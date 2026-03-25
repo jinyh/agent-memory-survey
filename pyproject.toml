@@ -1,0 +1,17 @@
+[project]
+name = "agentresearch"
+version = "0.1.0"
+description = "Research on Agent Memory: survey and prototype implementations"
+requires-python = ">=3.10"
+dependencies = [
+    "chromadb>=0.4.0",
+    "networkx>=3.0",
+    "sentence-transformers>=2.2.0",
+    "numpy>=1.24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1.0",
+]
