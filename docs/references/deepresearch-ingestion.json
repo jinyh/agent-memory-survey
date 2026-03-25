@@ -1,0 +1,293 @@
+{
+  "count": 36,
+  "records": [
+    {
+      "title": "1. Introduction",
+      "source_url": "https://arxiv.org/html/2603.04740v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2603.04740.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and Emerging Frontiers",
+      "source_url": "https://arxiv.org/html/2603.07670v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2603.07670.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "[2512.13564] Memory in the Age of AI Agents",
+      "source_url": "https://arxiv.org/abs/2512.13564",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2512.13564.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Memory in the Age of AI Agents (Dec 2025)",
+      "source_url": "https://www.youtube.com/watch?v=ZvaooFqZayc",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Graph-based Agent Memory: Taxonomy, Techniques, and Applications",
+      "source_url": "https://www.scribd.com/document/994695793/Graph-based-Agent-Memory-Taxonomy-Techniques-and-Applications",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Rethinking Memory Mechanisms of Foundation Agents in the Second Half: A Survey",
+      "source_url": "https://arxiv.org/html/2602.06052v2",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2602.06052.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "TeleMem: Building Long-Term and Multimodal Memory for Agentic AI",
+      "source_url": "https://arxiv.org/html/2601.06037v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2601.06037.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "MemOCR: Layout-Aware Visual Memory for Efficient Long-Horizon Reasoning",
+      "source_url": "https://arxiv.org/html/2601.21468v4",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2601.21468.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Efficient Multimodal Spatial Reasoning via Dynamic and Asymmetric Routing",
+      "source_url": "https://openreview.net/forum?id=BQASoLmREU",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "download_failed"
+    },
+    {
+      "title": "PolarMem: A Training-Free Polarized Latent Graph Memory for Verifiable Multimodal Agents",
+      "source_url": "https://www.researchgate.net/publication/400370819\\_PolarMem\\_A\\_Training-Free\\_Polarized\\_Latent\\_Graph\\_Memory\\_for\\_Verifiable\\_Multimodal\\_Agents",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Zijie Zhou",
+      "source_url": "https://www.catalyzex.com/author/Zijie%20Zhou",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "TeleAI-UAGI/telemem: TeleMem is a high-performance ...",
+      "source_url": "https://github.com/TeleAI-UAGI/telemem",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects",
+      "source_url": "https://arxiv.org/html/2512.12818v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2512.12818.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Adaptive episodic memory: how multiple memory representations drive behavior in humans and nonhumans | Physiological Reviews",
+      "source_url": "https://journals.physiology.org/doi/10.1152/physrev.00005.2025",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Seeing, Listening, Remembering, and Reasoning: A Multimodal Agent with Long-Term Memory",
+      "source_url": "https://m3-agent.github.io/",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Seeing, Listening, Remembering, and Reasoning: A Multimodal Agent with Long-Term Memory | OpenReview",
+      "source_url": "https://openreview.net/forum?id=PMz29A7Muq",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "download_failed"
+    },
+    {
+      "title": "MemVerse: Multimodal Memory for Lifelong Learning Agents",
+      "source_url": "https://arxiv.org/html/2512.03627v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2512.03627.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Synapse: Empowering LLM Agents with Episodic-Semantic Memory via Spreading Activation",
+      "source_url": "https://arxiv.org/html/2601.02744v2",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2601.02744.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Agent Semantic Memory (AgentSM) - Emergent Mind",
+      "source_url": "https://www.emergentmind.com/topics/agent-semantic-memory-agentsm",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "LiveVLM: Efficient Online Video Understanding via Streaming-Oriented KV Cache and Retrieval",
+      "source_url": "https://www.researchgate.net/publication/391954118\\_LiveVLM\\_Efficient\\_Online\\_Video\\_Understanding\\_via\\_Streaming-Oriented\\_KV\\_Cache\\_and\\_Retrieval",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "ICLR 2026 Monday 04/27",
+      "source_url": "https://iclr.cc/virtual/2026/day/4/27",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Think3D: Thinking with Space for Spatial Reasoning",
+      "source_url": "https://arxiv.org/html/2601.13029v3",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2601.13029.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Experience-Driven Multi-Agent Systems Are Training-free Context-aware Earth Observers",
+      "source_url": "https://arxiv.org/html/2602.02559v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2602.02559.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "See and Remember: A Multimodal Agent for Web Traversal",
+      "source_url": "https://arxiv.org/html/2603.02626v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2603.02626.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents",
+      "source_url": "https://arxiv.org/pdf/2601.01885",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2601.01885.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "[2601.13029] Think3D: Thinking with Space for Spatial Reasoning",
+      "source_url": "https://arxiv.org/abs/2601.13029",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2601.13029.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Vision to Geometry: 3D Spatial Memory for Sequential Embodied MLLM Reasoning and Exploration",
+      "source_url": "https://arxiv.org/html/2512.02458v2",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2512.02458.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "GSMem: 3D Gaussian Splatting as Persistent Spatial Memory for Zero-Shot Embodied Exploration and Reasoning",
+      "source_url": "https://www.researchgate.net/publication/402859807\\_GSMem\\_3D\\_Gaussian\\_Splatting\\_as\\_Persistent\\_Spatial\\_Memory\\_for\\_Zero-Shot\\_Embodied\\_Exploration\\_and\\_Reasoning",
+      "category": "other",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "GSMem: 3D Gaussian Splatting as Persistent Spatial Memory for Zero-Shot Embodied Exploration and Reasoning | alphaXiv",
+      "source_url": "https://www.alphaxiv.org/overview/2603.19137v1",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "[2603.19137] GSMem: 3D Gaussian Splatting as Persistent Spatial Memory for Zero-Shot Embodied Exploration and Reasoning",
+      "source_url": "https://arxiv.org/abs/2603.19137",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2603.19137.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "RenderMem: Rendering as Spatial Memory Retrieval",
+      "source_url": "https://arxiv.org/html/2603.14669v1",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2603.14669.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "3D Spatial Memory for Sequential Embodied MLLM Reasoning and Exploration",
+      "source_url": "https://arxiv.org/pdf/2512.02458",
+      "category": "paper",
+      "status": "downloaded",
+      "local_path": "ref/paper/2512.02458.pdf",
+      "reason": "downloaded_from_open_source"
+    },
+    {
+      "title": "Improve dataset card: Add task categories, HF paper link, GitHub link, correct project page, and sample usage · David0219/TeleEgo at 692cf38 - Hugging Face",
+      "source_url": "https://huggingface.co/datasets/David0219/TeleEgo/commit/692cf386e38d8e43e05462984249ca5a238876e5",
+      "category": "benchmark",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "NeurIPS 2025 Orals",
+      "source_url": "https://neurips.cc/virtual/2025/events/oral",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "FindingDory: A Benchmark to Evaluate Memory in Embodied Agents | OpenReview",
+      "source_url": "https://openreview.net/forum?id=cnn6KDy7YT",
+      "category": "benchmark",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    },
+    {
+      "title": "Robotics",
+      "source_url": "https://arxiv.org/list/cs.RO/new",
+      "category": "paper",
+      "status": "missing",
+      "local_path": null,
+      "reason": "no_open_pdf_downloaded"
+    }
+  ]
+}
