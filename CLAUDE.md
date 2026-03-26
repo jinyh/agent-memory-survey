@@ -1,25 +1,16 @@
-# AgentResearch - Agent Memory 研究项目
+# AgentResearch
 
-## 项目概述
-研究 LLM Agent 记忆层的最新进展、思路和实现。包含研究综述文档和概念原型代码。
+Claude Code 入口说明。该仓库用于研究 Agent Memory，产物包括研究综述、参考资料库和最小记忆原型。
 
-## 项目结构
-- `ref/` — 参考论文 PDF
-- `docs/survey/` — 研究综述文档
-- `docs/references.md` — 参考文献库
-- `src/memory/` — 概念原型代码
-- `tests/` — 单元测试
+## 共享约定
 
-## 技术栈
-- Python 3.10+, uv
-- 依赖: chromadb, networkx, sentence-transformers
+本仓库的共享项目约定以 `AGENTS.md` 为准。
 
-## 环境约定
-- 为保持根目录整洁，虚拟环境默认放在仓库外，例如 `$HOME/.venvs/agentresearch`
-- 推荐流程: `uv venv "$HOME/.venvs/agentresearch"` → `source "$HOME/.venvs/agentresearch/bin/activate"` → `uv sync --active --extra dev`
+- 目录结构、开发命令、资料维护流程等公共规则只在 `AGENTS.md` 维护。
+- 若 `CLAUDE.md` 与 `AGENTS.md` 出现冲突，以 `AGENTS.md` 为准。
+- 更新共享项目说明时，先改 `AGENTS.md`；`CLAUDE.md` 仅保留 Claude Code 入口说明和必要差异。
 
-## 开发命令
-```bash
-uv run --active --extra dev pytest tests/   # 运行测试
-uv run --active python -m src.memory.agent  # 运行 Agent 示例
-```
+## Claude Code 使用提示
+
+- 进入仓库后，先阅读 `AGENTS.md` 获取完整项目上下文。
+- 涉及 `ref/paper/`、`ref/blog/`、`ref/DeepResearch/` 的资料变更时，遵循 `AGENTS.md` 中的资料维护约定执行。
