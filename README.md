@@ -8,6 +8,7 @@ Agent Memory 研究项目，当前重构为三层结构：
 
 ## 目录结构
 
+- `docs/method/`：研究版 BMAD 方法层（工作流、角色、工件、评审门、追踪规则）
 - `docs/survey/`：新版综述，按 Formation / Evolution / Retrieval / Evaluation / Frontier 组织
 - `docs/references.md`：参考资料入口页
 - `docs/references/`：自动生成的 paper/blog/deepresearch 索引与质量评估

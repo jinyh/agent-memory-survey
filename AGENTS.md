@@ -16,6 +16,7 @@
   - `survey-map.md` — 章节研究矩阵与证据地图
 - `docs/references.md` — 参考资料入口页（含质量评估口径定义）
 - `docs/references/` — 自动生成的论文、博客、DeepResearch 摄取索引与质量评估
+- `docs/method/` — 研究版 BMAD 方法层（工作流、角色、工件、评审门、追踪规则）
 - `docs/plans/` — 研究规划与设计文档
 - `docs/architecture/` — 架构决策记录（ADR）
 - `src/memory/` — 概念原型代码
@@ -48,6 +49,7 @@ uv run --active --extra dev ruff format src/ tests/    # 代码格式化
 - `paper` 是综述中的主证据；`blog` 主要用于补充工程实践、系统选型和 benchmark 争议背景。
 
 ## Survey 写作约束
+- 进入实现或实验前，遵守 `docs/method/gates.md` 定义的评审门要求（Gate A：进实现前；Gate B：实验前；Gate C：进 survey 前）。
 - `docs/survey/` 中关键概念、方法范式、系统路线、评测对象、组织性判断，必须绑定明确代表引用。
 - 代表引用优先 `paper`；`blog` 只能做工程补充；`DeepResearch` 只能做线索。
 - 如果正文出现缩写或系统名并承担论证功能，首次必须写出明确作品名，不允许只用泛称或缩写承担主判断。
