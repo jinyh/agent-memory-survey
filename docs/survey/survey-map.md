@@ -15,7 +15,7 @@
 | 什么信息应进入长期记忆 | `02-formation` | Mem0, LangMem, MemAgent, Elastic |
 | 记忆如何更新、压缩与遗忘 | `03-evolution` | Hindsight, Synapse, MSA, AgentOrchestra |
 | 如何从长期历史中真正用上记忆 | `04-retrieval` | Mem0, Zep, Letta/MemGPT, RLM, MSA |
-| 当前 benchmark 到底在测什么 | `05-evaluation` | LoCoMo, LongMemEval, Letta benchmark, Cortex/Hindsight 叙事 |
+| 当前 benchmark 到底在测什么 | `05-evaluation` | LoCoMo, LongMemEval, MemoryAgentBench, MemoryArena, AMA-Bench |
 | 生产系统如何做分层和治理 | `06-systems-and-engineering` | Mem0, Zep, Letta/MemGPT, Hindsight, Elastic |
 | 多模态、空间与安全的 frontier 在哪 | `07-frontiers` | TeleMem, M3-Agent, MemVerse, MemOCR, Think3D, GSMem, RenderMem |
 
@@ -35,6 +35,9 @@
 | Synapse | 中 | 高 | 高 | 中 | 中 | 中 |
 | Elastic memory architecture | 高 | 中 | 高 | 中 | 高 | 低 |
 | Think3D / GSMem / RenderMem | 低 | 中 | 高 | 低 | 中 | 高 |
+| MemoryAgentBench | 低 | 低 | 低 | 高 | 低 | 中 |
+| MemoryArena | 低 | 低 | 中 | 高 | 低 | 中 |
+| AMA-Bench | 低 | 低 | 中 | 高 | 低 | 中 |
 
 说明：
 
@@ -80,8 +83,10 @@
 
 - LoCoMo
 - LongMemEval
-- Mem0 benchmark 叙事
-- Hindsight / Cortex / Letta 的评测叙事
+- MemoryAgentBench
+- MemoryArena
+- AMA-Bench
+- Hindsight / Cortex / Letta 的评测叙事（工程补充）
 
 ### 06-systems-and-engineering
 
