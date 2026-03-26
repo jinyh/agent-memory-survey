@@ -11,7 +11,7 @@ Agent Memory 研究项目，当前重构为三层结构：
 - `docs/survey/`：新版综述，按 Formation / Evolution / Retrieval / Evaluation / Frontier 组织
 - `docs/references.md`：参考资料入口页
 - `docs/references/`：自动生成的 paper/blog/deepresearch 索引与质量评估
-- `ref/paper/`：本地 PDF 论文库
+- `ref/paper/`：本地 PDF 论文库，默认不纳入版本控制
 - `ref/blog/`：工程文章与行业资料
 - `ref/DeepResearch/`：研究报告与待摄取引用线索
 - `src/memory/`：记忆层概念原型
@@ -50,6 +50,8 @@ uv run --active python -m src.references
 2. 生成 `docs/references/` 下的结构化索引
 3. 评估每条资料的质量字段
 4. 对 `DeepResearch` 中支持直下的开放论文执行下载补齐
+
+说明：`ref/paper/` 用于保存本地论文原文 PDF，供索引脚本和研究流程使用，但这些 PDF 默认不会提交到 Git 仓库。
 
 ## 根目录约定
 
