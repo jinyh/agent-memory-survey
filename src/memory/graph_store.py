@@ -219,6 +219,12 @@ class GraphMemoryStore(MemoryStore):
 
     # ── 序列化 / 反序列化 ──────────────────────────────
 
+    def get_init_kwargs(self) -> dict:
+        return {
+            "max_capacity": self._max_capacity,
+            "decay_rate": self._decay_rate,
+        }
+
     def to_snapshot_dict(self) -> dict:
         """将全部状态导出为可 JSON 序列化的 dict。"""
         items = []
@@ -247,19 +253,16 @@ class GraphMemoryStore(MemoryStore):
                 "attrs": attrs,
             })
         return {
+            "init_kwargs": self.get_init_kwargs(),
             "items": items,
             "edges": edges,
         }
 
     @classmethod
-    def from_snapshot_dict(
-        cls,
-        data: dict,
-        max_capacity: int = 10000,
-        decay_rate: float = 0.01,
-    ) -> GraphMemoryStore:
-        """从 dict 恢复 store 状态。"""
-        store = cls(max_capacity=max_capacity, decay_rate=decay_rate)
+    def from_snapshot_dict(cls, data: dict, **kwargs: Any) -> GraphMemoryStore:
+        """从 dict 恢复 store 状态，kwargs 优先，缺省回退到 data['init_kwargs']。"""
+        init = {**data.get("init_kwargs", {}), **kwargs}
+        store = cls(max_capacity=init.get("max_capacity", 10000), decay_rate=init.get("decay_rate", 0.01))
         for d in data.get("items", []):
             item = MemoryItem(
                 content=d["content"],

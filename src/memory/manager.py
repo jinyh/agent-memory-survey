@@ -78,6 +78,51 @@ class MemoryManager:
         logger.debug(f"记忆已存储: [{store_name}] {memory_id[:8]}...")
         return memory_id
 
+    def _fuse_stores(
+        self,
+        query: str,
+        overfetch_k: int,
+        store_names: list[str],
+        memory_type: MemoryType | None,
+        collect_trace: bool,
+    ) -> tuple[list[tuple[MemoryItem, float, str]], dict]:
+        """rank 归一化融合检索的共享实现。
+
+        返回 (排序后的全部结果, trace_dict)。collect_trace=False 时 trace_dict 为空 dict。
+        """
+        merged: dict[str, tuple[MemoryItem, float, str]] = {}
+        trace: dict[str, list[dict]] = {}
+
+        for name in store_names:
+            if name not in self._stores:
+                continue
+            weight = self._fusion_config.get_weight(name)
+            results = self._stores[name].query(
+                query, top_k=overfetch_k, memory_type=memory_type
+            )
+            if collect_trace:
+                store_trace: list[dict] = []
+            for rank, (item, raw_score) in enumerate(results, start=1):
+                normalized_score = 1.0 / rank
+                fused_score = weight * normalized_score
+                if collect_trace:
+                    store_trace.append({
+                        "item_id": item.id,
+                        "raw_score": raw_score,
+                        "rank": rank,
+                        "normalized_score": normalized_score,
+                        "fused_score": fused_score,
+                    })
+                existing = merged.get(item.id)
+                if existing is None or fused_score > existing[1]:
+                    merged[item.id] = (item, fused_score, name)
+            if collect_trace:
+                trace[name] = store_trace
+
+        all_results = list(merged.values())
+        all_results.sort(key=lambda x: x[1], reverse=True)
+        return all_results, trace
+
     def recall(
         self,
         query: str,
@@ -96,27 +141,9 @@ class MemoryManager:
         """
         store_names = store_names or list(self._stores.keys())
         overfetch_k = top_k * self._fusion_config.overfetch_factor
-
-        # item_id → (MemoryItem, fused_score, store_name)
-        # 同一条记忆可能出现在多个 store，取最高 fused_score
-        merged: dict[str, tuple[MemoryItem, float, str]] = {}
-
-        for name in store_names:
-            if name not in self._stores:
-                continue
-            weight = self._fusion_config.get_weight(name)
-            results = self._stores[name].query(
-                query, top_k=overfetch_k, memory_type=memory_type
-            )
-            for rank, (item, _raw_score) in enumerate(results, start=1):
-                normalized_score = 1.0 / rank
-                fused_score = weight * normalized_score
-                existing = merged.get(item.id)
-                if existing is None or fused_score > existing[1]:
-                    merged[item.id] = (item, fused_score, name)
-
-        all_results = list(merged.values())
-        all_results.sort(key=lambda x: x[1], reverse=True)
+        all_results, _ = self._fuse_stores(
+            query, overfetch_k, store_names, memory_type, collect_trace=False
+        )
         return all_results[:top_k]
 
     def recall_with_trace(
@@ -141,35 +168,9 @@ class MemoryManager:
         """
         store_names = store_names or list(self._stores.keys())
         overfetch_k = top_k * self._fusion_config.overfetch_factor
-
-        trace: dict[str, list[dict]] = {}
-        merged: dict[str, tuple[MemoryItem, float, str]] = {}
-
-        for name in store_names:
-            if name not in self._stores:
-                continue
-            weight = self._fusion_config.get_weight(name)
-            results = self._stores[name].query(
-                query, top_k=overfetch_k, memory_type=memory_type
-            )
-            store_trace: list[dict] = []
-            for rank, (item, raw_score) in enumerate(results, start=1):
-                normalized_score = 1.0 / rank
-                fused_score = weight * normalized_score
-                store_trace.append({
-                    "item_id": item.id,
-                    "raw_score": raw_score,
-                    "rank": rank,
-                    "normalized_score": normalized_score,
-                    "fused_score": fused_score,
-                })
-                existing = merged.get(item.id)
-                if existing is None or fused_score > existing[1]:
-                    merged[item.id] = (item, fused_score, name)
-            trace[name] = store_trace
-
-        all_results = list(merged.values())
-        all_results.sort(key=lambda x: x[1], reverse=True)
+        all_results, trace = self._fuse_stores(
+            query, overfetch_k, store_names, memory_type, collect_trace=True
+        )
         return {
             "results": all_results[:top_k],
             "trace": trace,
@@ -399,7 +400,7 @@ class MemoryManager:
                     existing_store.delete(item.id)
 
             # 用已注册 store 实例的参数重建
-            restored = cls.from_snapshot_dict(store_data, existing_store)
+            restored = cls.from_snapshot_dict(store_data, **existing_store.get_init_kwargs())
             self._stores[name] = restored
             stores_sizes[name] = restored.size()
 

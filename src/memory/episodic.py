@@ -203,6 +203,13 @@ class EpisodicMemory(MemoryStore):
 
     # ── 序列化 / 反序列化 ──────────────────────────────
 
+    def get_init_kwargs(self) -> dict:
+        return {
+            "max_capacity": self._max_capacity,
+            "decay_rate": self._decay_rate,
+            "importance_threshold": self._importance_threshold,
+        }
+
     def to_snapshot_dict(self) -> dict:
         """将全部状态导出为可 JSON 序列化的 dict。"""
         items = []
@@ -221,23 +228,19 @@ class EpisodicMemory(MemoryStore):
                 "links": item.links,
             })
         return {
+            "init_kwargs": self.get_init_kwargs(),
             "items": items,
             "timeline": list(self._timeline),
         }
 
     @classmethod
-    def from_snapshot_dict(
-        cls,
-        data: dict,
-        max_capacity: int = 5000,
-        decay_rate: float = 0.02,
-        importance_threshold: float = 0.3,
-    ) -> EpisodicMemory:
-        """从 dict 恢复 store 状态。"""
+    def from_snapshot_dict(cls, data: dict, **kwargs: Any) -> EpisodicMemory:
+        """从 dict 恢复 store 状态，kwargs 优先，缺省回退到 data['init_kwargs']。"""
+        init = {**data.get("init_kwargs", {}), **kwargs}
         store = cls(
-            max_capacity=max_capacity,
-            decay_rate=decay_rate,
-            importance_threshold=importance_threshold,
+            max_capacity=init.get("max_capacity", 5000),
+            decay_rate=init.get("decay_rate", 0.02),
+            importance_threshold=init.get("importance_threshold", 0.3),
         )
         for d in data.get("items", []):
             item = MemoryItem(

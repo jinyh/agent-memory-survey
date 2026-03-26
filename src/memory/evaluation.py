@@ -233,39 +233,16 @@ def check_roundtrip(
     manager: MemoryManager, queries: list[dict], tmp_dir: str
 ) -> bool:
     """保存快照 → 从快照恢复新 manager → 对比 top-3 结果 ID 是否一致。"""
-    # 保存
     snap_path = os.path.join(tmp_dir, "roundtrip_snap")
     manager.save_snapshot(snap_path)
 
-    # 读取快照 JSON
-    with open(os.path.join(snap_path, "snapshot.json"), "r", encoding="utf-8") as f:
-        snapshot = json.load(f)
+    # 用与原 manager 相同构造参数注册空 store，供 load_snapshot 提取 init_kwargs
+    new_manager = MemoryManager(fusion_config=manager._fusion_config)
+    for name, store in manager._stores.items():
+        new_manager.register_store(name, store.__class__(**store.get_init_kwargs()))
 
-    # 重建 manager（手动恢复，避免 load_snapshot 签名问题）
-    config = FusionConfig(
-        mode="rank",
-        overfetch_factor=3,
-        store_weights={"episodic": 1.0, "graph": 1.0},
-    )
-    new_manager = MemoryManager(fusion_config=config)
+    new_manager.load_snapshot(snap_path)
 
-    stores_data = snapshot.get("stores", {})
-    if "episodic" in stores_data:
-        ep = EpisodicMemory.from_snapshot_dict(
-            stores_data["episodic"]["data"],
-            max_capacity=1000,
-            decay_rate=0.001,
-        )
-        new_manager.register_store("episodic", ep)
-    if "graph" in stores_data:
-        gs = GraphMemoryStore.from_snapshot_dict(
-            stores_data["graph"]["data"],
-            max_capacity=1000,
-            decay_rate=0.001,
-        )
-        new_manager.register_store("graph", gs)
-
-    # 对比
     for q in queries:
         orig = manager.recall(q["query"], top_k=3)
         rest = new_manager.recall(q["query"], top_k=3)

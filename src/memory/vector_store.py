@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from .base import MemoryItem, MemoryStore, MemoryType
@@ -146,6 +148,13 @@ class VectorMemoryStore(MemoryStore):
 
     # ── 序列化 / 反序列化 ──────────────────────────────
 
+    def get_init_kwargs(self) -> dict:
+        return {
+            "model_name": self._model_name,
+            "max_capacity": self._max_capacity,
+            "decay_rate": self._decay_rate,
+        }
+
     def to_snapshot_dict(self) -> dict:
         """将全部状态导出为可 JSON 序列化的 dict。"""
         items = []
@@ -163,21 +172,16 @@ class VectorMemoryStore(MemoryStore):
                 "tags": item.tags,
                 "links": item.links,
             })
-        return {"items": items}
+        return {"init_kwargs": self.get_init_kwargs(), "items": items}
 
     @classmethod
-    def from_snapshot_dict(
-        cls,
-        data: dict,
-        model_name: str = "all-MiniLM-L6-v2",
-        max_capacity: int = 10000,
-        decay_rate: float = 0.01,
-    ) -> VectorMemoryStore:
-        """从 dict 恢复 store 状态（不重新编码 embedding）。"""
+    def from_snapshot_dict(cls, data: dict, **kwargs: Any) -> VectorMemoryStore:
+        """从 dict 恢复 store 状态（不重新编码 embedding），kwargs 优先，缺省回退到 data['init_kwargs']。"""
+        init = {**data.get("init_kwargs", {}), **kwargs}
         store = cls(
-            model_name=model_name,
-            max_capacity=max_capacity,
-            decay_rate=decay_rate,
+            model_name=init.get("model_name", "all-MiniLM-L6-v2"),
+            max_capacity=init.get("max_capacity", 10000),
+            decay_rate=init.get("decay_rate", 0.01),
         )
         for d in data.get("items", []):
             item = MemoryItem(

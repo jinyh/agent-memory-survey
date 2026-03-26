@@ -117,3 +117,16 @@ class MemoryStore(ABC):
     @abstractmethod
     def size(self) -> int:
         """返回当前记忆总数。"""
+
+    @abstractmethod
+    def get_init_kwargs(self) -> dict:
+        """返回重建本 store 所需的构造参数 dict。"""
+
+    @abstractmethod
+    def to_snapshot_dict(self) -> dict:
+        """导出全部状态（含 init_kwargs）为可 JSON 序列化的 dict。"""
+
+    @classmethod
+    @abstractmethod
+    def from_snapshot_dict(cls, data: dict, **kwargs: Any) -> "MemoryStore":
+        """从 dict 恢复 store 状态，kwargs 为构造参数（缺省回退到 data['init_kwargs']）。"""
