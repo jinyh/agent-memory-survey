@@ -1,6 +1,8 @@
 # Agent Memory 内核 v1 实施计划（单 Agent 本地）
 
 > v1.1.0 | 2026-03-26 — Claude Code 审计修订版
+>
+> status: completed — src/memory/ 已实现（commit ec82558），tests/test_memory.py 通过
 
 ## Summary
 目标是在不引入 BMAD 重型安装/IDE 体系的前提下，把现有原型升级为”可比较检索 + 可恢复持久化 + 可重复评测”的 Memory 内核。

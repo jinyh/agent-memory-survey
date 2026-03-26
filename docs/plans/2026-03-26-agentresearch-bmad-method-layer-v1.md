@@ -1,6 +1,8 @@
 # AgentResearch 研究版 BMAD 方法层实施方案 v1
 
 > v1.0.0 | 2026-03-26
+>
+> status: completed — docs/method/ 6 文件已落地，AGENTS.md 已同步
 
 ## Summary
 
