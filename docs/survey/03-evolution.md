@@ -90,3 +90,17 @@ MSA 的贡献之一，是说明 latent route + sparse generation 可以把极大
 3. 要从一开始就预留 provenance、version 和 deletion 的接口，否则后续治理会非常昂贵。
 
 如果说 formation 决定了记忆“怎么进入系统”，那么 evolution 决定了系统是否还能在半年后保持一致、可信和可控。
+
+## 代表工作定位
+
+- `Hindsight`：belief-aware evolution 的最强代表，强调 evidence 与 opinion 分层。
+- `Synapse`：代表 episodic 与 semantic 之间的激活和重组。
+- `MSA`：代表压缩与稀疏读取结合的内生 memory 演化方向。
+- `AgentOrchestra`：代表多 agent 场景下 versioning 与组件演化的协议化思路。
+- `工程治理材料`：帮助说明删除、撤销、审计和权限不是附属问题。
+
+## 本章主要证据来源
+
+- `paper`：Hindsight、Synapse、MSA、AgentOrchestra。
+- `blog`：工程系统关于 memory 更新、治理、权限和审计的讨论。
+- `综合推断`：evolution 是长期能力本身，而不是后台优化，这是对现有 demo 与真实部署鸿沟的归纳。

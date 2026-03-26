@@ -91,3 +91,17 @@ Elastic 的实践说明，memory 很快会碰到 identity-aware retrieval、tena
 ## 本章结论
 
 从工程角度看，memory layer 正在从“外挂检索器”演化为“状态管理与认知控制层”。不同系统的真实差异，在于它们把 control plane 放在哪里。凡是只强调 storage，而不处理 policy、evolution 和 governance 的方案，都更像 memory feature，而不是成熟 memory architecture。
+
+## 代表工作定位
+
+- `Mem0 / LangMem`：代表抽取式 memory service 的主流工程起点。
+- `Zep / Graphiti`：代表图作为长期记忆骨架的路线。
+- `Letta / MemGPT`：代表 memory OS 与分层上下文管理。
+- `Hindsight`：代表 belief-aware 多网络系统。
+- `Elastic memory architecture`：代表生产级过滤、隔离、权限与 hybrid retrieval 的工程约束。
+
+## 本章主要证据来源
+
+- `paper`：Mem0、Letta/MemGPT、Hindsight、图记忆综述等系统论文。
+- `blog`：Elastic、Letta、benchmark 比较类工程文章。
+- `综合推断`：memory layer 正在向 control plane 演化，是从系统分层与治理压力共同抽出的结论。

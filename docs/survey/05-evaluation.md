@@ -119,3 +119,16 @@ Mem0 一类系统追求低延迟、低 token、高性价比个性化记忆；Hin
 这也是本章最重要的一句：在 Agent Memory 里，先问“评测什么”，再看“谁分数更高”。如果一个 benchmark 只测长对话 recall，它给不出对 belief management 或 governance 的结论；如果一个系统只公布某一套自定义基准成绩，也不能直接推断它是更成熟的 memory layer。
 
 因此，本综述不会把 retrieval 分数当作 memory 全貌，而是把它当作一个必要但远远不充分的信号。
+
+## 代表工作定位
+
+- `LoCoMo`：代表对长对话 recall 与时间问题的标准化测试。
+- `LongMemEval`：代表更长跨度、多 session 的压力测试。
+- `Mem0 benchmark 叙事`：代表第一代 memory system 如何通过标准基准建立比较口径。
+- `Hindsight / Cortex / Letta`：代表不同系统如何通过自有叙事强调 memory-in-use 或更难基准。
+
+## 本章主要证据来源
+
+- `paper`：LoCoMo、LongMemEval 及相关系统论文中的评测部分。
+- `blog`：Letta、Mem0、benchmark 比较文章。
+- `综合推断`：评测对象必须拆层看，是基于 benchmark 覆盖面与部署问题错位得出的判断。
