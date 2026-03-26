@@ -16,6 +16,44 @@
 | 压缩与摘要 | 长轨迹、重复 observation、冷数据 | summarizer 或 latent compressor | 降低上下文与存储成本 | 易牺牲细节，摘要偏差难检测 | 中 |
 | 遗忘与治理 | 过时、错误、越权或撤销内容 | governance policy | 面向长期部署的关键能力 | benchmark 与公开实证仍明显不足 | 低 |
 
+## 关键概念与代表引用
+
+- consolidation
+  本文语义：把 episodic 经验提升为可复用 semantic 或 procedural memory。
+  主代表引用：`Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects`
+  证据类型：`主证据`
+  边界说明：支撑 retain / reflect 的结构化演化，不支撑所有巩固策略已有统一 benchmark。
+- version semantics
+  本文语义：更新不是数据库覆盖，而是显式记录新旧边界与采用条件。
+  主代表引用：`Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects`
+  证据类型：`主证据`
+  边界说明：支撑 evolution 必须保留版本语义，不支撑存储成本问题已解决。
+- belief-aware update
+  本文语义：evidence、belief、summary、policy 应以不同更新逻辑演化。
+  主代表引用：`Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects`
+  证据类型：`主证据`
+  边界说明：支撑 belief correction 的必要性，不支撑公共评测已充分覆盖。
+- abstraction vs specificity
+  本文语义：压缩和抽象不能抹掉后续修正所需的证据颗粒度。
+  主代表引用：`Memora（论文题名 Memoria）`
+  证据类型：`主证据`
+  边界说明：支撑 personalization memory 的演化边界，不承担本章核心 versioning 论证。
+- learnable memory operations
+  本文语义：巩固、修订、裁剪可以由可学习技能驱动，而非纯启发式。
+  主代表引用：`MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents`
+  证据类型：`主证据`
+  边界说明：支撑 evolution 可学习化，不支撑大规模部署稳定性已验证。
+- spreading activation
+  本文语义：episodic 与 semantic 的联动可通过图激活增强，但它更像补充机制而非主演化主线。
+  主代表引用：`Synapse: Empowering LLM Agents with Episodic-Semantic Memory via Spreading Activation`
+  证据类型：`工程补充`
+  边界说明：支撑联动式 retrieval/evolution 案例，不支撑 version semantics。
+- multi-agent protocol evolution
+  本文语义：多 agent 协议会引入状态协同问题，但不应被当作 evolution 章节的主锚点。
+  主代表引用：`AgentOrchestra: Orchestrating Multi-Agent Intelligence with the TEA Protocol`
+  证据类型：`工程补充`
+  边界说明：支撑多 agent 协调背景，不承担本章核心主判断。
+
 ## Evolution 不是“后台优化”，而是长期能力本身
 
 很多工程实现把 evolution 当作后处理任务，例如定期 summarization、离线 reindex 或记忆清理。这样做短期可行，但从系统视角看，evolution 实际承担的是长期能力定义：
@@ -103,14 +141,15 @@ MSA 的贡献之一，是说明 latent route + sparse generation 可以把极大
 
 ## 代表工作定位
 
-- `Hindsight`：belief-aware evolution 的最强代表，强调 evidence 与 opinion 分层。
-- `Synapse`：代表 episodic 与 semantic 之间的激活和重组。
+- `Hindsight`：belief-aware evolution 的最强代表，强调 evidence 与 opinion 分层，是本章主证据。
+- `Memora（论文题名 Memoria） / MemSkill`：补足 abstraction 与可学习 memory operation 两条演化路线。
+- `Synapse`：代表 episodic 与 semantic 之间的激活和重组，但降为补充案例。
 - `MSA`：代表压缩与稀疏读取结合的内生 memory 演化方向。
-- `AgentOrchestra`：代表多 agent 场景下 versioning 与组件演化的协议化思路。
+- `AgentOrchestra`：保留为多 agent 协调补充，不再承担 evolution 主线。
 - `工程治理材料`：帮助说明删除、撤销、审计和权限不是附属问题。
 
 ## 本章主要证据来源
 
-- `paper`：Hindsight、Synapse、MSA、AgentOrchestra。
+- `paper`：Hindsight、Memoria、MemSkill、MSA、Synapse、AgentOrchestra。
 - `blog`：工程系统关于 memory 更新、治理、权限和审计的讨论。
 - `综合推断`：evolution 是长期能力本身，而不是后台优化，这是对现有 demo 与真实部署鸿沟的归纳。

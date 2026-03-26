@@ -22,6 +22,29 @@ Agent Memory 的 frontier 已经不再只是“让文本 chatbot 记住更久”
 | 安全与权限治理 | identity、access scope、audit trail | 系统治理层 | 面向真实部署不可回避 | 学术基准与系统实现脱节 | 中 |
 | 删除与可撤销性 | 外部库、图、summary、latent 表示的联动撤销 | deletion pipeline | 决定 memory 是否具备合规能力 | 跨表示同步删除仍缺成熟方案 | 低 |
 
+## 关键概念与代表引用
+
+- multimodal memory
+  本文语义：记忆对象从文本事实扩展到视觉片段、对象、视频与界面状态。
+  主代表引用：`TeleMem: Building Long-Term and Multimodal Memory for Agentic AI`
+  证据类型：`主证据`
+  边界说明：支撑多模态长期记忆已进入系统级设计，不支撑统一评价标准已稳定。
+- spatial memory
+  本文语义：agent 记住的是可重新定位和更新的环境结构，而不只是 caption。
+  主代表引用：`Think3D: Thinking with Space for Spatial Reasoning`
+  证据类型：`主证据`
+  边界说明：支撑主动 3D 探索与空间推理的闭环，不支撑连续任务 benchmark 已统一。
+- world state retrieval
+  本文语义：空间记忆可以通过渲染或环境接口直接返回可见证据。
+  主代表引用：`RenderMem: Rendering as Spatial Memory Retrieval`
+  证据类型：`主证据`
+  边界说明：支撑“渲染即检索”的世界状态路线，不支撑治理与删除问题已解决。
+- auditability / deletion
+  本文语义：长期 memory 必须支持来源追踪、删除和可撤销性。
+  主代表引用：`Elastic memory architecture`
+  证据类型：`工程补充`
+  边界说明：支撑工程治理方向，不承担本章多模态与空间主判断。
+
 ## 多模态记忆：从句子到片段与对象
 
 TeleMem、M3-Agent、MemVerse、MemOCR、See and Remember 等工作共同说明：一旦 agent 需要处理网页、视觉流、视频或复杂界面，记忆对象就不再是整洁的自然语言事实，而是：
@@ -94,12 +117,13 @@ Frontier 章节最重要的结论不是“未来会更强”，而是：memory l
 ## 代表工作定位
 
 - `TeleMem`：代表长期多模态 memory 开始进入系统级设计。
-- `M3-Agent / MemVerse / MemOCR`：代表视觉、视频和文档布局记忆的不同形成与读取路径。
-- `Think3D / GSMem / RenderMem`：代表空间记忆从 caption 检索转向环境模型。
+- `Think3D`：代表主动 3D 探索驱动的 spatial memory 主锚点。
+- `RenderMem`：代表“渲染即检索”的世界状态记忆主锚点。
+- `M3-Agent / MemVerse / MemOCR / GSMem`：保留为补充线索，不再堆叠为本章主锚点。
 - `工程治理材料`：代表安全、权限、删除与审计会成为 memory 基础设施要求。
 
 ## 本章主要证据来源
 
-- `paper`：TeleMem、M3-Agent、MemVerse、MemOCR、Think3D、GSMem、RenderMem。
-- `blog`：系统治理与 benchmark 争议中的工程讨论。
+- `paper`：TeleMem、Think3D、RenderMem 为主证据，M3-Agent、MemVerse、MemOCR、GSMem 作为补充线索。
+- `blog`：系统治理与 benchmark 争议中的工程讨论，仅作工程补充。
 - `综合推断`：frontier 的中心问题正在从“更长文本记忆”转向“更长期的世界状态治理”。

@@ -307,7 +307,12 @@ def _classify_paper(title: str) -> tuple[str, list[str], list[str], list[str]]:
     paper_type = "system"
     tags = ["agent-memory"]
 
-    if "recursive" in lower:
+    if "memoryagentbench" in lower or "memoryarena" in lower or "ama-bench" in lower:
+        lifecycle = ["evaluation"]
+        functions = ["episodic", "working"]
+        paper_type = "benchmark"
+        tags.extend(["benchmark", "agent-eval"])
+    elif "recursive" in lower:
         lifecycle = ["formation", "retrieval"]
         functions = ["working"]
         paper_type = "mechanism"
@@ -322,6 +327,21 @@ def _classify_paper(title: str) -> tuple[str, list[str], list[str], list[str]]:
         functions = ["procedural", "episodic"]
         paper_type = "framework"
         tags.extend(["multi-agent", "protocol"])
+    elif "memskill" in lower:
+        lifecycle = ["formation", "evolution"]
+        functions = ["episodic", "procedural"]
+        paper_type = "method"
+        tags.extend(["memory-policy", "skill"])
+    elif "memoria" in lower:
+        lifecycle = ["formation", "evolution", "retrieval"]
+        functions = ["episodic", "semantic"]
+        paper_type = "framework"
+        tags.extend(["personalization", "memory-service"])
+    elif "bmam" in lower:
+        lifecycle = ["evolution", "retrieval"]
+        functions = ["episodic", "semantic", "procedural"]
+        paper_type = "framework"
+        tags.extend(["brain-inspired", "multi-agent"])
     elif "memagent" in lower:
         lifecycle = ["formation", "evolution", "retrieval"]
         functions = ["working", "episodic"]
@@ -382,12 +402,30 @@ def _infer_paper_title(stem: str, deepresearch_map: dict[str, str]) -> str:
         return deepresearch_map[arxiv_id_match.group(1)]
     if stem.startswith("2506.12508"):
         return "AgentOrchestra: Orchestrating Multi-Agent Intelligence with the TEA Protocol"
+    if stem.startswith("2507.05257"):
+        return "MemoryAgentBench: Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions"
     if stem.startswith("2507.02259"):
         return "MemAgent: Reshaping Long-Context LLM with Multi-Conv RL-based Memory Agent"
+    if stem.startswith("2512.12686"):
+        return "Memoria: A Scalable Agentic Memory Framework for Personalized Conversational AI"
+    if stem.startswith("2512.13564"):
+        return "Memory in the Age of AI Agents: A Survey"
     if stem.startswith("2512.24601"):
         return "Recursive Language Models"
+    if stem.startswith("2601.01885"):
+        return "Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents"
+    if stem.startswith("2601.20465"):
+        return "BMAM: Brain-inspired Multi-Agent Memory Framework"
     if "MSA__" in stem:
         return "MSA: Memory Sparse Attention for Efficient End-to-End Memory Model Scaling to 100M Tokens"
+    if stem.startswith("2602.02474"):
+        return "MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents"
+    if stem.startswith("2602.16313"):
+        return "MemoryArena: Benchmarking Agent Memory in Interdependent Multi-Session Agentic Tasks"
+    if stem.startswith("2602.22769"):
+        return "AMA-Bench: Evaluating Long-Horizon Memory for Agentic Applications"
+    if stem.startswith("2603.04740"):
+        return "Memory as Ontology: A Constitutional Memory Architecture for Persistent Digital Citizens"
     return stem.replace("_", " ")
 
 

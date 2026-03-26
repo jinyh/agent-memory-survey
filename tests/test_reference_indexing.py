@@ -50,6 +50,30 @@ def test_build_reference_library_enriches_downloaded_paper_titles():
         record.title.startswith("TeleMem:")
         for record in library.papers
     )
+    assert any(
+        record.title.startswith("MemoryArena:")
+        for record in library.papers
+    )
+    assert any(
+        "MemoryAgentBench" in record.title
+        for record in library.papers
+    )
+    assert any(
+        record.title.startswith("AMA-Bench:")
+        for record in library.papers
+    )
+    assert any(
+        record.title.startswith("Memoria:")
+        for record in library.papers
+    )
+    assert any(
+        record.title.startswith("MemSkill:")
+        for record in library.papers
+    )
+    assert any(
+        record.title.startswith("BMAM:")
+        for record in library.papers
+    )
 
 
 def test_extract_deepresearch_entries_tracks_download_status():
