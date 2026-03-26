@@ -17,6 +17,7 @@
 - `docs/references.md` — 参考资料入口页（含质量评估口径定义）
 - `docs/references/` — 自动生成的论文、博客、DeepResearch 摄取索引与质量评估
 - `docs/plans/` — 研究规划与设计文档
+- `docs/architecture/` — 架构决策记录（ADR）
 - `src/memory/` — 概念原型代码
 - `src/references/` — 资料索引、质量评估与开放论文下载工具
 - `tests/` — 单元测试
