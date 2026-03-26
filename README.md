@@ -1,4 +1,4 @@
-# AgentResearch
+# Agent Memory
 
 Agent Memory 研究项目，当前重构为三层结构：
 
