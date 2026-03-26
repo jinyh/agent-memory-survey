@@ -307,7 +307,7 @@ def _classify_paper(title: str) -> tuple[str, list[str], list[str], list[str]]:
     paper_type = "system"
     tags = ["agent-memory"]
 
-    if "memoryagentbench" in lower or "memoryarena" in lower or "ama-bench" in lower:
+    if any(k in lower for k in ("memoryagentbench", "memoryarena", "ama-bench", "locomo", "longmemeval", "very long-term conversational", "long-term interactive memory")):
         lifecycle = ["evaluation"]
         functions = ["episodic", "working"]
         paper_type = "benchmark"
@@ -420,6 +420,10 @@ def _infer_paper_title(stem: str, deepresearch_map: dict[str, str]) -> str:
         return "MSA: Memory Sparse Attention for Efficient End-to-End Memory Model Scaling to 100M Tokens"
     if stem.startswith("2602.02474"):
         return "MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents"
+    if stem.startswith("2402.17753"):
+        return "Evaluating Very Long-Term Conversational Memory of LLM Agents"
+    if stem.startswith("2410.10813"):
+        return "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory"
     if stem.startswith("2602.16313"):
         return "MemoryArena: Benchmarking Agent Memory in Interdependent Multi-Session Agentic Tasks"
     if stem.startswith("2602.22769"):
@@ -524,6 +528,29 @@ def _download_filename(download_url: str, title: str) -> str:
         slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
         return f"{slug}-{openreview_id}.pdf"
     return f"{re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')}.pdf"
+
+
+def download_hf_dataset(hf_repo_id: str, dest_dir: Path) -> Path:
+    """从 HuggingFace 下载数据集快照到 dest_dir/{repo_name}/。"""
+    from huggingface_hub import snapshot_download
+
+    local_dir = dest_dir / hf_repo_id.split("/")[-1]
+    local_dir.mkdir(parents=True, exist_ok=True)
+    snapshot_download(repo_id=hf_repo_id, repo_type="dataset", local_dir=str(local_dir))
+    return local_dir
+
+
+def download_github_files(file_urls: list[str], dest_dir: Path) -> list[Path]:
+    """下载 GitHub raw 文件列表到 dest_dir/，返回成功写入的路径列表。"""
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    downloaded: list[Path] = []
+    for url in file_urls:
+        filename = url.split("/")[-1]
+        target = dest_dir / filename
+        if not target.exists():
+            urllib.request.urlretrieve(url, target)
+        downloaded.append(target)
+    return downloaded
 
 
 def _build_deepresearch_paper_map(report_path: Path) -> dict[str, str]:

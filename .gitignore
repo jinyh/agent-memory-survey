@@ -39,3 +39,4 @@ htmlcov/
 
 # Local research materials
 ref/paper/*.pdf
+ref/datasets/

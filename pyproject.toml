@@ -7,6 +7,7 @@ dependencies = [
     "networkx>=3.0",
     "sentence-transformers>=2.2.0",
     "numpy>=1.24.0",
+    "huggingface_hub>=0.23.0",
 ]
 
 [project.optional-dependencies]

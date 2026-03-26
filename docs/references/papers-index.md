@@ -1,6 +1,28 @@
 # Papers Index
 
-- count: 28
+- count: 30
+
+## Evaluating Very Long-Term Conversational Memory of LLM Agents
+- source_type: paper
+- year: None
+- file_path: ref/paper/2402.17753.pdf
+- identifier: arXiv:2402.17753
+- paper_type: benchmark
+- lifecycle_stages: ['evaluation']
+- memory_functions: ['episodic', 'working']
+- tags: ['agent-memory', 'benchmark', 'agent-eval']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory
+- source_type: paper
+- year: None
+- file_path: ref/paper/2410.10813.pdf
+- identifier: arXiv:2410.10813
+- paper_type: benchmark
+- lifecycle_stages: ['evaluation']
+- memory_functions: ['episodic', 'working']
+- tags: ['agent-memory', 'benchmark', 'agent-eval']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'medium', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
 ## AgentOrchestra: Orchestrating Multi-Agent Intelligence with the TEA Protocol
 - source_type: paper
