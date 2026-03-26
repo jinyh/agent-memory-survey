@@ -24,6 +24,24 @@ class MemoryType(Enum):
 
 
 @dataclass
+class FusionConfig:
+    """跨 store 检索融合配置。
+
+    mode: 融合策略，当前仅支持 "rank"（rank 归一化融合）
+    overfetch_factor: 每个 store 预取倍数，实际取 top_k * overfetch_factor
+    store_weights: 各 store 的权重，key 为 store 名称，缺省权重为 1.0
+    """
+
+    mode: str = "rank"
+    overfetch_factor: int = 3
+    store_weights: dict[str, float] = field(default_factory=dict)
+
+    def get_weight(self, store_name: str) -> float:
+        """获取指定 store 的权重，缺省返回 1.0。"""
+        return self.store_weights.get(store_name, 1.0)
+
+
+@dataclass
 class MemoryItem:
     """单条记忆条目。"""
 

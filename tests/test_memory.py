@@ -1,13 +1,15 @@
 """Agent Memory 核心模块测试。"""
 
+import json
 import time
 
 import pytest
 
-from src.memory.base import MemoryItem, MemoryType
+from src.memory.base import FusionConfig, MemoryItem, MemoryType
 from src.memory.episodic import EpisodicMemory
 from src.memory.graph_store import GraphMemoryStore
 from src.memory.manager import MemoryManager
+from src.memory.vector_store import VectorMemoryStore
 
 
 # ---- MemoryItem 测试 ----
@@ -125,8 +127,8 @@ class TestGraphMemoryStore:
 
     def test_tag_overlap_links(self):
         gs = GraphMemoryStore()
-        id1 = gs.add(MemoryItem(content="Python", tags=["编程"]))
-        id2 = gs.add(MemoryItem(content="Java", tags=["编程"]))
+        gs.add(MemoryItem(content="Python", tags=["编程"]))
+        gs.add(MemoryItem(content="Java", tags=["编程"]))
 
         stats = gs.graph_stats()
         assert stats["edges"] > 0  # 应该有 tag 重叠的自动链接
@@ -224,3 +226,298 @@ class TestMemoryManager:
         assert "ep" in stats
         assert "sem" in stats
         assert stats["ep"]["size"] == 0
+
+
+# ---- FusionConfig 测试 ----
+
+
+class TestFusionConfig:
+    def test_default_values(self):
+        """默认配置: mode=rank, overfetch_factor=3, store_weights={}。"""
+        fc = FusionConfig()
+        assert fc.mode == "rank"
+        assert fc.overfetch_factor == 3
+        assert fc.store_weights == {}
+
+    def test_get_weight_default(self):
+        """未配置的 store 返回默认权重 1.0。"""
+        fc = FusionConfig()
+        assert fc.get_weight("any_store") == 1.0
+        assert fc.get_weight("nonexistent") == 1.0
+
+    def test_get_weight_custom(self):
+        """配置了的 store 返回配置值。"""
+        fc = FusionConfig(store_weights={"ep": 2.0, "graph": 0.5})
+        assert fc.get_weight("ep") == 2.0
+        assert fc.get_weight("graph") == 0.5
+        # 未配置的仍返回 1.0
+        assert fc.get_weight("other") == 1.0
+
+
+# ---- Rank 融合测试 ----
+
+
+class TestRankFusion:
+    def test_cross_store_rank_fusion(self):
+        """跨 store rank 归一化融合：结果不被单一 store 劫持，fused_score 递减。"""
+        mm = MemoryManager()
+        ep = EpisodicMemory()
+        gs = GraphMemoryStore()
+        mm.register_store("ep", ep)
+        mm.register_store("graph", gs)
+
+        # episodic 中添加 3 条关于 Python 的记忆
+        ep.add_episode("Python 基础教程", importance=0.8, tags=["python"])
+        ep.add_episode("Python 高级特性", importance=0.7, tags=["python"])
+        ep.add_episode("Python 数据分析", importance=0.6, tags=["python"])
+
+        # graph 中添加 3 条关于 Python 的记忆
+        gs.add(MemoryItem(content="Python 编程语言", tags=["python", "编程"]))
+        gs.add(MemoryItem(content="Python 机器学习", tags=["python", "ML"]))
+        gs.add(MemoryItem(content="Python Web 开发", tags=["python", "web"]))
+
+        results = mm.recall("Python", top_k=3)
+        assert len(results) == 3
+
+        # 验证结果来自两个 store（不被单一 store 劫持）
+        store_names = {r[2] for r in results}
+        assert len(store_names) >= 2, "结果应来自至少两个 store"
+
+        # 验证 fused_score 递减
+        scores = [r[1] for r in results]
+        for i in range(len(scores) - 1):
+            assert scores[i] >= scores[i + 1], "fused_score 应递减"
+
+    def test_recall_with_trace(self):
+        """recall_with_trace 返回 trace 信息，包含评分明细。"""
+        mm = MemoryManager()
+        ep = EpisodicMemory()
+        gs = GraphMemoryStore()
+        mm.register_store("ep", ep)
+        mm.register_store("graph", gs)
+
+        ep.add_episode("Python 基础教程", importance=0.8, tags=["python"])
+        ep.add_episode("Python 高级特性", importance=0.7, tags=["python"])
+        ep.add_episode("Python 数据分析", importance=0.6, tags=["python"])
+
+        gs.add(MemoryItem(content="Python 编程语言", tags=["python", "编程"]))
+        gs.add(MemoryItem(content="Python 机器学习", tags=["python", "ML"]))
+        gs.add(MemoryItem(content="Python Web 开发", tags=["python", "web"]))
+
+        output = mm.recall_with_trace("Python", top_k=3)
+
+        # 验证返回结构
+        assert "results" in output
+        assert "trace" in output
+        assert len(output["results"]) == 3
+
+        # 验证 trace 中每个 store 的条目包含必要字段
+        required_fields = {"item_id", "raw_score", "rank", "normalized_score", "fused_score"}
+        for store_name, entries in output["trace"].items():
+            assert len(entries) > 0, f"store '{store_name}' 应有 trace 条目"
+            for entry in entries:
+                assert required_fields.issubset(entry.keys()), (
+                    f"trace 条目缺少字段: {required_fields - entry.keys()}"
+                )
+
+        # 验证 normalized_score 符合 1/rank 规律
+        for store_name, entries in output["trace"].items():
+            for entry in entries:
+                expected = 1.0 / entry["rank"]
+                assert abs(entry["normalized_score"] - expected) < 1e-9, (
+                    f"normalized_score 应为 1/rank={expected}，实际为 {entry['normalized_score']}"
+                )
+
+    def test_store_weights(self):
+        """store 权重影响融合排序：高权重 store 的结果排名更靠前。"""
+        # ep 权重 2.0，graph 权重 0.5
+        fc = FusionConfig(store_weights={"ep": 2.0, "graph": 0.5})
+        mm = MemoryManager(fusion_config=fc)
+        ep = EpisodicMemory()
+        gs = GraphMemoryStore()
+        mm.register_store("ep", ep)
+        mm.register_store("graph", gs)
+
+        # 两个 store 添加相似内容
+        for i in range(3):
+            ep.add_episode(f"Python 话题 {i}", importance=0.7, tags=["python"])
+            gs.add(MemoryItem(content=f"Python 话题 {i}", tags=["python"]))
+
+        results = mm.recall("Python", top_k=6)
+        assert len(results) > 0
+
+        # 统计 top 位置中 ep 的数量
+        top_half = results[: len(results) // 2] if len(results) >= 2 else results
+        ep_count = sum(1 for _, _, sn in top_half if sn == "ep")
+        graph_count = sum(1 for _, _, sn in top_half if sn == "graph")
+        assert ep_count >= graph_count, "高权重 ep store 应在 top 位置更多"
+
+
+# ---- 快照持久化测试 ----
+
+
+class TestSnapshot:
+    def test_roundtrip_episodic_graph(self, tmp_path):
+        """save_snapshot → load_snapshot 往返：记忆数量和 recall 结果一致。"""
+        # 创建并填充 manager
+        mm1 = MemoryManager()
+        ep1 = EpisodicMemory()
+        gs1 = GraphMemoryStore()
+        mm1.register_store("ep", ep1)
+        mm1.register_store("graph", gs1, default=True)
+
+        ep1.add_episode("Python 基础", importance=0.8, tags=["python"])
+        ep1.add_episode("Python 进阶", importance=0.7, tags=["python"])
+        ep1.add_episode("Python 实战", importance=0.6, tags=["python"])
+
+        id_g1 = gs1.add(MemoryItem(content="Python 编程", tags=["python", "编程"]))
+        id_g2 = gs1.add(MemoryItem(content="Python 框架", tags=["python", "web"]))
+        gs1.add(MemoryItem(content="Python 数据", tags=["python", "data"]))
+        gs1.add_relation(id_g1, id_g2, "相关")
+
+        # 保存快照
+        snap_dir = str(tmp_path / "snap1")
+        mm1.save_snapshot(snap_dir)
+        total_before = mm1.total_memories()
+        recall_before = [r[0].id for r in mm1.recall("Python", top_k=3)]
+
+        # 创建新 manager，加载快照
+        mm2 = MemoryManager()
+        mm2.register_store("ep", EpisodicMemory())
+        mm2.register_store("graph", GraphMemoryStore(), default=True)
+        mm2.load_snapshot(snap_dir)
+
+        # 验证记忆总数一致
+        assert mm2.total_memories() == total_before
+
+        # 验证同样 query 的 top-3 结果 ID 一致
+        recall_after = [r[0].id for r in mm2.recall("Python", top_k=3)]
+        assert set(recall_after) == set(recall_before)
+
+    def test_strict_validation_bad_schema(self, tmp_path):
+        """strict 模式下，错误的 schema_version 应抛 ValueError。"""
+        mm = MemoryManager()
+        mm.register_store("ep", EpisodicMemory())
+        snap_dir = str(tmp_path / "snap_bad_schema")
+        mm.save_snapshot(snap_dir)
+
+        # 手动篡改 schema_version
+        snap_file = tmp_path / "snap_bad_schema" / "snapshot.json"
+        data = json.loads(snap_file.read_text(encoding="utf-8"))
+        data["schema_version"] = "99.0"
+        snap_file.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+        mm2 = MemoryManager()
+        mm2.register_store("ep", EpisodicMemory())
+        with pytest.raises(ValueError, match="不支持的快照版本"):
+            mm2.load_snapshot(snap_dir, strict=True)
+
+    def test_strict_validation_bad_graph_edge(self, tmp_path):
+        """strict 模式下，图边指向不存在的节点应抛 ValueError。"""
+        mm = MemoryManager()
+        gs = GraphMemoryStore()
+        mm.register_store("graph", gs, default=True)
+        gs.add(MemoryItem(content="节点A", tags=["test"]))
+
+        snap_dir = str(tmp_path / "snap_bad_edge")
+        mm.save_snapshot(snap_dir)
+
+        # 手动注入一条指向不存在 ID 的边
+        snap_file = tmp_path / "snap_bad_edge" / "snapshot.json"
+        data = json.loads(snap_file.read_text(encoding="utf-8"))
+        graph_data = data["stores"]["graph"]["data"]
+        graph_data["edges"].append({
+            "source": "nonexistent-id-000",
+            "target": "nonexistent-id-001",
+            "relation": "fake",
+            "attrs": {},
+        })
+        snap_file.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+        mm2 = MemoryManager()
+        mm2.register_store("graph", GraphMemoryStore(), default=True)
+        with pytest.raises(ValueError, match="不存在的.*节点"):
+            mm2.load_snapshot(snap_dir, strict=True)
+
+    def test_load_non_strict(self, tmp_path):
+        """non-strict 模式下，错误的 schema_version 不抛错。"""
+        mm = MemoryManager()
+        mm.register_store("ep", EpisodicMemory())
+        snap_dir = str(tmp_path / "snap_non_strict")
+        mm.save_snapshot(snap_dir)
+
+        # 篡改 schema_version
+        snap_file = tmp_path / "snap_non_strict" / "snapshot.json"
+        data = json.loads(snap_file.read_text(encoding="utf-8"))
+        data["schema_version"] = "99.0"
+        snap_file.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+        mm2 = MemoryManager()
+        mm2.register_store("ep", EpisodicMemory())
+        # strict=False 不应抛错
+        result = mm2.load_snapshot(snap_dir, strict=False)
+        assert "total_memories" in result
+
+
+# ---- 各 Store 序列化单测 ----
+
+
+class TestStoreSnapshot:
+    def test_episodic_snapshot_roundtrip(self):
+        """EpisodicMemory to_snapshot_dict → from_snapshot_dict 往返一致。"""
+        ep = EpisodicMemory()
+        ep.add_episode("事件A", importance=0.9, tags=["a"])
+        ep.add_episode("事件B", importance=0.5, tags=["b"])
+        ep.add_episode("事件C", importance=0.3, tags=["c"])
+
+        snap = ep.to_snapshot_dict()
+        restored = EpisodicMemory.from_snapshot_dict(snap)
+
+        assert restored.size() == ep.size()
+        original_contents = sorted(i.content for i in ep.list_all())
+        restored_contents = sorted(i.content for i in restored.list_all())
+        assert original_contents == restored_contents
+
+    def test_graph_snapshot_roundtrip(self):
+        """GraphMemoryStore to_snapshot_dict → from_snapshot_dict 往返一致。"""
+        gs = GraphMemoryStore()
+        id1 = gs.add(MemoryItem(content="概念A", tags=["x"]))
+        gs.add(MemoryItem(content="概念B", tags=["x"]))
+        id3 = gs.add(MemoryItem(content="概念C", tags=["y"]))
+        gs.add_relation(id1, id3, "关联")
+
+        original_stats = gs.graph_stats()
+        snap = gs.to_snapshot_dict()
+        restored = GraphMemoryStore.from_snapshot_dict(snap)
+
+        assert restored.size() == gs.size()
+        assert restored.graph_stats()["edges"] == original_stats["edges"]
+
+    def test_vector_snapshot_roundtrip(self):
+        """VectorMemoryStore 手动设置 embedding 的序列化往返。"""
+        vs = VectorMemoryStore()
+        # 手动设置 embedding，不调用 _get_model
+        item1 = MemoryItem(
+            content="向量A",
+            embedding=[0.1, 0.2, 0.3],
+            tags=["vec"],
+        )
+        item2 = MemoryItem(
+            content="向量B",
+            embedding=[0.4, 0.5, 0.6],
+            tags=["vec"],
+        )
+        # 直接写入 _memories 跳过 _encode
+        vs._memories[item1.id] = item1
+        vs._memories[item2.id] = item2
+
+        snap = vs.to_snapshot_dict()
+        restored = VectorMemoryStore.from_snapshot_dict(snap)
+
+        assert restored.size() == vs.size()
+        # 验证 embedding 值一致
+        for orig_item in vs.list_all():
+            restored_item = next(
+                i for i in restored.list_all() if i.id == orig_item.id
+            )
+            assert restored_item.embedding == orig_item.embedding

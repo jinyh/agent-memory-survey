@@ -216,3 +216,80 @@ class GraphMemoryStore(MemoryStore):
             "density": nx.density(self._graph) if self._graph.number_of_nodes() > 1 else 0,
             "components": nx.number_weakly_connected_components(self._graph),
         }
+
+    # ── 序列化 / 反序列化 ──────────────────────────────
+
+    def to_snapshot_dict(self) -> dict:
+        """将全部状态导出为可 JSON 序列化的 dict。"""
+        items = []
+        for item in self._memories.values():
+            items.append({
+                "content": item.content,
+                "memory_type": item.memory_type.value,
+                "metadata": item.metadata,
+                "id": item.id,
+                "created_at": item.created_at,
+                "last_accessed": item.last_accessed,
+                "access_count": item.access_count,
+                "importance": item.importance,
+                "embedding": item.embedding,
+                "tags": item.tags,
+                "links": item.links,
+            })
+        edges = []
+        for source, target, edge_data in self._graph.edges(data=True):
+            relation = edge_data.get("relation", "")
+            attrs = {k: v for k, v in edge_data.items() if k != "relation"}
+            edges.append({
+                "source": source,
+                "target": target,
+                "relation": relation,
+                "attrs": attrs,
+            })
+        return {
+            "items": items,
+            "edges": edges,
+        }
+
+    @classmethod
+    def from_snapshot_dict(
+        cls,
+        data: dict,
+        max_capacity: int = 10000,
+        decay_rate: float = 0.01,
+    ) -> GraphMemoryStore:
+        """从 dict 恢复 store 状态。"""
+        store = cls(max_capacity=max_capacity, decay_rate=decay_rate)
+        for d in data.get("items", []):
+            item = MemoryItem(
+                content=d["content"],
+                memory_type=MemoryType(d["memory_type"]),
+                metadata=d.get("metadata", {}),
+                id=d["id"],
+                created_at=d["created_at"],
+                last_accessed=d["last_accessed"],
+                access_count=d.get("access_count", 0),
+                importance=d.get("importance", 0.5),
+                embedding=d.get("embedding"),
+                tags=d.get("tags", []),
+                links=d.get("links", []),
+            )
+            store._memories[item.id] = item
+            # 恢复图节点（与 add() 中的属性保持一致）
+            store._graph.add_node(
+                item.id,
+                content=item.content,
+                memory_type=item.memory_type.value,
+                created_at=item.created_at,
+                importance=item.importance,
+                tags=item.tags,
+            )
+        # 恢复图边
+        for edge in data.get("edges", []):
+            store._graph.add_edge(
+                edge["source"],
+                edge["target"],
+                relation=edge["relation"],
+                **edge.get("attrs", {}),
+            )
+        return store

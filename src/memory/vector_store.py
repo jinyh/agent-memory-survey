@@ -144,6 +144,59 @@ class VectorMemoryStore(MemoryStore):
     def size(self) -> int:
         return len(self._memories)
 
+    # ── 序列化 / 反序列化 ──────────────────────────────
+
+    def to_snapshot_dict(self) -> dict:
+        """将全部状态导出为可 JSON 序列化的 dict。"""
+        items = []
+        for item in self._memories.values():
+            items.append({
+                "content": item.content,
+                "memory_type": item.memory_type.value,
+                "metadata": item.metadata,
+                "id": item.id,
+                "created_at": item.created_at,
+                "last_accessed": item.last_accessed,
+                "access_count": item.access_count,
+                "importance": item.importance,
+                "embedding": item.embedding,
+                "tags": item.tags,
+                "links": item.links,
+            })
+        return {"items": items}
+
+    @classmethod
+    def from_snapshot_dict(
+        cls,
+        data: dict,
+        model_name: str = "all-MiniLM-L6-v2",
+        max_capacity: int = 10000,
+        decay_rate: float = 0.01,
+    ) -> VectorMemoryStore:
+        """从 dict 恢复 store 状态（不重新编码 embedding）。"""
+        store = cls(
+            model_name=model_name,
+            max_capacity=max_capacity,
+            decay_rate=decay_rate,
+        )
+        for d in data.get("items", []):
+            item = MemoryItem(
+                content=d["content"],
+                memory_type=MemoryType(d["memory_type"]),
+                metadata=d.get("metadata", {}),
+                id=d["id"],
+                created_at=d["created_at"],
+                last_accessed=d["last_accessed"],
+                access_count=d.get("access_count", 0),
+                importance=d.get("importance", 0.5),
+                embedding=d.get("embedding"),
+                tags=d.get("tags", []),
+                links=d.get("links", []),
+            )
+            # 直接写入 _memories，跳过 add() 避免触发重新编码
+            store._memories[item.id] = item
+        return store
+
     def _evict_lowest(self) -> None:
         """淘汰衰减分数最低的记忆。"""
         if not self._memories:

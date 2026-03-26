@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-import time
 from typing import Any
 
 from .base import MemoryItem, MemoryStore, MemoryType
@@ -201,6 +200,62 @@ class EpisodicMemory(MemoryStore):
 
     def size(self) -> int:
         return len(self._episodes)
+
+    # ── 序列化 / 反序列化 ──────────────────────────────
+
+    def to_snapshot_dict(self) -> dict:
+        """将全部状态导出为可 JSON 序列化的 dict。"""
+        items = []
+        for item in self._episodes.values():
+            items.append({
+                "content": item.content,
+                "memory_type": item.memory_type.value,
+                "metadata": item.metadata,
+                "id": item.id,
+                "created_at": item.created_at,
+                "last_accessed": item.last_accessed,
+                "access_count": item.access_count,
+                "importance": item.importance,
+                "embedding": item.embedding,
+                "tags": item.tags,
+                "links": item.links,
+            })
+        return {
+            "items": items,
+            "timeline": list(self._timeline),
+        }
+
+    @classmethod
+    def from_snapshot_dict(
+        cls,
+        data: dict,
+        max_capacity: int = 5000,
+        decay_rate: float = 0.02,
+        importance_threshold: float = 0.3,
+    ) -> EpisodicMemory:
+        """从 dict 恢复 store 状态。"""
+        store = cls(
+            max_capacity=max_capacity,
+            decay_rate=decay_rate,
+            importance_threshold=importance_threshold,
+        )
+        for d in data.get("items", []):
+            item = MemoryItem(
+                content=d["content"],
+                memory_type=MemoryType(d["memory_type"]),
+                metadata=d.get("metadata", {}),
+                id=d["id"],
+                created_at=d["created_at"],
+                last_accessed=d["last_accessed"],
+                access_count=d.get("access_count", 0),
+                importance=d.get("importance", 0.5),
+                embedding=d.get("embedding"),
+                tags=d.get("tags", []),
+                links=d.get("links", []),
+            )
+            store._episodes[item.id] = item
+        store._timeline = list(data.get("timeline", []))
+        return store
 
     def _evict_oldest_unimportant(self) -> None:
         """淘汰最旧且最不重要的记忆。"""
