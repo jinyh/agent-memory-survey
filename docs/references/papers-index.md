@@ -1,6 +1,6 @@
 # Papers Index
 
-- count: 22
+- count: 28
 
 ## AgentOrchestra: Orchestrating Multi-Agent Intelligence with the TEA Protocol
 - source_type: paper
@@ -23,6 +23,17 @@
 - memory_functions: ['working', 'episodic']
 - tags: ['agent-memory', 'rl', 'long-context']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'high', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## MemoryAgentBench: Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2507.05257.pdf
+- identifier: arXiv:2507.05257
+- paper_type: benchmark
+- lifecycle_stages: ['evaluation']
+- memory_functions: ['episodic', 'working']
+- tags: ['agent-memory', 'benchmark', 'agent-eval']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
 ## Seeing, Listening, Remembering, and Reasoning: A Multimodal Agent with Long-Term Memory
 - source_type: paper
@@ -55,6 +66,17 @@
 - lifecycle_stages: ['retrieval']
 - memory_functions: ['semantic']
 - tags: ['agent-memory']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## Memoria: A Scalable Agentic Memory Framework for Personalized Conversational AI
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2512.12686.pdf
+- identifier: arXiv:2512.12686
+- paper_type: framework
+- lifecycle_stages: ['formation', 'evolution', 'retrieval']
+- memory_functions: ['episodic', 'semantic']
+- tags: ['agent-memory', 'personalization', 'memory-service']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
 ## Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects
@@ -134,6 +156,17 @@
 - tags: ['agent-memory']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'medium', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
+## BMAM: Brain-inspired Multi-Agent Memory Framework
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2601.20465.pdf
+- identifier: arXiv:2601.20465
+- paper_type: framework
+- lifecycle_stages: ['evolution', 'retrieval']
+- memory_functions: ['episodic', 'semantic', 'procedural']
+- tags: ['agent-memory', 'brain-inspired', 'multi-agent']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
 ## MemOCR: Layout-Aware Visual Memory for Efficient Long-Horizon Reasoning
 - source_type: paper
 - year: 2026
@@ -144,6 +177,17 @@
 - memory_functions: ['semantic']
 - tags: ['agent-memory']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'medium', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2602.02474.pdf
+- identifier: arXiv:2602.02474
+- paper_type: method
+- lifecycle_stages: ['formation', 'evolution']
+- memory_functions: ['episodic', 'procedural']
+- tags: ['agent-memory', 'memory-policy', 'skill']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
 ## Experience-Driven Multi-Agent Systems Are Training-free Context-aware Earth Observers
 - source_type: paper
@@ -176,6 +220,28 @@
 - lifecycle_stages: ['retrieval']
 - memory_functions: ['semantic']
 - tags: ['agent-memory']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## MemoryArena: Benchmarking Agent Memory in Interdependent Multi-Session Agentic Tasks
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2602.16313.pdf
+- identifier: arXiv:2602.16313
+- paper_type: benchmark
+- lifecycle_stages: ['evaluation']
+- memory_functions: ['episodic', 'working']
+- tags: ['agent-memory', 'benchmark', 'agent-eval']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## AMA-Bench: Evaluating Long-Horizon Memory for Agentic Applications
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2602.22769.pdf
+- identifier: arXiv:2602.22769
+- paper_type: benchmark
+- lifecycle_stages: ['evaluation']
+- memory_functions: ['episodic', 'working']
+- tags: ['agent-memory', 'benchmark', 'agent-eval']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
 ## See and Remember: A Multimodal Agent for Web Traversal

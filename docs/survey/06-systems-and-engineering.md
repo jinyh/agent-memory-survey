@@ -16,6 +16,39 @@
 | belief-aware 多网络 | evidence / opinion / world / experience 分层 | memory object schema | 更适合冲突修正与解释 | 实现复杂，标准评测覆盖不足 | 中 |
 | 原生长记忆 / 程序化 working memory | latent state、REPL、稀疏注意力 | 模型内部或程序环境 | 超长任务潜力强，working memory 表达丰富 | 企业级治理与隔离仍不成熟 | 中 |
 
+## 关键概念与代表引用
+
+- memory service
+  本文语义：把 memory 封装为抽取、更新、检索和过滤的外部服务。
+  主代表引用：`Mem0`
+  证据类型：`主证据`
+  边界说明：支撑产品化起步路径，不支撑 belief-aware 演化已充分解决。
+- memory OS
+  本文语义：把 memory paging、active state 与 archive 管理暴露给 agent 自身。
+  主代表引用：`Letta / MemGPT`
+  证据类型：`主证据`
+  边界说明：支撑 memory management 进入 agent control loop，不支撑低延迟与高稳定性天然兼得。
+- belief-aware architecture
+  本文语义：事实、经验、总结和 belief 需要结构化分层。
+  主代表引用：`Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects`
+  证据类型：`主证据`
+  边界说明：支撑 conflict correction 与可解释性，不支撑公共 benchmark 已跟上。
+- programmatic working memory
+  本文语义：工作记忆可以由程序和 REPL 显式管理。
+  主代表引用：`Recursive Language Models`
+  证据类型：`主证据`
+  边界说明：支撑 recursive/programmatic route，不支撑企业级治理能力。
+- native long-memory mechanism
+  本文语义：部分 memory function 可以内化为稀疏注意力或 latent substrate。
+  主代表引用：`MSA: Memory Sparse Attention for Efficient End-to-End Memory Model Scaling to 100M Tokens`
+  证据类型：`主证据`
+  边界说明：支撑原生长记忆机制，不替代外部 control plane。
+- control plane
+  本文语义：权限、过滤、版本与路由是 memory architecture 的系统控制面。
+  主代表引用：`BMAM: Brain-inspired Multi-Agent Memory Framework`
+  证据类型：`工程补充`
+  边界说明：支撑 brain-inspired architecture 作为补充路线，不承担本章最核心主线。
+
 ## 一条粗略但有用的系统谱系
 
 ### 1. 抽取式 memory service
@@ -62,7 +95,7 @@
 
 ### 5. 原生长记忆与程序化工作记忆
 
-代表：MSA、RLM，以及其他长上下文原生 memory 机制。
+代表：MSA、Recursive Language Models，以及其他长上下文原生 memory 机制。
 
 这些工作共同说明，未来 memory 不必全部依赖外部数据库。模型内部的稀疏注意力、路由键、REPL 状态和递归程序，都可以承担一部分 memory function。它们对“working memory”尤其有启发。
 
@@ -108,10 +141,13 @@ Elastic 的实践说明，memory 很快会碰到 identity-aware retrieval、tena
 - `Zep / Graphiti`：代表图作为长期记忆骨架的路线。
 - `Letta / MemGPT`：代表 memory OS 与分层上下文管理。
 - `Hindsight`：代表 belief-aware 多网络系统。
+- `Recursive Language Models`：代表程序化 working memory 与 recursive control。
+- `MSA`：代表原生长记忆机制。
+- `BMAM`：作为 brain-inspired memory architecture 的补充证据保留。
 - `Elastic memory architecture`：代表生产级过滤、隔离、权限与 hybrid retrieval 的工程约束。
 
 ## 本章主要证据来源
 
-- `paper`：Mem0、Letta/MemGPT、Hindsight、图记忆综述等系统论文。
-- `blog`：Elastic、Letta、benchmark 比较类工程文章。
+- `paper`：Mem0、Letta/MemGPT、Hindsight、Recursive Language Models、MSA、BMAM、图记忆综述等系统论文。
+- `blog`：Elastic、Letta、benchmark 比较类工程文章，仅作工程补充。
 - `综合推断`：memory layer 正在向 control plane 演化，是从系统分层与治理压力共同抽出的结论。
