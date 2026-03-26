@@ -1,6 +1,6 @@
 # Blogs Index
 
-- count: 5
+- count: 6
 
 ## AI Agent Memory Systems in 2026
 - source_type: blog
@@ -12,6 +12,17 @@
 - lifecycle_stages: ['evaluation']
 - tags: ['agent-memory', 'benchmark']
 - quality: {'credibility': 'high', 'verifiability': 'medium', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
+
+## Junyang Lin on X: "From "Reasoning" Thinking to "Agentic" Thinking " / X
+- source_type: blog
+- author_or_org: None
+- published_at: Thu, 26 Mar 2026 15:34:53 GMT
+- file_path: ref/blog/From "Reasoning" Thinking to "Agentic" Thinking.md
+- source_url: https://x.com/JustinLin610/status/2037116325210829168
+- article_type: benchmark-analysis
+- lifecycle_stages: ['evaluation']
+- tags: ['agent-memory', 'benchmark']
+- quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
 
 ## Agent Memory: Why Your AI Has Amnesia and How to Fix It
 - source_type: blog
