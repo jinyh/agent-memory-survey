@@ -16,6 +16,7 @@
 | 记忆如何更新、压缩与遗忘 | `03-evolution` | Hindsight, Synapse, MSA, AgentOrchestra |
 | 如何从长期历史中真正用上记忆 | `04-retrieval` | Mem0, Zep, Letta/MemGPT, RLM, MSA |
 | 当前 benchmark 到底在测什么 | `05-evaluation` | LoCoMo, LongMemEval, MemoryAgentBench, MemoryArena, AMA-Bench |
+| benchmark 未覆盖的 formation/evolution 评测 | `05-evaluation` | MemoryAgentBench（部分覆盖 evolution），其余 4 个均不覆盖 |
 | 生产系统如何做分层和治理 | `06-systems-and-engineering` | Mem0, Zep, Letta/MemGPT, Hindsight, Elastic |
 | 多模态、空间与安全的 frontier 在哪 | `07-frontiers` | TeleMem, M3-Agent, MemVerse, MemOCR, Think3D, GSMem, RenderMem |
 

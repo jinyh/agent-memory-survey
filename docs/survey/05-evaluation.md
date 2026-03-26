@@ -177,8 +177,28 @@ Mem0 一类系统追求低延迟、低 token、高性价比个性化记忆；Hin
 - `MemoryArena`：代表 multi-session memory-agent-environment loop 的评测对象升级。
 - `AMA-Bench`：代表 memory benchmark 从对话历史问答走向 `agent trajectory + tool use`。
 
+## 当前 benchmark 未覆盖的评测维度
+
+> 本节基于 RQ-001 实验 E-20260326-lifecycle-eval 的评测覆盖矩阵分析，evidence_refs 见 `docs/plans/2026-03-26-memory-lifecycle-eval-evaluation-report.md`。
+
+将上述 5 个主流 benchmark 按生命周期三阶段（formation / evolution / retrieval）交叉比对，覆盖情况如下：
+
+| Benchmark | Formation 质量 | Evolution 正确性 | Retrieval 忠实度 |
+|---|---|---|---|
+| LoCoMo | 不覆盖 | 不覆盖 | 覆盖 |
+| LongMemEval | 不覆盖 | 不覆盖 | 覆盖 |
+| MemoryAgentBench | 部分覆盖 | 部分覆盖 | 覆盖 |
+| MemoryArena | 不覆盖 | 部分覆盖 | 覆盖 |
+| AMA-Bench | 不覆盖 | 不覆盖 | 覆盖 |
+
+其中，MemoryAgentBench（arXiv:2507.05257）通过 selective forgetting 维度最接近 evolution 正确性评测，但仍依赖最终 retrieval 结果间接判断，未直接测量 evolution 中间状态（如更新前后记忆库的差异对比）。
+
+这一覆盖空白意味着：现有 benchmark 能检测「agent 是否能从历史中找到正确答案」，但无法单独归因「写入选择是否正确」（formation 质量）或「冲突更新是否准确」（evolution 正确性）。当系统在 demo 和基准上表现良好但在长期部署中出现记忆污染和冲突事实时，现有评测缺乏定位根因的能力。
+
+**证据边界**：上表中各 benchmark 的覆盖判断来自其论文评测协议描述。「无法单独归因写入错误 vs 检索错误」这一判断属于综合推断，基于 5 个 benchmark 评测协议的交叉对比，而非某一论文的直接声明。
+
 ## 本章主要证据来源
 
 - `paper`：LoCoMo、LongMemEval、MemoryAgentBench、MemoryArena、AMA-Bench 及相关系统论文中的评测部分。
 - `blog`：Letta、Mem0、benchmark 比较文章，仅作工程补充。
-- `综合推断`：评测对象必须拆层看，是基于 benchmark 覆盖面与部署问题错位得出的判断。
+- `综合推断`：评测对象必须拆层看，是基于 benchmark 覆盖面与部署问题错位得出的判断。评测覆盖矩阵中的归因分析同样属于综合推断。
