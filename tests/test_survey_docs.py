@@ -58,5 +58,7 @@ def test_new_survey_chapters_include_evidence_anchors():
 
     for name in chapter_names:
         content = (SURVEY_DIR / name).read_text(encoding="utf-8")
+        assert "## 研究矩阵" in content
+        assert "| 优势 | 局限 | 当前证据强度 |" in content
         assert "## 代表工作定位" in content
         assert "## 本章主要证据来源" in content

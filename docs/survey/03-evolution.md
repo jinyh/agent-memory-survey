@@ -6,6 +6,16 @@
 
 如果 formation 决定了记忆如何进入系统，那么 evolution 决定了系统能否长期活下去。多数 memory demo 看起来能工作，是因为它们只展示了“第一次记住”；真正把系统拖垮的，是第二次、第三次、第一百次写入之后，旧记忆如何被修正、压缩、抽象、隔离和撤销。
 
+## 研究矩阵：evolution 的核心矛盾
+
+| 机制 | 主要对象 | 控制权中心 | 优势 | 局限 | 当前证据强度 |
+| --- | --- | --- | --- | --- | --- |
+| 巩固 consolidation | episodic -> semantic / procedural | 总结器、聚合器或 agent policy | 让经验变成可复用知识，降低碎片化 | 过早抽象会放大错误 belief | 中 |
+| 覆盖式更新 | 稳定属性、明确新旧替代关系 | update policy | 实现简单，适合少量高确定性事实 | 丢历史边界，不利审计与解释 | 中 |
+| 版本化更新 | 时间敏感事实、可追溯状态 | version semantics 与 provenance | 便于回溯、解释和时间推理 | 存储与检索复杂度更高 | 中低 |
+| 压缩与摘要 | 长轨迹、重复 observation、冷数据 | summarizer 或 latent compressor | 降低上下文与存储成本 | 易牺牲细节，摘要偏差难检测 | 中 |
+| 遗忘与治理 | 过时、错误、越权或撤销内容 | governance policy | 面向长期部署的关键能力 | benchmark 与公开实证仍明显不足 | 低 |
+
 ## Evolution 不是“后台优化”，而是长期能力本身
 
 很多工程实现把 evolution 当作后处理任务，例如定期 summarization、离线 reindex 或记忆清理。这样做短期可行，但从系统视角看，evolution 实际承担的是长期能力定义：

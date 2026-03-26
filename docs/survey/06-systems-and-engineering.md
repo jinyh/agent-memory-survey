@@ -6,6 +6,16 @@
 
 系统实现层面的真正趋势，不是“大家都在做 memory”，而是大家在围绕不同失败模式做不同补偿。有人想降低 token 和延迟，有人想显式管理 belief，有人想把 memory 变成 OS，有人想让模型原生具备超长工作记忆。理解这些系统，关键是看它们在补哪一类缺口。
 
+## 研究矩阵：主要系统路线怎么取舍
+
+| 系统路线 | 核心 substrate | 控制权中心 | 优势 | 局限 | 当前证据强度 |
+| --- | --- | --- | --- | --- | --- |
+| 抽取式 memory service | vector + metadata + fact store | 外部服务与规则引擎 | 上手快，最适合产品化起步 | 难处理 belief、复杂演化与多跳依赖 | 高 |
+| 图 / 时序 backbone | graph + temporal edges | 图层与同步管线 | 关系与时序可显式建模，便于追溯 | ingestion、同步、维护成本高 | 中 |
+| Memory OS / 分层上下文 | active state + archive + paging | agent 自身与控制平面 | 把记忆使用变成显式行为 | 行为稳定性与调试成本是门槛 | 中 |
+| belief-aware 多网络 | evidence / opinion / world / experience 分层 | memory object schema | 更适合冲突修正与解释 | 实现复杂，标准评测覆盖不足 | 中 |
+| 原生长记忆 / 程序化 working memory | latent state、REPL、稀疏注意力 | 模型内部或程序环境 | 超长任务潜力强，working memory 表达丰富 | 企业级治理与隔离仍不成熟 | 中 |
+
 ## 一条粗略但有用的系统谱系
 
 ### 1. 抽取式 memory service

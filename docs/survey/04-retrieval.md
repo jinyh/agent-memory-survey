@@ -12,6 +12,16 @@ Retrieval 不是“从库里 top-k 拿几条最相似文本”这么简单。对
 
 当前研究之所以热衷 retrieval，是因为这里最容易量化，也最容易做基准；但也因此，这一阶段最容易被误认为 memory 的全部。
 
+## 研究矩阵：retrieval 在比较什么
+
+| 路线 | 主要表示 | 控制权中心 | 优势 | 局限 | 当前证据强度 |
+| --- | --- | --- | --- | --- | --- |
+| 向量 / hybrid retrieval | embedding + keyword + metadata | 检索器与 reranker | 成熟、可部署、实验充分 | 任务相关性与时间关系常需额外补偿 | 高 |
+| 图检索 | 实体、关系、时间链、邻域 | 图索引与扩展策略 | 擅长多跳、时间顺序与对象追踪 | 构图与更新开销高 | 中 |
+| 路由式 / 分层 retrieval | archive、summary、active state 多层协同 | router 或外部策略 | 读取预算可适配任务复杂度 | 系统复杂度提高，调参难 | 中高 |
+| agentic / 程序化 retrieval | 工具调用、REPL 变量、中间程序状态 | agent 本身 | 可把 retrieval 变成显式推理过程 | 行为链更长，调试和治理更难 | 中 |
+| 内生 sparse retrieval | latent memory、稀疏注意力、memory interleave | 模型内部注意力机制 | 减少固定 top-k 的外部瓶颈 | 外部审计、权限、删除弱 | 中 |
+
 ## 读取机制的四条主线
 
 ### 1. 向量与混合检索

@@ -12,6 +12,16 @@ Agent Memory 的 frontier 已经不再只是“让文本 chatbot 记住更久”
 
 这意味着 frontier 不是附录式补充，而是在重新定义什么叫“memory layer”。
 
+## 研究矩阵：frontier 在扩展哪些边界
+
+| 前沿方向 | 记忆对象 | 控制权中心 | 优势 | 局限 | 当前证据强度 |
+| --- | --- | --- | --- | --- | --- |
+| 多模态长期记忆 | 视觉片段、对象、视频段落、布局 | 感知模块与跨模态索引 | 把 memory 扩展到网页、视频和文档世界 | 统一表示与评价口径尚未稳定 | 中 |
+| 空间 / 具身记忆 | 地图、轨迹、锚点、环境状态 | world model 与导航策略 | 让记忆直接服务行动闭环 | 更新、定位和 revision 成本高 | 中低 |
+| belief-aware world state | observation、hypothesis、experience | 记忆 schema 与 revision policy | 更能解释行动错误与 belief 漂移 | 结构复杂，公开对比少 | 低中 |
+| 安全与权限治理 | identity、access scope、audit trail | 系统治理层 | 面向真实部署不可回避 | 学术基准与系统实现脱节 | 中 |
+| 删除与可撤销性 | 外部库、图、summary、latent 表示的联动撤销 | deletion pipeline | 决定 memory 是否具备合规能力 | 跨表示同步删除仍缺成熟方案 | 低 |
+
 ## 多模态记忆：从句子到片段与对象
 
 TeleMem、M3-Agent、MemVerse、MemOCR、See and Remember 等工作共同说明：一旦 agent 需要处理网页、视觉流、视频或复杂界面，记忆对象就不再是整洁的自然语言事实，而是：
