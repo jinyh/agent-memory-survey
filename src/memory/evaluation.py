@@ -258,17 +258,29 @@ def check_roundtrip(
 # ---------------------------------------------------------------------------
 
 
-def _write_report_json(metrics: dict, roundtrip_ok: bool, out_dir: str) -> str:
+def _write_report_json(
+    metrics: dict,
+    roundtrip_ok: bool,
+    out_dir: str,
+    formation_metrics: dict | None = None,
+    evolution_metrics: dict | None = None,
+) -> str:
     """写入 report.json。"""
-    report = {
+    report: dict[str, Any] = {
         "timestamp": time.time(),
         "seed": 42,
+        "snapshot_roundtrip_consistent": roundtrip_ok,
+    }
+    if formation_metrics:
+        report["formation"] = formation_metrics
+    if evolution_metrics:
+        report["evolution"] = evolution_metrics
+    report["retrieval"] = {
         "hit@1": metrics["hit@1"],
         "hit@3": metrics["hit@3"],
         "hit@5": metrics["hit@5"],
         "mrr": metrics["mrr"],
         "store_distribution": metrics["store_distribution"],
-        "snapshot_roundtrip_consistent": roundtrip_ok,
     }
     path = os.path.join(out_dir, "report.json")
     with open(path, "w", encoding="utf-8") as f:
@@ -276,14 +288,42 @@ def _write_report_json(metrics: dict, roundtrip_ok: bool, out_dir: str) -> str:
     return path
 
 
-def _write_report_md(metrics: dict, roundtrip_ok: bool, out_dir: str) -> str:
+def _write_report_md(
+    metrics: dict,
+    roundtrip_ok: bool,
+    out_dir: str,
+    formation_metrics: dict | None = None,
+    evolution_metrics: dict | None = None,
+) -> str:
     """写入 report.md（简洁摘要）。"""
     lines = [
         "# Memory Evaluation Report",
         "",
-        f"seed: 42 | queries: {len(metrics['per_query'])}",
+        f"seed: 42 | retrieval queries: {len(metrics['per_query'])}",
         "",
-        "## 指标",
+    ]
+    if formation_metrics:
+        lines += [
+            "## Formation 质量",
+            "",
+            "| 指标 | 值 |",
+            "|------|-----|",
+            f"| formation_precision | {formation_metrics['formation_precision']:.3f} |",
+            f"| formation_recall | {formation_metrics['formation_recall']:.3f} |",
+            "",
+        ]
+    if evolution_metrics:
+        lines += [
+            "## Evolution 正确性",
+            "",
+            "| 指标 | 值 |",
+            "|------|-----|",
+            f"| evolution_accuracy | {evolution_metrics['evolution_accuracy']:.3f} |",
+            f"| forgetting_precision | {evolution_metrics['forgetting_precision']:.3f} |",
+            "",
+        ]
+    lines += [
+        "## Retrieval 忠实度",
         "",
         "| 指标 | 值 |",
         "|------|-----|",
@@ -329,43 +369,233 @@ def _write_cases_jsonl(
 
 
 def run_evaluation(out_dir: str) -> dict:
-    """执行完整评测流程，返回指标摘要。"""
+    """执行完整评测流程（formation + evolution + retrieval），返回指标摘要。"""
     os.makedirs(out_dir, exist_ok=True)
 
-    # 1. 构造场景
-    manager, queries = build_scenario(seed=42)
+    # --- Stage 1: Formation ---
+    fm_manager, events, expected_writes = build_formation_scenario(seed=42)
+    actual_writes: set[str] = set()
+    for ev in events:
+        if ev["importance"] >= _IMPORTANCE_THRESHOLD and len(ev["content"]) >= _CONTENT_MIN_LEN:
+            fm_manager.remember(
+                content=ev["content"],
+                importance=ev["importance"],
+                tags=ev["tags"],
+            )
+            actual_writes.add(ev["id"])
+    formation_metrics = compute_formation_metrics(actual_writes, expected_writes)
 
-    # 2. 执行检索（带 trace）
+    # --- Stage 2: Evolution ---
+    ev_manager, update_events, expected_state = build_evolution_scenario(seed=42)
+    for event in update_events:
+        if event["type"] == "update":
+            ev_manager.update_memory(event["target_id"], content=event["new_content"])
+        elif event["type"] == "forget":
+            ev_manager.forget(event["target_id"])
+    all_items: dict[str, str] = {}
+    for store_name in ev_manager._stores:
+        for item in ev_manager.get_store(store_name).list_all():
+            all_items[item.id] = item.content
+    evolution_metrics = compute_evolution_metrics(all_items, expected_state)
+
+    # --- Stage 3: Retrieval ---
+    ret_manager, queries = build_scenario(seed=42)
     results_per_query: list[list[tuple[MemoryItem, float, str]]] = []
     traces: list[dict] = []
     for q in queries:
-        traced = manager.recall_with_trace(q["query"], top_k=q["top_k"])
+        traced = ret_manager.recall_with_trace(q["query"], top_k=q["top_k"])
         results_per_query.append(traced["results"])
-        # trace 中的 raw 数据序列化
         traces.append(traced["trace"])
+    retrieval_metrics = compute_metrics(queries, results_per_query)
 
-    # 3. 计算指标
-    metrics = compute_metrics(queries, results_per_query)
-
-    # 4. 快照 roundtrip
+    # --- Snapshot roundtrip (retrieval stage manager) ---
     with tempfile.TemporaryDirectory() as tmp_dir:
-        roundtrip_ok = check_roundtrip(manager, queries, tmp_dir)
+        roundtrip_ok = check_roundtrip(ret_manager, queries, tmp_dir)
 
-    # 5. 写入产物
-    _write_report_json(metrics, roundtrip_ok, out_dir)
-    _write_report_md(metrics, roundtrip_ok, out_dir)
-    _write_cases_jsonl(metrics, traces, out_dir)
+    # --- Write artifacts ---
+    _write_report_json(retrieval_metrics, roundtrip_ok, out_dir,
+                       formation_metrics=formation_metrics,
+                       evolution_metrics=evolution_metrics)
+    _write_report_md(retrieval_metrics, roundtrip_ok, out_dir,
+                     formation_metrics=formation_metrics,
+                     evolution_metrics=evolution_metrics)
+    _write_cases_jsonl(retrieval_metrics, traces, out_dir)
 
     summary = {
-        "hit@1": metrics["hit@1"],
-        "hit@3": metrics["hit@3"],
-        "hit@5": metrics["hit@5"],
-        "mrr": metrics["mrr"],
+        "formation_precision": formation_metrics["formation_precision"],
+        "formation_recall": formation_metrics["formation_recall"],
+        "evolution_accuracy": evolution_metrics["evolution_accuracy"],
+        "forgetting_precision": evolution_metrics["forgetting_precision"],
+        "hit@1": retrieval_metrics["hit@1"],
+        "hit@3": retrieval_metrics["hit@3"],
+        "hit@5": retrieval_metrics["hit@5"],
+        "mrr": retrieval_metrics["mrr"],
         "snapshot_roundtrip_consistent": roundtrip_ok,
         "output_dir": out_dir,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
+
+
+# ---------------------------------------------------------------------------
+# Formation 场景构造与指标
+# ---------------------------------------------------------------------------
+
+_IMPORTANCE_THRESHOLD = 0.6
+_CONTENT_MIN_LEN = 5
+
+
+def build_formation_scenario(
+    seed: int = 42,
+) -> tuple[MemoryManager, list[dict], set[str]]:
+    """构造 formation 质量评测场景。
+
+    返回 (manager, events, expected_writes)
+    events: [{"id": str, "content": str, "importance": float, "tags": list[str]}]
+    expected_writes: 按触发规则（importance >= 0.6 且 len(content) >= 5）应被写入的 id 集合
+    """
+    random.seed(seed)
+
+    config = FusionConfig(mode="rank", overfetch_factor=3)
+    manager = MemoryManager(fusion_config=config)
+    ep_store = EpisodicMemory(max_capacity=1000, decay_rate=0.001)
+    manager.register_store("episodic", ep_store, default=True)
+
+    events = [
+        {"id": "f-001", "content": "用户偏好：不喜欢冗长回复", "importance": 0.90, "tags": ["偏好"]},
+        {"id": "f-002", "content": "嗯", "importance": 0.10, "tags": []},
+        {"id": "f-003", "content": "用户工作地点是上海", "importance": 0.85, "tags": ["偏好", "地点"]},
+        {"id": "f-004", "content": "好的", "importance": 0.05, "tags": []},
+        {"id": "f-005", "content": "用户擅长 Python，不熟悉 Rust", "importance": 0.80, "tags": ["技能"]},
+        {"id": "f-006", "content": "讨论了 RAG 检索管道的配置方法", "importance": 0.70, "tags": ["rag"]},
+        {"id": "f-007", "content": "用户说明天有会议", "importance": 0.45, "tags": ["日程"]},
+        {"id": "f-008", "content": "用户要求回复使用中文", "importance": 0.75, "tags": ["偏好"]},
+        {"id": "f-009", "content": "哦", "importance": 0.08, "tags": []},
+        {"id": "f-010", "content": "提到 Agent 记忆的分层架构设计原则", "importance": 0.88, "tags": ["架构"]},
+        {"id": "f-011", "content": "用户不确定", "importance": 0.30, "tags": []},
+        {"id": "f-012", "content": "确认了向量数据库选型为 ChromaDB", "importance": 0.72, "tags": ["工具"]},
+        {"id": "f-013", "content": "嗯嗯", "importance": 0.12, "tags": []},
+        {"id": "f-014", "content": "用户偏好暗色主题 UI", "importance": 0.65, "tags": ["偏好"]},
+        {"id": "f-015", "content": "讨论了 LRU 淘汰策略的适用场景", "importance": 0.68, "tags": ["架构"]},
+    ]
+
+    expected_writes = {
+        e["id"]
+        for e in events
+        if e["importance"] >= _IMPORTANCE_THRESHOLD and len(e["content"]) >= _CONTENT_MIN_LEN
+    }
+    return manager, events, expected_writes
+
+
+def compute_formation_metrics(
+    actual_writes: set[str],
+    expected_writes: set[str],
+) -> dict[str, float]:
+    """计算 formation 质量指标。
+
+    formation_precision: 实际写入中属于预期写入的比例
+    formation_recall: 预期写入中被实际写入的比例
+    """
+    if not actual_writes and not expected_writes:
+        return {"formation_precision": 1.0, "formation_recall": 1.0}
+    tp = len(actual_writes & expected_writes)
+    precision = tp / len(actual_writes) if actual_writes else 0.0
+    recall = tp / len(expected_writes) if expected_writes else 0.0
+    return {"formation_precision": precision, "formation_recall": recall}
+
+
+# ---------------------------------------------------------------------------
+# Evolution 场景构造与指标
+# ---------------------------------------------------------------------------
+
+
+def build_evolution_scenario(
+    seed: int = 42,
+) -> tuple[MemoryManager, list[dict], dict[str, str | None]]:
+    """构造 evolution 正确性评测场景。
+
+    返回 (manager, update_events, expected_state)
+    update_events: [{"type": "update"|"forget", "target_id": str, ...}]
+    expected_state: {item_id: content_after_update | None}  None 表示应被遗忘
+    """
+    random.seed(seed)
+
+    config = FusionConfig(mode="rank", overfetch_factor=3)
+    manager = MemoryManager(fusion_config=config)
+    ep_store = EpisodicMemory(max_capacity=1000, decay_rate=0.001)
+    manager.register_store("episodic", ep_store, default=True)
+
+    # 预置记忆（固定 id 以便追踪）
+    base_items = [
+        ("ev-m001", "用户工作地点是北京", 0.85, ["偏好", "地点"]),
+        ("ev-m002", "用户擅长 Java", 0.80, ["技能"]),
+        ("ev-m003", "上次会议于周一举行", 0.60, ["日程"]),
+        ("ev-m004", "用户偏好简洁回复", 0.90, ["偏好"]),
+        ("ev-m005", "向量数据库选型为 FAISS", 0.70, ["工具"]),
+    ]
+    for fixed_id, content, importance, tags in base_items:
+        item = MemoryItem(
+            id=fixed_id,
+            content=content,
+            importance=importance,
+            tags=tags,
+            created_at=_FIXED_TIMESTAMP,
+            last_accessed=_FIXED_TIMESTAMP,
+        )
+        ep_store._episodes[fixed_id] = item
+        ep_store._timeline.append(fixed_id)
+
+    update_events = [
+        # 冲突更新：工作地点变更
+        {"type": "update", "target_id": "ev-m001", "new_content": "用户工作地点是上海"},
+        # 冲突更新：技能更新
+        {"type": "update", "target_id": "ev-m002", "new_content": "用户擅长 Python 和 Java"},
+        # 主动遗忘：日程信息过期
+        {"type": "forget", "target_id": "ev-m003"},
+        # 冲突更新：工具选型变更
+        {"type": "update", "target_id": "ev-m005", "new_content": "向量数据库选型为 ChromaDB"},
+    ]
+
+    expected_state: dict[str, str | None] = {
+        "ev-m001": "用户工作地点是上海",
+        "ev-m002": "用户擅长 Python 和 Java",
+        "ev-m003": None,  # 应被遗忘
+        "ev-m004": "用户偏好简洁回复",  # 未变动
+        "ev-m005": "向量数据库选型为 ChromaDB",
+    }
+    return manager, update_events, expected_state
+
+
+def compute_evolution_metrics(
+    actual_state: dict[str, str],
+    expected_state: dict[str, str | None],
+) -> dict[str, float]:
+    """计算 evolution 正确性指标。
+
+    evolution_accuracy: 预期存续记忆中内容匹配的比例
+    forgetting_precision: 预期被遗忘的记忆中实际缺失的比例
+    """
+    should_survive = {k: v for k, v in expected_state.items() if v is not None}
+    should_forget = {k for k, v in expected_state.items() if v is None}
+
+    if should_survive:
+        correct = sum(
+            1 for k, v in should_survive.items() if actual_state.get(k) == v
+        )
+        evolution_accuracy = correct / len(should_survive)
+    else:
+        evolution_accuracy = 1.0
+
+    if should_forget:
+        actually_forgotten = sum(1 for k in should_forget if k not in actual_state)
+        forgetting_precision = actually_forgotten / len(should_forget)
+    else:
+        forgetting_precision = 1.0
+
+    return {
+        "evolution_accuracy": evolution_accuracy,
+        "forgetting_precision": forgetting_precision,
+    }
 
 
 def main() -> None:

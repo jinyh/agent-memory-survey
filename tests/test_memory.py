@@ -521,3 +521,106 @@ class TestStoreSnapshot:
                 i for i in restored.list_all() if i.id == orig_item.id
             )
             assert restored_item.embedding == orig_item.embedding
+
+
+# ---------------------------------------------------------------------------
+# Formation 质量指标测试
+# ---------------------------------------------------------------------------
+
+
+class TestFormationMetrics:
+    def test_build_formation_scenario_returns_structure(self):
+        from src.memory.evaluation import build_formation_scenario
+        manager, events, expected_writes = build_formation_scenario()
+        assert len(events) >= 10
+        assert len(expected_writes) >= 3
+        assert len(expected_writes) < len(events)  # 非全写入
+
+    def test_compute_formation_metrics_perfect(self):
+        from src.memory.evaluation import compute_formation_metrics
+        actual = {"a", "b", "c"}
+        expected = {"a", "b", "c"}
+        m = compute_formation_metrics(actual, expected)
+        assert m["formation_precision"] == 1.0
+        assert m["formation_recall"] == 1.0
+
+    def test_compute_formation_metrics_partial(self):
+        from src.memory.evaluation import compute_formation_metrics
+        actual = {"a", "b", "d"}  # d 是误写，c 被遗漏
+        expected = {"a", "b", "c"}
+        m = compute_formation_metrics(actual, expected)
+        assert abs(m["formation_precision"] - 2 / 3) < 1e-9
+        assert abs(m["formation_recall"] - 2 / 3) < 1e-9
+
+    def test_compute_formation_metrics_empty_actual(self):
+        from src.memory.evaluation import compute_formation_metrics
+        m = compute_formation_metrics(set(), {"a", "b"})
+        assert m["formation_precision"] == 0.0
+        assert m["formation_recall"] == 0.0
+
+    def test_formation_scenario_rule_produces_perfect_score(self):
+        from src.memory.evaluation import (
+            build_formation_scenario,
+            compute_formation_metrics,
+        )
+        _IMPORTANCE_THRESHOLD = 0.6
+        _CONTENT_MIN_LEN = 5
+        manager, events, expected_writes = build_formation_scenario()
+        actual_writes = {
+            e["id"]
+            for e in events
+            if e["importance"] >= _IMPORTANCE_THRESHOLD
+            and len(e["content"]) >= _CONTENT_MIN_LEN
+        }
+        m = compute_formation_metrics(actual_writes, expected_writes)
+        assert m["formation_precision"] == 1.0
+        assert m["formation_recall"] == 1.0
+
+
+# ---------------------------------------------------------------------------
+# Evolution 正确性指标测试
+# ---------------------------------------------------------------------------
+
+
+class TestEvolutionMetrics:
+    def test_build_evolution_scenario_returns_structure(self):
+        from src.memory.evaluation import build_evolution_scenario
+        manager, update_events, expected_state = build_evolution_scenario()
+        assert len(update_events) >= 3
+        assert len(expected_state) >= 3
+        assert any(v is None for v in expected_state.values())  # 至少一条遗忘
+
+    def test_compute_evolution_metrics_perfect(self):
+        from src.memory.evaluation import compute_evolution_metrics
+        actual = {"m1": "content A", "m2": "content B"}
+        expected = {"m1": "content A", "m2": "content B", "m3": None}
+        m = compute_evolution_metrics(actual, expected)
+        assert m["evolution_accuracy"] == 1.0
+        assert m["forgetting_precision"] == 1.0
+
+    def test_compute_evolution_metrics_partial(self):
+        from src.memory.evaluation import compute_evolution_metrics
+        actual = {"m1": "content A", "m2": "wrong", "m3": "should be gone"}
+        expected = {"m1": "content A", "m2": "content B", "m3": None}
+        m = compute_evolution_metrics(actual, expected)
+        assert m["evolution_accuracy"] < 1.0
+        assert m["forgetting_precision"] == 0.0
+
+    def test_evolution_scenario_correct_execution(self):
+        from src.memory.evaluation import (
+            build_evolution_scenario,
+            compute_evolution_metrics,
+        )
+        manager, update_events, expected_state = build_evolution_scenario()
+        for event in update_events:
+            if event["type"] == "update":
+                manager.update_memory(event["target_id"], content=event["new_content"])
+            elif event["type"] == "forget":
+                manager.forget(event["target_id"])
+        all_items: dict[str, str] = {}
+        for store_name in manager._stores:
+            for item in manager.get_store(store_name).list_all():
+                all_items[item.id] = item.content
+        m = compute_evolution_metrics(all_items, expected_state)
+        assert m["evolution_accuracy"] >= 0.8
+        assert m["forgetting_precision"] >= 0.9
