@@ -15,7 +15,9 @@ Agent Memory 研究项目，当前重构为三层结构：
 - `ref/paper/`：本地 PDF 论文库，默认不纳入版本控制
 - `ref/blog/`：工程文章与行业资料
 - `ref/DeepResearch/`：研究报告与待摄取引用线索
-- `src/memory/`：记忆层概念原型
+- `docs/plans/`：研究工件（research-brief、evidence-map、experiment-spec、evaluation-report、survey-update-note）
+- `docs/architecture/`：架构决策记录（ADR）
+- `src/memory/`：记忆层概念原型（含全生命周期评测框架）
 - `src/references/`：资料索引、质量评估与下载工具
 - `tests/`：单元测试
 
@@ -34,6 +36,7 @@ uv sync --active --extra dev
 ```bash
 uv run --active --extra dev pytest tests/
 uv run --active python -m src.memory.agent
+uv run --active python -m src.memory.evaluation --out docs/memory-eval/latest
 uv run --active python -m src.references
 ```
 

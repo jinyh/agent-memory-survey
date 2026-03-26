@@ -35,6 +35,7 @@
 ```bash
 uv run --active --extra dev pytest tests/              # 运行测试
 uv run --active python -m src.memory.agent             # 运行 Agent 示例
+uv run --active python -m src.memory.evaluation --out docs/memory-eval/latest  # 全生命周期评测
 uv run --active python -m src.references               # 重建资料索引并补齐开放论文
 uv run --active --extra dev ruff check src/ tests/     # 代码检查
 uv run --active --extra dev ruff format src/ tests/    # 代码格式化
