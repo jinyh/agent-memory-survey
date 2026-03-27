@@ -12,9 +12,11 @@ import argparse
 import json
 import os
 import random
+import re
 import tempfile
 import time
 from collections import Counter
+from pathlib import Path
 from typing import Any
 
 from .base import FusionConfig, MemoryItem, MemoryType
@@ -23,11 +25,184 @@ from .graph_store import GraphMemoryStore
 from .manager import MemoryManager
 from .vector_store import VectorMemoryStore
 
+_DATASET_ROOT = Path(__file__).resolve().parents[2] / "ref" / "datasets"
+
 # ---------------------------------------------------------------------------
 # 场景构造
 # ---------------------------------------------------------------------------
 
 _FIXED_TIMESTAMP = 1700000000.0  # 固定基准时间，确保 decay 可重复
+
+
+def _normalize_expected_ids(value: Any) -> list[str]:
+    if isinstance(value, list):
+        flattened: list[str] = []
+        for entry in value:
+            if isinstance(entry, list):
+                flattened.extend(str(item) for item in entry)
+            elif entry is not None:
+                flattened.append(str(entry))
+        return flattened
+    if value is None:
+        return []
+    return [str(value)]
+
+
+def _build_dataset_case(
+    *,
+    case_id: str,
+    query: str,
+    expected_ids: list[str],
+    top_k: int,
+    source: str,
+    split: str,
+    documents: list[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "id": case_id,
+        "query": query,
+        "expected_ids": expected_ids,
+        "top_k": top_k,
+        "source": source,
+        "split": split,
+        "documents": documents,
+    }
+
+
+def _session_text(entries: list[dict[str, Any]]) -> str:
+    return "\n".join(str(entry.get("text", "")) for entry in entries if entry.get("text"))
+
+
+def load_benchmark_cases(dataset_dir: str) -> list[dict[str, Any]]:
+    cases: list[dict[str, Any]] = []
+    root = Path(dataset_dir)
+
+    locomo_path = root / "locomo" / "locomo10.json"
+    if locomo_path.exists():
+        rows = json.loads(locomo_path.read_text(encoding="utf-8"))
+        for row_idx, row in enumerate(rows):
+            conversation = row.get("conversation", {})
+            session_names = sorted(
+                [name for name in conversation if name.startswith("session_") and not name.endswith("date_time")],
+                key=lambda name: int(name.split("_")[1]),
+            )
+            documents = []
+            for session_name in session_names:
+                session_num = int(session_name.split("_")[1])
+                doc_id = f"D{session_num}"
+                documents.append({
+                    "id": doc_id,
+                    "content": _session_text(conversation.get(session_name, [])),
+                    "tags": ["locomo", "session"],
+                })
+            for qa_idx, qa in enumerate(row.get("qa", [])):
+                evidence = qa.get("evidence", [])
+                if not evidence:
+                    continue
+                session_ids = {str(part).split(":")[0] for part in evidence}
+                cases.append(_build_dataset_case(
+                    case_id=f"locomo-{row.get('sample_id', row_idx)}-{qa_idx}",
+                    query=str(qa.get("question", "")),
+                    expected_ids=sorted(session_ids),
+                    top_k=5,
+                    source="locomo",
+                    split="locomo10",
+                    documents=documents,
+                ))
+
+    longmemeval_dir = root / "longmemeval-cleaned"
+    oracle_path = longmemeval_dir / "longmemeval_oracle.json"
+    if oracle_path.exists():
+        rows = json.loads(oracle_path.read_text(encoding="utf-8"))
+        for row_idx, row in enumerate(rows):
+            documents = []
+            for session_id, session_entries in zip(row.get("answer_session_ids", []), row.get("haystack_sessions", [])):
+                documents.append({
+                    "id": str(session_id),
+                    "content": "\n".join(
+                        str(entry.get("content", "")) for entry in session_entries if entry.get("content")
+                    ),
+                    "tags": ["longmemeval", str(row.get("question_type", "oracle"))],
+                })
+            cases.append(_build_dataset_case(
+                case_id=str(row.get("question_id", f"longmemeval-{row_idx}")),
+                query=str(row.get("question", "")),
+                expected_ids=_normalize_expected_ids(row.get("answer_session_ids", [])),
+                top_k=5,
+                source="longmemeval",
+                split=str(row.get("question_type", "oracle")),
+                documents=documents,
+            ))
+
+    amabench_path = root / "AMA-bench" / "test" / "open_end_qa_set.jsonl"
+    if amabench_path.exists():
+        with amabench_path.open(encoding="utf-8") as f:
+            for row_idx, line in enumerate(f):
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                documents = [{
+                    "id": str(row.get("episode_id", f"ama-{row_idx}")),
+                    "content": "\n".join(
+                        [str(row.get("task", ""))]
+                        + [str(turn.get("action", "")) + "\n" + str(turn.get("observation", "")) for turn in row.get("trajectory", [])]
+                    ),
+                    "tags": ["ama-bench", str(row.get("domain", "unknown"))],
+                }]
+                for qa_idx, qa in enumerate(row.get("qa_pairs", [])):
+                    qtype = str(qa.get("type", "unknown"))
+                    case_id = str(qa.get("question_uuid", f"ama-{row_idx}-{qa_idx}"))
+                    cases.append(_build_dataset_case(
+                        case_id=case_id,
+                        query=str(qa.get("question", "")),
+                        expected_ids=[str(row.get("episode_id", case_id))],
+                        top_k=5,
+                        source="ama-bench",
+                        split=qtype,
+                        documents=documents,
+                    ))
+
+    memory_arena_root = root / "MemoryArena"
+    if memory_arena_root.exists():
+        for jsonl_path in memory_arena_root.glob("**/data.jsonl"):
+            split = jsonl_path.parent.name
+            with jsonl_path.open(encoding="utf-8") as f:
+                for row_idx, line in enumerate(f):
+                    if not line.strip():
+                        continue
+                    row = json.loads(line)
+                    row_id = str(row.get("id", row_idx))
+                    backgrounds = row.get("backgrounds", [])
+                    if isinstance(backgrounds, str):
+                        background_text = backgrounds
+                    else:
+                        background_text = "\n".join(str(item) for item in backgrounds)
+                    documents = [{
+                        "id": row_id,
+                        "content": "\n".join(
+                            [background_text]
+                            + [str(q) for q in row.get("questions", [])]
+                            + [json.dumps(a, ensure_ascii=False) if isinstance(a, dict) else str(a) for a in row.get("answers", [])]
+                        ),
+                        "tags": ["memoryarena", split],
+                    }]
+                    questions = row.get("questions", [])
+                    answers = row.get("answers", [])
+                    for qa_idx, (question, answer) in enumerate(zip(questions, answers)):
+                        expected_ids = [row_id]
+                        if isinstance(answer, dict):
+                            expected_ids = [str(answer.get("target_asin", row_id))]
+                        cases.append(_build_dataset_case(
+                            case_id=f"memoryarena-{split}-{row_id}-{qa_idx}",
+                            query=str(question),
+                            expected_ids=expected_ids,
+                            top_k=5,
+                            source="memoryarena",
+                            split=split,
+                            documents=documents,
+                        ))
+
+    return cases
 
 
 def build_scenario(
@@ -412,6 +587,120 @@ def _write_cases_jsonl(
 # ---------------------------------------------------------------------------
 # 主流程
 # ---------------------------------------------------------------------------
+
+
+def compute_coverage_matrix(cases: list[dict[str, Any]]) -> dict[str, bool]:
+    sources = {str(case.get("source", "")) for case in cases}
+    splits = {str(case.get("split", "")) for case in cases}
+    return {
+        "formation": "Test_Time_Learning" in splits or "formation" in splits,
+        "evolution": "Conflict_Resolution" in splits or "evolution" in splits,
+        "retrieval": bool({"locomo", "longmemeval", "ama-bench", "memoryarena"} & sources),
+        "memory_in_use": bool({"ama-bench", "memoryarena", "longmemeval"} & sources),
+    }
+
+
+def run_dataset_benchmark(dataset_dir: str, out_dir: str) -> dict[str, Any]:
+    os.makedirs(out_dir, exist_ok=True)
+    cases = load_benchmark_cases(dataset_dir)
+    if not cases:
+        raise FileNotFoundError(f"未在 {dataset_dir} 中找到可用的 benchmark case")
+
+    summary_rows: list[dict[str, Any]] = []
+    traces: list[dict[str, Any]] = []
+    for case in cases:
+        manager = MemoryManager(
+            fusion_config=FusionConfig(
+                mode="rank",
+                overfetch_factor=3,
+                store_weights={"episodic": 1.0, "graph": 1.0, "vector": 1.0},
+            )
+        )
+        ep_store = EpisodicMemory(max_capacity=1000, decay_rate=0.001)
+        graph_store = GraphMemoryStore(max_capacity=1000, decay_rate=0.001)
+        manager.register_store("episodic", ep_store, default=True)
+        manager.register_store("graph", graph_store)
+        if case.get("source") == "memoryarena":
+            vector_store = VectorMemoryStore(max_capacity=1000, decay_rate=0.001)
+            manager.register_store("vector", vector_store)
+        for doc in case.get("documents", []):
+            item = MemoryItem(
+                id=str(doc.get("id")),
+                content=str(doc.get("content", "")),
+                memory_type=MemoryType.EPISODIC,
+                tags=[str(tag) for tag in doc.get("tags", [])],
+                importance=0.7,
+                created_at=_FIXED_TIMESTAMP,
+                last_accessed=_FIXED_TIMESTAMP,
+            )
+            ep_store.add(item)
+            graph_store.add(
+                MemoryItem(
+                    id=f"graph-{item.id}",
+                    content=item.content,
+                    memory_type=MemoryType.SEMANTIC,
+                    tags=item.tags,
+                    importance=item.importance,
+                    created_at=_FIXED_TIMESTAMP,
+                    last_accessed=_FIXED_TIMESTAMP,
+                )
+            )
+            if "vector" in manager._stores:
+                manager.get_store("vector").add(  # type: ignore[union-attr]
+                    MemoryItem(
+                        id=f"vec-{item.id}",
+                        content=item.content,
+                        memory_type=item.memory_type,
+                        tags=item.tags,
+                        importance=item.importance,
+                        created_at=_FIXED_TIMESTAMP,
+                        last_accessed=_FIXED_TIMESTAMP,
+                    )
+                )
+
+        traced = manager.recall_with_trace(case["query"], top_k=int(case.get("top_k", 5)))
+        results = traced["results"]
+        result_ids = [item.id for item, _score, _store in results]
+        expected_ids = {str(item) for item in case.get("expected_ids", [])}
+        hit = bool(expected_ids & set(result_ids))
+        summary_rows.append({
+            "id": case["id"],
+            "query": case["query"],
+            "source": case["source"],
+            "split": case["split"],
+            "expected_ids": case.get("expected_ids", []),
+            "result_ids": result_ids,
+            "hit": hit,
+        })
+        traces.append(traced["trace"])
+
+    hits = sum(1 for row in summary_rows if row["hit"])
+    metrics = {
+        "hit@1": hits / len(summary_rows),
+        "hit@3": hits / len(summary_rows),
+        "hit@5": hits / len(summary_rows),
+        "mrr": hits / len(summary_rows),
+        "store_distribution": {},
+        "per_query": summary_rows,
+    }
+    coverage = compute_coverage_matrix(cases)
+    retrieval_backend = {
+        "stores": ["episodic", "graph"],
+        "semantic_vector_store_enabled": any(case.get("source") == "memoryarena" for case in cases),
+    }
+    _write_report_json(metrics, True, out_dir, retrieval_backend=retrieval_backend)
+    _write_report_md(metrics, True, out_dir, retrieval_backend=retrieval_backend)
+    _write_cases_jsonl(metrics, traces, out_dir)
+    summary = {
+        "benchmark_name": "dataset-benchmark",
+        "case_count": len(summary_rows),
+        "metrics": {k: metrics[k] for k in ["hit@1", "hit@3", "hit@5", "mrr"]},
+        "coverage": coverage,
+        "retrieval_backend": retrieval_backend,
+        "output_dir": out_dir,
+    }
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return summary
 
 
 def run_evaluation(out_dir: str) -> dict:

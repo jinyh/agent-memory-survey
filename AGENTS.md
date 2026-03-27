@@ -55,4 +55,10 @@ uv run --active --extra dev ruff format src/ tests/    # 代码格式化
 - `docs/survey/` 中关键概念、方法范式、系统路线、评测对象、组织性判断，必须绑定明确代表引用。
 - 代表引用优先 `paper`；`blog` 只能做工程补充；`DeepResearch` 只能做线索。
 - 如果正文出现缩写或系统名并承担论证功能，首次必须写出明确作品名，不允许只用泛称或缩写承担主判断。
+- `docs/survey/survey-map.md` 作为 survey ↔ code ↔ gap 的长期索引层维护，不替代正文。
+- `src/memory/evaluation.py` 的数据集适配只负责把 `ref/datasets` 归一化成 benchmark case；不要把 retrieval 数据集误写成完整 lifecycle benchmark。
+- `MemoryManager.recall()` 采用 rank 融合，不是 raw score 直排；调试检索时优先看 `recall_with_trace()`。
+- `tests/test_memory.py -q` 是本仓库最常用的记忆层回归验证命令。
+- `find . -name "CLAUDE.md" -o -name ".claude.local.md"` 可先确认是否已有 Claude 说明文件，再决定是更新还是新建。
+- survey 章节更新时，优先同步 `docs/survey/README.md` 和 `docs/survey/survey-map.md`。
 - 更新共享写作规则时，必须同步检查 `CLAUDE.md`，并保持 `AGENTS.md` 为单一细则真源。

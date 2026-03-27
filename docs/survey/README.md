@@ -37,7 +37,7 @@
 - [05-evaluation.md](./05-evaluation.md)：评测问题，区分在评测什么、没有评测什么、为什么会争议不断。
 - [06-systems-and-engineering.md](./06-systems-and-engineering.md)：系统谱系与工程落地。
 - [07-frontiers.md](./07-frontiers.md)：多模态、空间记忆、安全与可审计性。
-- [survey-map.md](./survey-map.md)：跨章节证据地图，按问题和按系统快速跳转。
+- [survey-map.md](./survey-map.md)：跨章节证据地图，按 survey 模块、代码实现和缺口快速跳转。
 
 ## 核心判断
 

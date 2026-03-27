@@ -2,6 +2,7 @@
 
 import json
 import time
+from pathlib import Path
 
 import pytest
 
@@ -10,6 +11,7 @@ from src.memory.episodic import EpisodicMemory
 from src.memory.graph_store import GraphMemoryStore
 from src.memory.manager import MemoryManager
 from src.memory.vector_store import VectorMemoryStore
+from src.memory.evaluation import build_scenario, load_benchmark_cases, run_dataset_benchmark
 
 
 # ---- MemoryItem 测试 ----
@@ -627,6 +629,28 @@ class TestEvolutionMetrics:
 
 
 class TestEvaluationOutputs:
+    def test_load_benchmark_cases_normalizes_files(self):
+        dataset_root = Path("/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets")
+
+        cases = load_benchmark_cases(str(dataset_root))
+
+        assert isinstance(cases, list)
+        assert len(cases) > 0
+        assert all({"id", "query", "expected_ids", "top_k"}.issubset(case) for case in cases)
+
+    def test_run_dataset_benchmark_writes_artifacts(self, tmp_path):
+        summary = run_dataset_benchmark(
+            dataset_dir="/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets",
+            out_dir=str(tmp_path / "dataset-out"),
+        )
+
+        out_dir = tmp_path / "dataset-out"
+        assert (out_dir / "report.json").exists()
+        assert (out_dir / "report.md").exists()
+        assert (out_dir / "cases.jsonl").exists()
+        assert "benchmark_name" in summary
+        assert "coverage" in summary
+
     def test_run_evaluation_writes_artifacts(self, tmp_path):
         from src.memory.evaluation import run_evaluation
 
@@ -650,8 +674,6 @@ class TestEvaluationOutputs:
         assert len(cases_jsonl.read_text(encoding="utf-8").strip().splitlines()) > 0
 
     def test_build_scenario_with_vector_store(self, monkeypatch):
-        from src.memory.evaluation import build_scenario
-
         def fake_encode(self, text: str):
             vocab = ["python", "rag", "记忆"]
             lowered = text.lower()

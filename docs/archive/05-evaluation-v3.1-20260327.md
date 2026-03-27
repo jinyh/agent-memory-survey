@@ -1,10 +1,6 @@
 # Evaluation：Agent Memory 到底在评测什么
 
-> v3.2 | 2026-03-27 — 更新 benchmark 适配结论，明确现有数据集只能覆盖部分生命周期信号
-
-## Changelog
-
-- v3.2 (2026-03-27): 归档 v3.1，补充 `ref/datasets` 中现成数据集的适配结论：它们可以统一归一化为 benchmark case，但大多数仍主要提供 retrieval / memory-in-use 信号，不能直接替代严格的 formation / evolution 评测。
+> v3.1 | 2026-03-27 — 收紧 benchmark 覆盖边界，补充 RQ-001 证据边界说明
 
 ## 本章核心判断
 
