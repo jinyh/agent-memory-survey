@@ -74,7 +74,7 @@
 从工程上看，巩固有两个常见结果：
 
 - `episodic -> semantic`：把多次重复经验压缩成偏好、稳定事实或对象画像。
-- `episodic -> procedural`：把经验转成工作流、策略或调用规则。
+- `episodic -> procedural`：把经验转成工作流、策略或调用规则。这对应 [01-framework](./01-framework.md) 中 skill 作为 procedural memory 显式载体的定位。
 
 这一步的难点在于避免过早抽象。系统若太快把局部经历提升为稳定知识，就会制造高置信度错误。
 

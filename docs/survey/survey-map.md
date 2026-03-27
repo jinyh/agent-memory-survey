@@ -1,6 +1,6 @@
 # Agent Memory Survey 证据地图
 
-> v3.0 | 2026-03-26
+> v3.1 | 2026-03-27
 
 这份地图不是正文替代品，而是正文的索引层。它回答两个问题：
 
@@ -12,6 +12,8 @@
 | 问题 | 重点章节 | 代表工作 |
 | --- | --- | --- |
 | 为什么 memory 不能约化为 RAG | `01-framework` `04-retrieval` `05-evaluation` | Mem0, Hindsight, Letta/MemGPT, RLM, MSA |
+| reasoning thinking 与 agentic thinking 的迁移对 memory 意味着什么 | `01-framework` | From "Reasoning" Thinking to "Agentic" Thinking (blog) |
+| skill 作为 procedural memory 的定位 | `01-framework` `03-evolution` | MemSkill |
 | 什么信息应进入长期记忆 | `02-formation` | Mem0, LangMem, MemAgent, Elastic |
 | 记忆如何更新、压缩与遗忘 | `03-evolution` | Hindsight, Synapse, MSA, AgentOrchestra |
 | 如何从长期历史中真正用上记忆 | `04-retrieval` | Mem0, Zep, Letta/MemGPT, RLM, MSA |
@@ -51,10 +53,10 @@
 
 - Mem0
 - Hindsight
-- Letta / MemGPT
-- RLM
-- MSA
-- TeleMem
+- Recursive Language Models
+- MemSkill
+- Memory in the Age of AI Agents: A Survey
+- From "Reasoning" Thinking to "Agentic" Thinking (blog)
 
 ### 02-formation
 

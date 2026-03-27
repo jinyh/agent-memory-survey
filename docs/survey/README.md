@@ -30,7 +30,7 @@
 
 ## 全文结构
 
-- [01-framework.md](./01-framework.md)：统一框架，定义 Agent Memory、Agentic Thinking 与 Skill 的分层关系，并引出 lifecycle 主线。
+- [01-framework.md](./01-framework.md)：统一框架，以 reasoning→agentic 的问题迁移为背景，定义 memory layer 的边界与 lifecycle 主线。
 - [02-formation.md](./02-formation.md)：记忆形成，讨论什么该写、怎么写、写成什么结构。
 - [03-evolution.md](./03-evolution.md)：记忆演化，讨论更新、压缩、巩固、遗忘与治理。
 - [04-retrieval.md](./04-retrieval.md)：记忆读取，比较 vector、graph、routing、latent 和记忆工具化。
