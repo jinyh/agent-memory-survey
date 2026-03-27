@@ -2,13 +2,13 @@
 
 ## 对照基准
 
-本文基于 **OpenAI 于 2026-02-11 发布的《Harness engineering: leveraging Codex in an agent-first world》**，对当前 `BMAD-METHOD` 仓库进行对照分析。
+本文基于 **OpenAI 于 2026-02-11 发布的《Harness engineering: leveraging Codex in an agent-first world》** 及当时可见的 BMAD 仓库状态，对 `BMAD-METHOD` 做快照式对照分析。
 
 判断口径不是“是否有 AI 工作流”，而是：该项目是否已经把 **仓库、运行环境、约束、验证、观测、评审、修复与交付** 组织成一个可供 agent 稳定执行的工程 harness。
 
 结论先行：
 
-- **BMAD 当前更像高结构化的 context engineering + workflow orchestration 框架。**
+- **就本文所基于的快照来看，BMAD 更像高结构化的 context engineering + workflow orchestration 框架。**
 - **它已经吸收了部分 Harness Engineering 思想，但整体还不是完整的 Harness Engineering。**
 
 ---
@@ -45,7 +45,7 @@ Harness Engineering 更进一步，通常会把这些约束变成 **硬性、可
 - 架构不变量测试
 - 风格或 taste 约束的自动检查
 
-当前 BMAD 主要还是“文字指导”，而不是“失败即阻断”的工程约束层。
+就本文所见内容，BMAD 主要还是“文字指导”，而不是“失败即阻断”的工程约束层。
 
 仓库证据：
 
@@ -74,7 +74,7 @@ Harness Engineering 更进一步，通常会把这些约束变成 **硬性、可
 
 - `Coming soon, full phase 4 automation!`
 
-这本身就说明，BMAD 的实现阶段自动化还没有成为默认完成态。Harness Engineering 的重点恰恰是把实现、验证、修复、再验证这条链路尽量自动化，并将人类从频繁 checkpoint 中抽离出来。
+这说明在本文所对照的文档状态下，BMAD 的实现阶段自动化还没有呈现为默认完成态。Harness Engineering 的重点恰恰是把实现、验证、修复、再验证这条链路尽量自动化，并将人类从频繁 checkpoint 中抽离出来。
 
 仓库证据：
 
@@ -127,7 +127,7 @@ BMAD 已经有很好的 review triage 思路，尤其是：
 
 ### 7. 缺少运行时可观测性接入
 
-仓库没有把以下内容作为 agent 默认工作界面的一部分：
+就本文所见文档与工件，仓库尚未把以下内容明确纳入 agent 默认工作界面的一部分：
 
 - 应用日志
 - 业务/系统指标
@@ -341,7 +341,7 @@ BMAD 很擅长把需求、架构、故事、实现组织起来，也要求测试
 
 一句话判断：
 
-**BMAD 当前更像“高结构化的 context engineering 与工作流编排框架”，而不是“把环境、约束、观测、验证与交付统一组织起来的 Harness Engineering 系统”。**
+**基于本文所对照的快照，BMAD 更像“高结构化的 context engineering 与工作流编排框架”，而不是“把环境、约束、观测、验证与交付统一组织起来的 Harness Engineering 系统”。**
 
 它和 Harness Engineering 的关系不是“完全无关”，而是：
 

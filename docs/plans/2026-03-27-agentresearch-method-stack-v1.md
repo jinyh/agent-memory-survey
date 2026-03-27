@@ -1,6 +1,6 @@
 # AgentResearch 推荐方法栈 v1
 
-> v1.0.0 | 2026-03-27
+> v1.1.0 | 2026-03-27 — 增补 harness engineering 增强层结论
 >
 > status: proposed
 > owner: Research Lead

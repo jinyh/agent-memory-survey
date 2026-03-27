@@ -18,6 +18,7 @@
 - `docs/references/` — 自动生成的论文、博客、DeepResearch 摄取索引与质量评估
 - `docs/method/` — 研究版 BMAD 方法层（工作流、角色、工件、评审门、追踪规则）
 - `docs/plans/` — 研究规划与设计文档
+- `docs/ideas/` — 记录与 Claude 交互过程中产生的想法、临时洞察和后续可执行点，文件名使用 `YYYY-MM-DD-<short-slug>.md`
 - `docs/architecture/` — 架构决策记录（ADR）
 - `src/memory/` — 概念原型代码
 - `src/references/` — 资料索引、质量评估与开放论文下载工具

@@ -1,6 +1,6 @@
 # AgentResearch 研究版 BMAD 方法层
 
-> v1.1.0 | 2026-03-27 — 增补 harness engineering 增强层与版本管理说明
+> v1.0.0 | 2026-03-26
 
 本目录是 `AgentResearch` 的研究工作流总入口，用来把研究问题、证据整理、架构决策、原型实现、实验评测与 survey 回写串成一条可复用的方法链。
 
