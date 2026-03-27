@@ -1,6 +1,6 @@
 # Evaluation：Agent Memory 到底在评测什么
 
-> v3.0 | 2026-03-26
+> v3.1 | 2026-03-27 — 收紧 benchmark 覆盖边界，补充 RQ-001 证据边界说明
 
 ## 本章核心判断
 
@@ -179,7 +179,7 @@ Mem0 一类系统追求低延迟、低 token、高性价比个性化记忆；Hin
 
 ## 当前 benchmark 未覆盖的评测维度
 
-> 本节基于 RQ-001 实验 E-20260326-lifecycle-eval 的评测覆盖矩阵分析，evidence_refs 见 `docs/plans/2026-03-26-memory-lifecycle-eval-evaluation-report.md`。
+本节依据 5 个主流 benchmark 的论文评测协议做覆盖对比；RQ-001 实验仅用于整理和验证表述，不作为结论来源。
 
 将上述 5 个主流 benchmark 按生命周期三阶段（formation / evolution / retrieval）交叉比对，覆盖情况如下：
 
@@ -191,7 +191,7 @@ Mem0 一类系统追求低延迟、低 token、高性价比个性化记忆；Hin
 | MemoryArena | 不覆盖 | 部分覆盖 | 覆盖 |
 | AMA-Bench | 不覆盖 | 不覆盖 | 覆盖 |
 
-其中，MemoryAgentBench（arXiv:2507.05257）通过 selective forgetting 维度最接近 evolution 正确性评测，但仍依赖最终 retrieval 结果间接判断，未直接测量 evolution 中间状态（如更新前后记忆库的差异对比）。
+其中，MemoryAgentBench（arXiv:2507.05257）通过 selective forgetting 维度触及 evolution 正确性，但仍主要通过最终结果间接反映更新过程，未直接测量更新前后的中间状态差异。
 
 这一覆盖空白意味着：现有 benchmark 能检测「agent 是否能从历史中找到正确答案」，但无法单独归因「写入选择是否正确」（formation 质量）或「冲突更新是否准确」（evolution 正确性）。当系统在 demo 和基准上表现良好但在长期部署中出现记忆污染和冲突事实时，现有评测缺乏定位根因的能力。
 

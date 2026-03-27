@@ -26,7 +26,7 @@
 ### 不可回写的结论（边界外）
 
 - ~~formation/evolution 指标优于现有 benchmark~~ — 当前实验中 1.0 分值来自规则对齐，不来自模型预测，无区分度证据
-- ~~本项目原型的 retrieval 能力弱于 benchmark 报告的其他系统~~ — tag 匹配 vs 语义检索不可比
+- ~~本项目原型的 retrieval 能力弱于 benchmark 报告的其他系统~~ — 默认评测场景未启用语义检索后端，tag 匹配 vs 语义检索不可比
 - ~~三阶段联合评测框架已成熟~~ — 仅验证了技术可行性，指标区分度未经实证
 
 ## evidence_scope

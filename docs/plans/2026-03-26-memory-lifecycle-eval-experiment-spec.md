@@ -31,8 +31,8 @@
 ### 输出
 
 - 扩展后的 `src/memory/evaluation.py`（新增 `build_formation_scenario()`、`build_evolution_scenario()`、`compute_formation_metrics()`、`compute_evolution_metrics()`）
-- `docs/memory-eval/latest/report.md`（包含三个阶段全部指标）
-- `docs/memory-eval/latest/report.json`（机器可读格式，含三阶段指标）
+- `docs/memory-eval/latest/report.md`（包含三个阶段全部指标与 retrieval backend 说明）
+- `docs/memory-eval/latest/report.json`（机器可读格式，含三阶段指标与 retrieval backend 说明）
 - `docs/memory-eval/latest/cases.jsonl`（每条查询 / 写入 / 更新的 trace）
 - 扩展后的 `tests/test_memory.py`（formation / evolution 指标单元测试）
 

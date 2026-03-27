@@ -624,3 +624,60 @@ class TestEvolutionMetrics:
         m = compute_evolution_metrics(all_items, expected_state)
         assert m["evolution_accuracy"] >= 0.8
         assert m["forgetting_precision"] >= 0.9
+
+
+class TestEvaluationOutputs:
+    def test_run_evaluation_writes_artifacts(self, tmp_path):
+        from src.memory.evaluation import run_evaluation
+
+        summary = run_evaluation(str(tmp_path))
+
+        report_json = tmp_path / "report.json"
+        report_md = tmp_path / "report.md"
+        cases_jsonl = tmp_path / "cases.jsonl"
+
+        assert report_json.exists()
+        assert report_md.exists()
+        assert cases_jsonl.exists()
+        assert summary["snapshot_roundtrip_consistent"] is True
+        assert summary["retrieval_backend"]["semantic_vector_store_enabled"] is False
+
+        report = json.loads(report_json.read_text(encoding="utf-8"))
+        assert {"formation", "evolution", "retrieval", "retrieval_backend"}.issubset(
+            report.keys()
+        )
+        assert report["retrieval_backend"]["semantic_vector_store_enabled"] is False
+        assert len(cases_jsonl.read_text(encoding="utf-8").strip().splitlines()) > 0
+
+    def test_build_scenario_with_vector_store(self, monkeypatch):
+        from src.memory.evaluation import build_scenario
+
+        def fake_encode(self, text: str):
+            vocab = ["python", "rag", "记忆"]
+            lowered = text.lower()
+            return [lowered.count(token) for token in vocab]
+
+        monkeypatch.setattr(VectorMemoryStore, "_encode", fake_encode)
+        manager, queries = build_scenario(enable_vector_store=True)
+
+        assert "vector" in manager._stores
+        assert len(queries) > 0
+
+    def test_vector_store_query_and_update(self, monkeypatch):
+        def fake_encode(self, text: str):
+            vocab = ["python", "rust", "agent"]
+            lowered = text.lower()
+            return [lowered.count(token) for token in vocab]
+
+        monkeypatch.setattr(VectorMemoryStore, "_encode", fake_encode)
+        store = VectorMemoryStore()
+        python_id = store.add(MemoryItem(content="Python 记忆系统", tags=["python"]))
+        rust_id = store.add(MemoryItem(content="Rust 运行时", tags=["rust"]))
+
+        results = store.query("python", top_k=2)
+        assert results[0][0].id == python_id
+
+        store.update(rust_id, content="Python 与 Rust 的比较")
+        results_after = store.query("python", top_k=2)
+        assert results_after[0][0].id in {python_id, rust_id}
+        assert any(item.id == rust_id for item, _score in results_after)

@@ -21,6 +21,5 @@
 
 ## 关系
 
-- 更稳定、可执行的结论，优先整理到 `docs/plans/`
-- 结构性决策，优先整理到 `docs/architecture/`
 - 这里保留的是轻量、快速记录的想法草稿
+- [2026-03-27-memory-lifecycle-rq-ranking.md](2026-03-27-memory-lifecycle-rq-ranking.md) — Agent Memory 研究问题排序与关系

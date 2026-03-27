@@ -1,6 +1,6 @@
 # Agent Memory Survey 证据地图
 
-> v3.1 | 2026-03-27
+> v3.2 | 2026-03-27 — 收紧 benchmark 覆盖映射，明确 formation/evolution 空白
 
 这份地图不是正文替代品，而是正文的索引层。它回答两个问题：
 
@@ -18,7 +18,7 @@
 | 记忆如何更新、压缩与遗忘 | `03-evolution` | Hindsight, Synapse, MSA, AgentOrchestra |
 | 如何从长期历史中真正用上记忆 | `04-retrieval` | Mem0, Zep, Letta/MemGPT, RLM, MSA |
 | 当前 benchmark 到底在测什么 | `05-evaluation` | LoCoMo, LongMemEval, MemoryAgentBench, MemoryArena, AMA-Bench |
-| benchmark 未覆盖的 formation/evolution 评测 | `05-evaluation` | MemoryAgentBench（部分覆盖 evolution），其余 4 个均不覆盖 |
+| benchmark 未覆盖的 formation/evolution 评测 | `05-evaluation` | 5 个主流 benchmark 主要覆盖 retrieval；其中仅 MemoryAgentBench 通过 selective forgetting 部分触及 evolution，其余 4 个不覆盖 |
 | 生产系统如何做分层和治理 | `06-systems-and-engineering` | Mem0, Zep, Letta/MemGPT, Hindsight, Elastic |
 | 多模态、空间与安全的 frontier 在哪 | `07-frontiers` | TeleMem, M3-Agent, MemVerse, MemOCR, Think3D, GSMem, RenderMem |
 

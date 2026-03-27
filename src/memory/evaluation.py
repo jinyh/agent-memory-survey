@@ -21,6 +21,7 @@ from .base import FusionConfig, MemoryItem, MemoryType
 from .episodic import EpisodicMemory
 from .graph_store import GraphMemoryStore
 from .manager import MemoryManager
+from .vector_store import VectorMemoryStore
 
 # ---------------------------------------------------------------------------
 # 场景构造
@@ -29,7 +30,10 @@ from .manager import MemoryManager
 _FIXED_TIMESTAMP = 1700000000.0  # 固定基准时间，确保 decay 可重复
 
 
-def build_scenario(seed: int = 42) -> tuple[MemoryManager, list[dict]]:
+def build_scenario(
+    seed: int = 42,
+    enable_vector_store: bool = False,
+) -> tuple[MemoryManager, list[dict]]:
     """构造固定 seed 的评测场景。
 
     返回 (manager, queries)
@@ -50,6 +54,10 @@ def build_scenario(seed: int = 42) -> tuple[MemoryManager, list[dict]]:
 
     manager.register_store("episodic", ep_store, default=True)
     manager.register_store("graph", graph_store)
+    vector_store = None
+    if enable_vector_store:
+        vector_store = VectorMemoryStore(max_capacity=1000, decay_rate=0.001)
+        manager.register_store("vector", vector_store)
 
     # ---- 情景记忆 (ep-001 ~ ep-010) ----
     episodic_items = [
@@ -75,6 +83,18 @@ def build_scenario(seed: int = 42) -> tuple[MemoryManager, list[dict]]:
             last_accessed=_FIXED_TIMESTAMP + i * 60,
         )
         ep_store.add(item)
+        if vector_store is not None:
+            vector_store.add(
+                MemoryItem(
+                    content=content,
+                    memory_type=MemoryType.EPISODIC,
+                    importance=importance,
+                    tags=tags,
+                    id=f"vec-{mid}",
+                    created_at=_FIXED_TIMESTAMP + i * 60,
+                    last_accessed=_FIXED_TIMESTAMP + i * 60,
+                )
+            )
 
     # ---- 图记忆 (gr-001 ~ gr-008) ----
     graph_items = [
@@ -106,6 +126,18 @@ def build_scenario(seed: int = 42) -> tuple[MemoryManager, list[dict]]:
             last_accessed=_FIXED_TIMESTAMP + i * 60,
         )
         graph_store.add(item)
+        if vector_store is not None:
+            vector_store.add(
+                MemoryItem(
+                    content=content,
+                    memory_type=mtype,
+                    importance=importance,
+                    tags=tags,
+                    id=f"vec-{mid}",
+                    created_at=_FIXED_TIMESTAMP + i * 60,
+                    last_accessed=_FIXED_TIMESTAMP + i * 60,
+                )
+            )
 
     # ---- 显式关系 ----
     graph_store.add_relation("gr-001", "gr-002", "组件")
@@ -264,6 +296,7 @@ def _write_report_json(
     out_dir: str,
     formation_metrics: dict | None = None,
     evolution_metrics: dict | None = None,
+    retrieval_backend: dict[str, Any] | None = None,
 ) -> str:
     """写入 report.json。"""
     report: dict[str, Any] = {
@@ -282,6 +315,8 @@ def _write_report_json(
         "mrr": metrics["mrr"],
         "store_distribution": metrics["store_distribution"],
     }
+    if retrieval_backend:
+        report["retrieval_backend"] = retrieval_backend
     path = os.path.join(out_dir, "report.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
@@ -294,6 +329,7 @@ def _write_report_md(
     out_dir: str,
     formation_metrics: dict | None = None,
     evolution_metrics: dict | None = None,
+    retrieval_backend: dict[str, Any] | None = None,
 ) -> str:
     """写入 report.md（简洁摘要）。"""
     lines = [
@@ -302,6 +338,16 @@ def _write_report_md(
         f"seed: 42 | retrieval queries: {len(metrics['per_query'])}",
         "",
     ]
+    if retrieval_backend:
+        stores = ", ".join(retrieval_backend.get("stores", [])) or "unknown"
+        semantic_enabled = retrieval_backend.get("semantic_vector_store_enabled", False)
+        lines += [
+            "## Retrieval backend",
+            "",
+            f"- stores: {stores}",
+            f"- semantic_vector_store_enabled: {semantic_enabled}",
+            "",
+        ]
     if formation_metrics:
         lines += [
             "## Formation 质量",
@@ -408,17 +454,32 @@ def run_evaluation(out_dir: str) -> dict:
         traces.append(traced["trace"])
     retrieval_metrics = compute_metrics(queries, results_per_query)
 
-    # --- Snapshot roundtrip (retrieval stage manager) ---
+    # --- Snapshot roundtrip (fresh retrieval manager) ---
+    roundtrip_manager, roundtrip_queries = build_scenario(seed=42)
     with tempfile.TemporaryDirectory() as tmp_dir:
-        roundtrip_ok = check_roundtrip(ret_manager, queries, tmp_dir)
+        roundtrip_ok = check_roundtrip(roundtrip_manager, roundtrip_queries, tmp_dir)
 
     # --- Write artifacts ---
-    _write_report_json(retrieval_metrics, roundtrip_ok, out_dir,
-                       formation_metrics=formation_metrics,
-                       evolution_metrics=evolution_metrics)
-    _write_report_md(retrieval_metrics, roundtrip_ok, out_dir,
-                     formation_metrics=formation_metrics,
-                     evolution_metrics=evolution_metrics)
+    retrieval_backend = {
+        "stores": list(ret_manager._stores.keys()),
+        "semantic_vector_store_enabled": "vector" in ret_manager._stores,
+    }
+    _write_report_json(
+        retrieval_metrics,
+        roundtrip_ok,
+        out_dir,
+        formation_metrics=formation_metrics,
+        evolution_metrics=evolution_metrics,
+        retrieval_backend=retrieval_backend,
+    )
+    _write_report_md(
+        retrieval_metrics,
+        roundtrip_ok,
+        out_dir,
+        formation_metrics=formation_metrics,
+        evolution_metrics=evolution_metrics,
+        retrieval_backend=retrieval_backend,
+    )
     _write_cases_jsonl(retrieval_metrics, traces, out_dir)
 
     summary = {
@@ -431,6 +492,7 @@ def run_evaluation(out_dir: str) -> dict:
         "hit@5": retrieval_metrics["hit@5"],
         "mrr": retrieval_metrics["mrr"],
         "snapshot_roundtrip_consistent": roundtrip_ok,
+        "retrieval_backend": retrieval_backend,
         "output_dir": out_dir,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
