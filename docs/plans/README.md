@@ -16,6 +16,7 @@
 - [2026-03-26-memory-lifecycle-eval-survey-update-note.md](2026-03-26-memory-lifecycle-eval-survey-update-note.md) — survey 回写说明
 - [2026-03-27-rq001-completion-check.md](2026-03-27-rq001-completion-check.md) — RQ-001 完成度检查
 - [2026-03-27-rq001-completion-update.md](2026-03-27-rq001-completion-update.md) — RQ-001 补齐更新
+- [2026-03-27-rq001-status-summary.md](2026-03-27-rq001-status-summary.md) — RQ-001 状态收口
 
 ## 方法层
 
