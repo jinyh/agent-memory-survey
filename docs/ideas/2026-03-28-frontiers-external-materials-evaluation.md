@@ -21,7 +21,9 @@
 
 这篇论文最有价值的地方，不是泛泛地说明“机器人也需要记忆”，而是把 frontier 中的一个关键分支讲得更具体：
 
-- memory 可以同时分成短期视觉记忆与长期语言记忆
+- memory 可以同时分成短期视频记忆与长期语言记忆
+- 短期视频记忆负责最近观察、遮挡、自遮挡、细粒度操作动态与即时 re-grasp 等问题
+- 长期语言记忆负责压缩后的语义事件摘要，用来维持 recipe progress、object-state、environment-state 这类长时任务状态
 - memory 服务的不只是回忆事实，而是长时任务中的行动状态维持
 - world-state memory 不一定表现为显式 3D 地图，也可以表现为 task-progress / object-state / environment-state 的持续表示
 
@@ -50,15 +52,21 @@
 1. **多尺度 memory**
    - 不是所有 memory 都应该用同一种表示与时间尺度处理。
    - 高频 observation 与低频 summary 更适合分层管理。
+   - 短期视频记忆与长期语言记忆的分工，说明“不同时间尺度 + 不同表示”的组合在 agent memory 中是第一性设计，而不是后期优化。
 
 2. **memory 作为状态层，而非静态事实库**
    - 在 embodied / long-horizon 任务里，memory 保存的是“当前世界推进到了哪里”，而不只是“过去说过什么”。
    - 这有助于区分 active state、episodic trace、semantic summary。
+   - MEM 的长期语言记忆本质上是 semantic event summary，而不是完整观测日志。
 
 3. **memory 与 action 的闭环**
    - 看见什么会影响写入什么。
    - 已写入什么又决定下一步采取什么动作。
    - 这类闭环比纯文本 chatbot 的长期记忆更接近 frontier 所说的 world-state layer。
+
+4. **compression 是 memory 设计本身，不只是系统优化**
+   - 论文里语言记忆的 summarization / compression 不是附带技巧，而是为了避免把长序列历史直接塞入策略后带来的 latency 失控。
+   - 它同时减少训练阶段与推理阶段的分布漂移：训练里常见的是一次成功的子任务指令序列，推理里却可能出现反复失败和重试，因此需要 memory 主动压缩并丢弃不再相关的信息。
 
 这些启发适合保留在 ideas 或后续设计文档中，但不应被误写成“当前代码已经支持 embodied multi-scale memory”。
 
@@ -71,6 +79,7 @@
 - embodied multimodal memory
 - long-horizon task state
 - short-term observation 与 long-term semantic memory 的分层
+- 通过 memory compression 控制 latency，并缓解长时任务中的训练-推理分布漂移
 
 它**不直接支撑**以下结论：
 
@@ -98,7 +107,7 @@
 
 - `2603.03596` 值得纳入 `ref/paper`，因为它对 `07-frontiers` 的 embodied multimodal memory / task-progress world-state 分支有直接补强作用。
 - `pi.website/research/memory` 有启发，但更适合作为工程 / 项目说明，不建议进入 `ref/paper`。
-- 本次最合理的做法是：把论文纳入本地论文库，同时把这组判断记录到 `docs/ideas`，但暂不直接改写 `07-frontiers.md`。
+- 本次最合理的做法是：把论文纳入本地论文库，把这组判断记录到 `docs/ideas`，并以补充证据的方式最小化更新 `07-frontiers.md`。
 
 ## 可能的下一步
 

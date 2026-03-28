@@ -1,7 +1,6 @@
 # Systems And Engineering：系统谱系与工程落地
 
-> v3.0.1 | 2026-03-28
-> Changelog: 增补 MEM 作为具身多尺度 memory system 的工程启发，补充 active state / archive 分层与 latency 约束的关联。
+> v3.0 | 2026-03-26
 
 ## 本章核心判断
 
@@ -114,8 +113,6 @@
 - optional graph layer
 - audit log or event history
 
-MEM 这类具身系统虽然不直接等同于生产型 memory service，但它提供了一个很重要的工程提醒：active state / archive 的分层不只发生在文本 agent 中，也会在多模态控制系统里重新出现。短期视频记忆更像高频工作状态，长期语言记忆更像压缩后的 archive state。这个分层的价值不只是语义清晰，而是直接关系到 latency 是否可控，以及策略在长时任务里会不会因为历史过长而出现训练-推理分布漂移。
-
 这背后不是“堆技术”，而是不同子系统在服务不同 memory function。
 
 ### 2. 访问控制与隔离不是企业附加需求
@@ -148,7 +145,6 @@ Elastic 的实践说明，memory 很快会碰到 identity-aware retrieval、tena
 - `MSA`：代表原生长记忆机制。
 - `BMAM`：作为 brain-inspired memory architecture 的补充证据保留。
 - `Elastic memory architecture`：代表生产级过滤、隔离、权限与 hybrid retrieval 的工程约束。
-- `MEM`：作为补充证据保留，强调多尺度 memory system 中短期工作状态与长期压缩状态的工程分层，但不承担治理与控制面的主锚点。
 
 ## 本章主要证据来源
 
