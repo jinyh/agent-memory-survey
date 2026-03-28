@@ -14,7 +14,7 @@
 | 01-framework | lifecycle 主线 | `src/memory/base.py`, `src/memory/manager.py`, `src/memory/agent.py` | 定义统一记忆接口、总调度器和最小 agent 闭环 | 缺少真正的控制平面与策略编排 |
 | 02-formation | 写入选择 | `src/memory/base.py`, `src/memory/episodic.py`, `src/memory/manager.py`, `src/memory/agent.py` | 支持 episodic 写入、importance、tags、observe/learn 入口 | 缺少模型驱动的写入判定 |
 | 03-evolution | 更新 / 巩固 / 遗忘 | `src/memory/manager.py`, `src/memory/episodic.py`, `src/memory/graph_store.py`, `src/memory/vector_store.py` | 支持 update/delete/consolidate/snapshot | 缺少版本化与 belief-aware 更新 |
-| 04-retrieval | 向量 / 图 / 混合检索 | `src/memory/episodic.py`, `src/memory/graph_store.py`, `src/memory/vector_store.py`, `src/memory/manager.py` | 支持三路检索与 rank fusion | 缺少更强语义检索与图推理 |
+| 04-retrieval | 向量 / 图 / 混合检索 / 分层路由 | `src/memory/episodic.py`, `src/memory/graph_store.py`, `src/memory/vector_store.py`, `src/memory/manager.py` | 支持三路检索与 rank fusion，可作为分层/路由式 retrieval 的最小骨架 | 缺少显式 active state、层次化路由与图推理 |
 | 05-evaluation | benchmark 口径 | `src/memory/evaluation.py`, `tests/test_memory.py` | 可跑评测与报告输出，支持数据集 case 归一化 | 缺少更严格的 lifecycle benchmark |
 | 06-systems-and-engineering | 分层治理 | `src/memory/manager.py`, `src/memory/graph_store.py`, `src/memory/vector_store.py` | 提供最小分层记忆骨架 | 缺少生产级隔离、审计、权限与成本治理 |
 | 07-frontiers | 多模态 / 空间 / 安全 | `src/memory/evaluation.py`（仅评测侧相关） | 只覆盖少量数据集入口 | 尚未实现多模态、空间与安全能力 |
@@ -51,7 +51,7 @@
 | 04-retrieval | vector retrieval | `src/memory/vector_store.py` | 余弦相似度 + 时间衰减 | 缺少外部 ANN / 数据库级索引 |
 | 04-retrieval | graph retrieval | `src/memory/graph_store.py` | tag / links / 邻居扩展 | 缺少路径推理与子图匹配 |
 | 03-evolution | episodic→semantic consolidation | `src/memory/manager.py`, `src/memory/episodic.py` | 简单模式抽取与合并 | 缺少真正的摘要 / 抽象质量评估 |
-| 03-evolution | update / delete | `src/memory/manager.py`, `src/memory/episodic.py`, `src/memory/graph_store.py`, `src/memory/vector_store.py` | 支持字段更新与删除 | 缺少 version semantics 和 provenance |
+| 03-evolution | update / delete | `src/memory/manager.py`, `src/memory/episodic.py`, `src/memory/graph_store.py`, `src/memory/vector_store.py` | 支持字段更新、删除与简单巩固 | 缺少 version semantics、provenance 和 belief-aware 更新 |
 | 05-evaluation | LoCoMo / LongMemEval | `src/memory/evaluation.py` | 统一归一化为 retrieval case | 主要还是 retrieval hit 信号 |
 | 05-evaluation | MemoryAgentBench / MemoryArena / AMA-Bench | `src/memory/evaluation.py` | 支持多轮 / 轨迹 / 背景拼接的 case 入口 | 仍不足以替代严格 formation / evolution 评测 |
 

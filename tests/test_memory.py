@@ -660,7 +660,14 @@ class TestEvaluationOutputs:
         assert len(cases) > 0
         assert all({"id", "query", "expected_ids", "top_k"}.issubset(case) for case in cases)
 
-    def test_run_dataset_benchmark_writes_artifacts(self, tmp_path):
+    def test_run_dataset_benchmark_writes_artifacts(self, tmp_path, monkeypatch):
+        def fake_encode(self, text: str):
+            vocab = ["memory", "agent", "task"]
+            lowered = text.lower()
+            return [lowered.count(token) for token in vocab]
+
+        monkeypatch.setattr(VectorMemoryStore, "_encode", fake_encode)
+
         summary = run_dataset_benchmark(
             dataset_dir="/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets",
             out_dir=str(tmp_path / "dataset-out"),

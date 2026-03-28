@@ -24,6 +24,10 @@ class MemoryManager:
     协调多个记忆存储后端（情景、语义、图等），
     提供统一的记忆读写接口和生命周期管理。
 
+    当前实现更接近“多 store + rank fusion”的最小骨架：
+    - 已覆盖跨 store 读取、简单更新/删除、episodic→semantic 巩固
+    - 尚未显式实现 active state、层次化路由、version semantics 与 belief-aware 更新
+
     灵感来源:
     - MemGPT/Letta: 分层记忆管理
     - AgeMem: 记忆操作作为 Agent 动作
