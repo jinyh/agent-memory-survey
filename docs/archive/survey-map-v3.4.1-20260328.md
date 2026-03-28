@@ -1,6 +1,6 @@
 # Agent Memory Survey 证据地图
 
-> v3.5.0 | 2026-03-28 — 同步 systems 章节新增的 retrieval-centric blog 基线定位，并保留 MEM 在 formation / systems / frontier 的章节映射与版本状态
+> v3.4.1 | 2026-03-28 — 同步 MEM 在 formation / systems / frontier 的章节映射与版本状态
 
 这份地图不是正文替代品，而是正文的索引层。它回答两个问题：
 
@@ -95,7 +95,6 @@
 - `src/memory/manager.py`
 - `src/memory/graph_store.py`
 - `src/memory/vector_store.py`
-- 工程补充：`ref/blog/Agentic Memory- A Detailed Breakdown.md`，用于说明 retrieval-centric memory 的工程起步形态、最小 baseline 价值及其边界；不作为 lifecycle 主框架证据
 
 ### 07-frontiers
 
