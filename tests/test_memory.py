@@ -14,6 +14,8 @@ from src.memory.vector_store import VectorMemoryStore
 from src.memory.evaluation import build_scenario, load_benchmark_cases, run_dataset_benchmark
 
 
+
+
 # ---- MemoryItem 测试 ----
 
 
@@ -629,6 +631,26 @@ class TestEvolutionMetrics:
 
 
 class TestEvaluationOutputs:
+    def test_export_memoryagentbench_writes_jsonl_and_md(self, tmp_path):
+        from src.memory.export_memoryagentbench import export_memoryagentbench
+
+        summary = export_memoryagentbench(
+            dataset_root="/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets/MemoryAgentBench",
+            out_root=str(tmp_path / "normalized"),
+        )
+
+        out_root = tmp_path / "normalized"
+        assert (out_root / "Accurate_Retrieval.jsonl").exists()
+        assert (out_root / "Accurate_Retrieval.md").exists()
+        assert (out_root / "Test_Time_Learning.jsonl").exists()
+        assert (out_root / "Test_Time_Learning.md").exists()
+        assert (out_root / "Long_Range_Understanding.jsonl").exists()
+        assert (out_root / "Long_Range_Understanding.md").exists()
+        assert (out_root / "Conflict_Resolution.jsonl").exists()
+        assert (out_root / "Conflict_Resolution.md").exists()
+        assert (out_root / "README.md").exists()
+        assert summary["Accurate_Retrieval"] > 0
+
     def test_load_benchmark_cases_normalizes_files(self):
         dataset_root = Path("/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets")
 
