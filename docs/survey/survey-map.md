@@ -1,6 +1,6 @@
 # Agent Memory Survey 证据地图
 
-> v3.3 | 2026-03-27 — 新增 `survey ↔ code ↔ gap` 长期映射表
+> v3.4 | 2026-03-28 — 补充 MEM frontier 映射
 
 这份地图不是正文替代品，而是正文的索引层。它回答两个问题：
 
@@ -35,6 +35,7 @@
 | Synapse | 中 | 高 | 高 | 中 | 中 | 中 |
 | Elastic memory architecture | 高 | 中 | 高 | 中 | 高 | 低 |
 | Think3D / GSMem / RenderMem | 低 | 中 | 高 | 低 | 中 | 高 |
+| MEM | 中 | 中 | 高 | 低 | 中 | 高 |
 | MemoryAgentBench | 低 | 低 | 低 | 高 | 低 | 中 |
 | MemoryArena | 低 | 低 | 中 | 高 | 低 | 中 |
 | AMA-Bench | 低 | 低 | 中 | 高 | 低 | 中 |

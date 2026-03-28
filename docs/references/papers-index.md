@@ -1,6 +1,6 @@
 # Papers Index
 
-- count: 30
+- count: 31
 
 ## Evaluating Very Long-Term Conversational Memory of LLM Agents
 - source_type: paper
@@ -271,6 +271,17 @@
 - year: 2026
 - file_path: ref/paper/2603.02626.pdf
 - identifier: arXiv:2603.02626
+- paper_type: system
+- lifecycle_stages: ['retrieval']
+- memory_functions: ['semantic']
+- tags: ['agent-memory']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## MEM: Multi-Scale Embodied Memory for Vision Language Action Models
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2603.03596.pdf
+- identifier: arXiv:2603.03596
 - paper_type: system
 - lifecycle_stages: ['retrieval']
 - memory_functions: ['semantic']

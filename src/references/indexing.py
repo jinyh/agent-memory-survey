@@ -428,6 +428,8 @@ def _infer_paper_title(stem: str, deepresearch_map: dict[str, str]) -> str:
         return "MemoryArena: Benchmarking Agent Memory in Interdependent Multi-Session Agentic Tasks"
     if stem.startswith("2602.22769"):
         return "AMA-Bench: Evaluating Long-Horizon Memory for Agentic Applications"
+    if stem.startswith("2603.03596"):
+        return "MEM: Multi-Scale Embodied Memory for Vision Language Action Models"
     if stem.startswith("2603.04740"):
         return "Memory as Ontology: A Constitutional Memory Architecture for Persistent Digital Citizens"
     return stem.replace("_", " ")
