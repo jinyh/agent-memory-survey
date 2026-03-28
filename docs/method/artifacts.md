@@ -1,6 +1,6 @@
 # 标准工件
 
-> v1.0.0 | 2026-03-26
+> v1.1.0 | 2026-03-29 — 补充非论文外部输入进入正式工件前的前置约束
 
 本文件定义研究版 BMAD 的标准工件、默认落点和最小字段。
 
@@ -32,6 +32,10 @@
 
 - `docs/plans/YYYY-MM-DD-<topic>-evidence-map.md`
 - 或与相关 `docs/survey/` / `docs/references/` 文档配套维护
+
+前置约束：
+
+- 非论文外部输入进入 `evidence-map` 前，应先完成最小分类与边界判定（参考 `docs/method/blog-survey-calibration-template.md`）
 
 最小字段：
 
@@ -99,6 +103,10 @@
 
 - `docs/plans/YYYY-MM-DD-<topic>-survey-update-note.md`
 - 或作为 survey 章节修改附带的变更说明
+
+前置约束：
+
+- 若 `survey-update-note` 引入 blog、GitHub project、benchmark repo 等非论文外部输入，应先完成最小分类与边界判定，并在 `evidence_scope` 中写清其角色与边界
 
 最小字段：
 

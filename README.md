@@ -6,9 +6,20 @@ Agent Memory 研究项目，当前重构为三层结构：
 - `ref/`：原始研究资料，按 `paper / blog / DeepResearch` 分层
 - `src/`：最小研究原型与资料索引工具
 
+## 目录别名对照
+
+日常口头讨论中常会使用一些简写，统一对应到以下真实路径：
+
+- `paper` → `ref/paper/`
+- `blog` → `ref/blog/`
+- `DeepResearch` → `ref/DeepResearch/`
+- `ideas` → `docs/ideas/`
+- `survey-map` → `docs/survey/survey-map.md`
+
 ## 目录结构
 
 - `docs/method/`：研究版 BMAD 方法层（工作流、角色、工件、评审门、追踪规则）
+  - 整体工作流总览见 `docs/method/README.md`
 - `docs/survey/`：新版综述，按 Formation / Evolution / Retrieval / Evaluation / Frontier 组织
 - `docs/references.md`：参考资料入口页
 - `docs/references/`：自动生成的 paper/blog/deepresearch 索引与质量评估

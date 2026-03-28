@@ -1,25 +1,41 @@
-# Blog ↔ Survey 对照分析模板
+# 非论文外部材料 ↔ Survey 对照分析模板
 
-> v1.0.0 | 2026-03-28
+> v1.1.0 | 2026-03-29
 
-这份模板用于处理一种特定任务：**输入一篇非论文外部材料，输出它与当前 survey 主框架的对齐、边界、风险和推荐落点。**
+这份模板用于处理一种特定任务：**输入一份非论文外部材料，输出它与当前 survey 主框架的对齐、边界、风险和推荐落点。**
 
-适用于：技术 Blog、项目介绍页、vendor engineering post、X thread、工程经验总结页。
+适用于：技术 Blog、项目介绍页、vendor engineering post、X thread、工程经验总结页、release note、GitHub project / open-source implementation、benchmark / eval repo。
 不适用于：论文 PDF / arXiv / 正式 paper（优先走 `survey-evidence-mapper`）、泛化 literature review、实现规划或仅做内容摘要的场景。
+
+## 最小分类规则
+
+非论文外部输入默认先收敛为以下几类角色，再决定是否写入正式文档：
+
+- `工程补充证据`：如 blog、engineering post、release note，用于补充工程实践、产品化取舍、benchmark 争议与运维经验。
+- `工程参照`：如 GitHub project、open-source implementation，用于 `systems baseline`、`implementation inspiration`、`evaluation reference`。
+- `评测参照`：如 benchmark、eval repo、leaderboard implementation，用于补 benchmark 口径、case 组织和评测基线。
+- `线索 / 候选`：如 DeepResearch 派生线索、尚未确认价值的外部材料，只保留为待摄取候选。
+- `暂不纳入`：相关度不足、风险偏高或尚无稳定落点的材料。
+
+默认规则：
+
+- `paper` 仍是主研究证据，不由本模板提升替代。
+- GitHub project 默认归为 `工程参照`，不直接替代 `paper` 成为主研究证据。
+- 所有非论文外部输入都必须先回答两件事：它属于哪一类；它应该落到哪一层。
 
 ## 使用原则
 
 1. **先守住 survey 主框架**
-   - 先按当前 survey 的 lifecycle / chapter 组织问题，不能先跟着 Blog 的分类走。
+   - 先按当前 survey 的 lifecycle / chapter 组织问题，不能先跟着外部材料自身的分类走。
 
-2. **Blog 默认只做工程补充**
-   - 除非有非常明确的理由，否则 Blog 不应被提升为主证据。
+2. **非论文外部输入默认降级处理**
+   - 除非有非常明确的理由，否则这类材料不应被提升为主证据；其中 Blog 默认只做工程补充。
 
 3. **必须先定边界，再写优点**
    - 任何分析都必须明确：它支撑什么、只弱补强什么、不支撑什么。
 
-4. **不能让 Blog 改写主论点**
-   - Blog 可以帮助解释、补充、启发，但不能直接替代 survey 现有的 anchor judgment。
+4. **不能让非论文外部输入改写主论点**
+   - 这类材料可以帮助解释、补充、启发，但不能直接替代 survey 现有的 anchor judgment；其中 Blog 仍默认按工程补充处理。
 
 5. **优先判断落点，再判断是否写入**
    - 先决定它更适合进 `docs/ideas/`、survey 某章的工程补充位、`blogs-index`，还是暂不纳入。
@@ -81,10 +97,10 @@
 
 | 角色 | 含义 | 何时使用 |
 | --- | --- | --- |
-| `systems baseline` | 代表某类工程起步形态或最小实现范式 | Blog 更适合说明工程直觉、baseline 或 MVP 结构，但不足以承担主论点 |
-| `engineering supplement` | 对现有 survey 判断提供工程补充说明 | Blog 能帮助解释已有判断的工程意义，但不改变主框架 |
-| `implementation inspiration` | 对代码/原型/接口设计有局部启发 | Blog 对实现细节或接口组织有参考价值，但研究支撑弱 |
-| `defer` | 暂不纳入 | Blog 相关度不够，或风险高于收益 |
+| `systems baseline` | 代表某类工程起步形态或最小实现范式 | 非论文外部输入更适合说明工程直觉、baseline 或 MVP 结构，但不足以承担主论点 |
+| `engineering supplement` | 对现有 survey 判断提供工程补充说明 | 这类材料能帮助解释已有判断的工程意义，但不改变主框架 |
+| `implementation inspiration` | 对代码/原型/接口设计有局部启发 | 这类材料对实现细节或接口组织有参考价值，但研究支撑弱 |
+| `defer` | 暂不纳入 | 相关度不够，或风险高于收益 |
 
 快速区分规则：
 - 更偏“说明第一代工程起步形态” → `systems baseline`
@@ -94,7 +110,7 @@
 
 ## 误用速查
 
-- **把 Blog 当主证据**：直接把 Blog 结论上升成 chapter 主判断，或用它替代 paper / 稳定 anchor
+- **把非论文外部输入当主证据**：直接把这类材料的结论上升成 chapter 主判断，或用它替代 paper / 稳定 anchor
 - **把产品叙事写成一般性规律**：把 demo / vendor post 误写成普遍趋势，未说明适用范围
 - **只写优点，不写边界**：只有“可借鉴点”，没有“不支撑什么”与风险提醒
 - **被 retrieval-centric 叙事带偏**：把 memory 收缩成 retrieval / vector store / recall loop，忽略 formation、evolution、evaluation、governance

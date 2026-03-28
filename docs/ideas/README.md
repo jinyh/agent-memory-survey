@@ -24,3 +24,18 @@
 - 这里保留的是轻量、快速记录的想法草稿
 - [2026-03-27-memory-lifecycle-rq-ranking.md](2026-03-27-memory-lifecycle-rq-ranking.md) — Agent Memory 研究问题排序与关系
 - [2026-03-28-agent-memory-rag-idea-mapping.md](2026-03-28-agent-memory-rag-idea-mapping.md) — Agentic Memory 与 Vectorless RAG 的可借鉴点映射
+
+## 升级路径
+
+`docs/ideas/` 不是正式研究结论层，而是前置孵化层。默认先轻量记录，再按成熟度升级：
+
+1. 如果已经形成明确研究问题、范围、非目标和 success criteria，升级到 `docs/plans/` 下的 `research-brief`。
+2. 如果已经整理出支持/反对证据、代表引用、争议点与缺口，升级到 `docs/plans/` 下的 `evidence-map`。
+3. 如果已经形成需要落到 `src/`、工具链或评测逻辑的稳定判断，升级到 `docs/architecture/` 或对应 `experiment-spec`。
+4. 如果只是对 survey 与实现关系的候选映射、待确认论点或局部工程启发，先保留在 `docs/ideas/`，确认后再写入 `docs/survey/survey-map.md` 或正式研究工件。
+
+## 使用边界
+
+- 不要把 `docs/ideas/` 当作长期的正式结论仓库。
+- “最小实现是否支撑 survey” 的稳定映射，优先回写到 `docs/survey/survey-map.md`。
+- blog / 外部材料的纳入边界判断，优先遵循 `docs/method/blog-survey-calibration-template.md`。
