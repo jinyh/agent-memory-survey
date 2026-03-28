@@ -70,4 +70,5 @@
 - 非论文外部输入进入正式文档前，先按 [`blog-survey-calibration-template.md`](./blog-survey-calibration-template.md) 完成最小分类与边界判定
 - 关键研究判断进入实现前，必须先完成架构决策
 - 实验结论进入 survey 前，必须明确证据边界与适用范围
+- `/architect` 不是日常默认流程；仅在跨代码原型、survey、工具链等多个层次的重大改动前，作为专项架构评审使用
 - 先追求文档驱动的一致性，再考虑 skill 化或命令化
