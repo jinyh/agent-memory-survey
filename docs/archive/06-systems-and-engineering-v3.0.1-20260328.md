@@ -1,7 +1,7 @@
 # Systems And Engineering：系统谱系与工程落地
 
-> v3.1.0 | 2026-03-28
-> Changelog: 新增工程 blog 作为 retrieval-centric baseline 的价值与边界分析；保留 MEM 作为具身多尺度 memory system 的工程启发，并补充 active state / archive 分层与 latency 约束的关联。
+> v3.0.1 | 2026-03-28
+> Changelog: 增补 MEM 作为具身多尺度 memory system 的工程启发，补充 active state / archive 分层与 latency 约束的关联。
 
 ## 本章核心判断
 
@@ -69,16 +69,6 @@
 - belief 与 evidence 往往未充分区分。
 - 对时间演化、多跳依赖和复杂任务链支持有限。
 - memory 被视作 service，而不是认知控制层。
-
-### 工程 blog 的价值与边界：retrieval-centric memory 的入门框架
-
-这类工程 blog 往往采用一条非常容易被工程师接受的主线：context window 负责短期工作状态，external store 负责跨会话持久化，vector retrieval 负责按需召回，episodic log 负责沉淀过往任务经验，再辅以 importance scoring、recency decay 与 consolidation 等启发式策略维持系统可用性。`Agentic Memory: A Detailed Breakdown` 是这一写法的代表案例。它的价值不在于提出新的研究框架，而在于把 retrieval-centric memory system 的最小可运行形态讲得足够清楚，因此很适合作为工程入门材料和 baseline 架构参考。
-
-这类 blog 之所以值得保留，不只是因为它们写得清楚，还因为它们代表了工程界对 Agent Memory 最自然的一种直觉：把 memory 理解为 retrieval-enhanced persistence，也就是在有限上下文之外补上一层可检索、可追加、可压缩的长期状态。这个视角解释了为什么第一代 memory system 会优先围绕 context overflow、semantic retrieval、episodic reuse 和 lightweight forgetting 展开，也解释了为什么许多产品化方案会先落在 vector + metadata + summary 这条路线。
-
-但它的边界也同样明显。首先，这类框架通常会把 memory 的核心问题压缩成“如何把相关内容取回来”，因此更擅长解释 retrieval、context management 与轻量级 personalization，却较少处理 formation policy、version semantics、belief correction、deletion / revocation、tenant isolation 与 auditability 等长期部署问题。其次，它容易把 memory loop 近似为“调用前检索、调用后写入”的 read/write 闭环，从而弱化 evolution 与 evaluation 在 memory lifecycle 中的独立地位。也正因此，这类 blog 更适合作为工程补充和 baseline 描述，而不宜替代以 `formation -> evolution -> retrieval -> evaluation` 为主线的 lifecycle 框架。
-
-换句话说，这类 blog 提供了一个很好的第一代工程视角：memory 作为 retrieval-enhanced state persistence；而当前更重要的问题已经转向 memory 如何成为可更新、可治理、可评估的状态管理与控制层。把它们放在 systems 章节里阅读是有价值的，但前提是明确它们解释的是“工程起步形态”，而不是 memory architecture 的终局。
 
 ### 2. 图与时序 memory backbone
 
