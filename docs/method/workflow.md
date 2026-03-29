@@ -43,6 +43,12 @@
 
 目标：把 `paper / blog / GitHub project / benchmark / DeepResearch` 分层整理，形成可追溯的证据图谱。
 
+**材料摄取双轨入口（进入 evidence-map 前的前置步骤）：**
+
+- 论文类材料（PDF / arXiv）：使用 `survey-evidence-mapper` skill 做快速判断与落点决策
+- 非论文外部材料（blog / GitHub project / benchmark / engineering post 等）：使用 `docs/method/blog-survey-calibration-template.md` 做最小分类与边界判定
+- 两者输出均作为 `evidence-map` 的前置输入，结果记录在 `non_paper_intake_refs` 字段
+
 默认产物：
 
 - `evidence-map`

@@ -46,6 +46,7 @@
 - `supporting_evidence`
 - `lead_evidence_lines`
 - `open_gaps`
+- `non_paper_intake_refs`（每条非论文证据须标注其 calibration 角色与推荐落点，格式：`材料名 → 角色 | 落点`；无非论文输入时填 `N/A`）
 
 ## 3. architecture-decision
 
