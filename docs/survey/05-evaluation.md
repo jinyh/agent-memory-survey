@@ -28,6 +28,12 @@
 | 成本与治理 | 系统是否可落地 | latency、token、索引成本、审计能力 | 回答“能不能上线” | 常被论文忽略，口径不统一 | 低中 |
 | 系统内 benchmark | 是否在特定设计目标下有效 | 厂商或框架自定义 leaderboard | 能对齐系统自有假设 | 易发生 benchmark alignment | 中 |
 
+## 本章主要证据来源
+
+- `paper`：`LoCoMo`、`LongMemEval`、`MemoryAgentBench`、`MemoryArena`、`AMA-Bench`
+- `blog`：用于补充系统评测口径、工程治理与 benchmark 争议
+- `DeepResearch`：仅作线索
+
 ## 关键概念与代表引用
 
 - retrieval hit

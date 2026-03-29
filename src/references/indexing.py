@@ -78,7 +78,7 @@ class ReferenceLibrary:
 
 def build_reference_library(repo_root: Path) -> ReferenceLibrary:
     deepresearch_map = _build_deepresearch_paper_map(
-        repo_root / "ref/DeepResearch/多模态Agent空间推理记忆研究.md"
+        _primary_deepresearch_report_path(repo_root)
     )
     papers = _scan_papers(repo_root, deepresearch_map)
     blogs = _scan_blogs(repo_root)
@@ -553,6 +553,19 @@ def download_github_files(file_urls: list[str], dest_dir: Path) -> list[Path]:
             urllib.request.urlretrieve(url, target)
         downloaded.append(target)
     return downloaded
+
+
+def _primary_deepresearch_report_path(repo_root: Path) -> Path:
+    report_dir = repo_root / "ref/DeepResearch"
+    preferred = report_dir / "多模态Agent空间推理记忆研究.md"
+    if preferred.exists():
+        return preferred
+
+    candidates = sorted(report_dir.glob("*.md"))
+    if candidates:
+        return candidates[0]
+
+    return preferred
 
 
 def _build_deepresearch_paper_map(report_path: Path) -> dict[str, str]:

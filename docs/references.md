@@ -30,7 +30,7 @@ uv run --active python -m src.references
 该命令会执行三件事：
 
 1. 扫描 `ref/paper/` 与 `ref/blog/`，重建论文与博客索引。
-2. 解析 `ref/DeepResearch/多模态Agent空间推理记忆研究.md`，更新摄取跟踪表。
+2. 解析 `ref/DeepResearch/` 中的主 DeepResearch 报告，更新摄取跟踪表。
 3. 对可直接下载的开放论文来源（当前支持 `arXiv` 与 `OpenReview`）尝试补齐到 `ref/paper/`。
 
 ## 质量评估口径

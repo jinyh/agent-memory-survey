@@ -21,11 +21,11 @@
 
 ## 方法结构
 
-- [workflow.md](./workflow.md)：主流程和阶段入口
-- [roles.md](./roles.md)：角色边界与交接关系
-- [artifacts.md](./artifacts.md)：标准工件与命名约定
-- [gates.md](./gates.md)：关键评审门与回退规则
-- [traceability.md](./traceability.md)：跨文档追踪字段与引用规则
+- [workflow-v1.0.0-20260327.md](./workflow-v1.0.0-20260327.md)：主流程和阶段入口
+- [roles.md](../method/roles.md)：角色边界与交接关系（当前版本）
+- [artifacts.md](../method/artifacts.md)：标准工件与命名约定（当前版本）
+- [gates-v1.0.0-20260327.md](./gates-v1.0.0-20260327.md)：关键评审门与回退规则
+- [traceability-v1.0.0-20260327.md](./traceability-v1.0.0-20260327.md)：跨文档追踪字段与引用规则
 
 ## 与现有目录的关系
 

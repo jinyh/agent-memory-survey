@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Agent Memory 核心模块测试。"""
 
 import json
@@ -8,13 +9,14 @@ import pytest
 
 from src.memory.base import FusionConfig, MemoryItem, MemoryType
 from src.memory.episodic import EpisodicMemory
+from src.memory.evaluation import (
+    build_scenario,
+    load_benchmark_cases,
+    run_dataset_benchmark,
+)
 from src.memory.graph_store import GraphMemoryStore
 from src.memory.manager import MemoryManager
 from src.memory.vector_store import VectorMemoryStore
-from src.memory.evaluation import build_scenario, load_benchmark_cases, run_dataset_benchmark
-
-
-
 
 # ---- MemoryItem 测试 ----
 
@@ -68,7 +70,10 @@ class TestEpisodicMemory:
         results = em.query("Python 问题")
         assert len(results) > 0
         # 第一个结果应该包含 Python
-        assert "Python" in results[0][0].content or "python" in results[0][0].content.lower()
+        assert (
+            "Python" in results[0][0].content
+            or "python" in results[0][0].content.lower()
+        )
 
     def test_recent(self):
         em = EpisodicMemory()
@@ -316,7 +321,13 @@ class TestRankFusion:
         assert len(output["results"]) == 3
 
         # 验证 trace 中每个 store 的条目包含必要字段
-        required_fields = {"item_id", "raw_score", "rank", "normalized_score", "fused_score"}
+        required_fields = {
+            "item_id",
+            "raw_score",
+            "rank",
+            "normalized_score",
+            "fused_score",
+        }
         for store_name, entries in output["trace"].items():
             assert len(entries) > 0, f"store '{store_name}' 应有 trace 条目"
             for entry in entries:
@@ -325,7 +336,7 @@ class TestRankFusion:
                 )
 
         # 验证 normalized_score 符合 1/rank 规律
-        for store_name, entries in output["trace"].items():
+        for _store_name, entries in output["trace"].items():
             for entry in entries:
                 expected = 1.0 / entry["rank"]
                 assert abs(entry["normalized_score"] - expected) < 1e-9, (
@@ -430,12 +441,14 @@ class TestSnapshot:
         snap_file = tmp_path / "snap_bad_edge" / "snapshot.json"
         data = json.loads(snap_file.read_text(encoding="utf-8"))
         graph_data = data["stores"]["graph"]["data"]
-        graph_data["edges"].append({
-            "source": "nonexistent-id-000",
-            "target": "nonexistent-id-001",
-            "relation": "fake",
-            "attrs": {},
-        })
+        graph_data["edges"].append(
+            {
+                "source": "nonexistent-id-000",
+                "target": "nonexistent-id-001",
+                "relation": "fake",
+                "attrs": {},
+            }
+        )
         snap_file.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
         mm2 = MemoryManager()
@@ -521,9 +534,7 @@ class TestStoreSnapshot:
         assert restored.size() == vs.size()
         # 验证 embedding 值一致
         for orig_item in vs.list_all():
-            restored_item = next(
-                i for i in restored.list_all() if i.id == orig_item.id
-            )
+            restored_item = next(i for i in restored.list_all() if i.id == orig_item.id)
             assert restored_item.embedding == orig_item.embedding
 
 
@@ -535,6 +546,7 @@ class TestStoreSnapshot:
 class TestFormationMetrics:
     def test_build_formation_scenario_returns_structure(self):
         from src.memory.evaluation import build_formation_scenario
+
         manager, events, expected_writes = build_formation_scenario()
         assert len(events) >= 10
         assert len(expected_writes) >= 3
@@ -542,6 +554,7 @@ class TestFormationMetrics:
 
     def test_compute_formation_metrics_perfect(self):
         from src.memory.evaluation import compute_formation_metrics
+
         actual = {"a", "b", "c"}
         expected = {"a", "b", "c"}
         m = compute_formation_metrics(actual, expected)
@@ -550,6 +563,7 @@ class TestFormationMetrics:
 
     def test_compute_formation_metrics_partial(self):
         from src.memory.evaluation import compute_formation_metrics
+
         actual = {"a", "b", "d"}  # d 是误写，c 被遗漏
         expected = {"a", "b", "c"}
         m = compute_formation_metrics(actual, expected)
@@ -558,6 +572,7 @@ class TestFormationMetrics:
 
     def test_compute_formation_metrics_empty_actual(self):
         from src.memory.evaluation import compute_formation_metrics
+
         m = compute_formation_metrics(set(), {"a", "b"})
         assert m["formation_precision"] == 0.0
         assert m["formation_recall"] == 0.0
@@ -567,6 +582,7 @@ class TestFormationMetrics:
             build_formation_scenario,
             compute_formation_metrics,
         )
+
         _IMPORTANCE_THRESHOLD = 0.6
         _CONTENT_MIN_LEN = 5
         manager, events, expected_writes = build_formation_scenario()
@@ -589,6 +605,7 @@ class TestFormationMetrics:
 class TestEvolutionMetrics:
     def test_build_evolution_scenario_returns_structure(self):
         from src.memory.evaluation import build_evolution_scenario
+
         manager, update_events, expected_state = build_evolution_scenario()
         assert len(update_events) >= 3
         assert len(expected_state) >= 3
@@ -596,6 +613,7 @@ class TestEvolutionMetrics:
 
     def test_compute_evolution_metrics_perfect(self):
         from src.memory.evaluation import compute_evolution_metrics
+
         actual = {"m1": "content A", "m2": "content B"}
         expected = {"m1": "content A", "m2": "content B", "m3": None}
         m = compute_evolution_metrics(actual, expected)
@@ -604,6 +622,7 @@ class TestEvolutionMetrics:
 
     def test_compute_evolution_metrics_partial(self):
         from src.memory.evaluation import compute_evolution_metrics
+
         actual = {"m1": "content A", "m2": "wrong", "m3": "should be gone"}
         expected = {"m1": "content A", "m2": "content B", "m3": None}
         m = compute_evolution_metrics(actual, expected)
@@ -615,6 +634,7 @@ class TestEvolutionMetrics:
             build_evolution_scenario,
             compute_evolution_metrics,
         )
+
         manager, update_events, expected_state = build_evolution_scenario()
         for event in update_events:
             if event["type"] == "update":
@@ -631,6 +651,23 @@ class TestEvolutionMetrics:
 
 
 class TestEvaluationOutputs:
+    def test_compute_metrics_uses_expected_ranking(self):
+        from src.memory.evaluation import compute_metrics
+
+        queries = [{"query": "q1", "expected_ids": ["m1"], "top_k": 5}]
+        results = [
+            [
+                (MemoryItem(id="m2", content="x"), 0.9, "ep"),
+                (MemoryItem(id="m1", content="y"), 0.8, "graph"),
+            ]
+        ]
+
+        metrics = compute_metrics(queries, results)
+
+        assert metrics["hit@1"] == 0.0
+        assert metrics["hit@3"] == 1.0
+        assert metrics["mrr"] == 0.5
+
     def test_export_memoryagentbench_writes_jsonl_and_md(self, tmp_path):
         from src.memory.export_memoryagentbench import export_memoryagentbench
 
@@ -652,13 +689,17 @@ class TestEvaluationOutputs:
         assert summary["Accurate_Retrieval"] > 0
 
     def test_load_benchmark_cases_normalizes_files(self):
-        dataset_root = Path("/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets")
+        dataset_root = Path(
+            "/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets"
+        )
 
         cases = load_benchmark_cases(str(dataset_root))
 
         assert isinstance(cases, list)
         assert len(cases) > 0
-        assert all({"id", "query", "expected_ids", "top_k"}.issubset(case) for case in cases)
+        assert all(
+            {"id", "query", "expected_ids", "top_k"}.issubset(case) for case in cases
+        )
 
     def test_run_dataset_benchmark_writes_artifacts(self, tmp_path, monkeypatch):
         def fake_encode(self, text: str):

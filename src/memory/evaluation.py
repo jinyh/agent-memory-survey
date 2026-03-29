@@ -1,3 +1,4 @@
+# ruff: noqa: E501, B905
 """Agent Memory 可重复评测。
 
 固定 seed 构造场景 → 执行检索 → 计算 hit@k / MRR / store 分布 → 快照 roundtrip 一致性检查。
@@ -12,7 +13,6 @@ import argparse
 import json
 import os
 import random
-import re
 import tempfile
 import time
 from collections import Counter
@@ -70,7 +70,9 @@ def _build_dataset_case(
 
 
 def _session_text(entries: list[dict[str, Any]]) -> str:
-    return "\n".join(str(entry.get("text", "")) for entry in entries if entry.get("text"))
+    return "\n".join(
+        str(entry.get("text", "")) for entry in entries if entry.get("text")
+    )
 
 
 def load_benchmark_cases(dataset_dir: str) -> list[dict[str, Any]]:
@@ -83,32 +85,40 @@ def load_benchmark_cases(dataset_dir: str) -> list[dict[str, Any]]:
         for row_idx, row in enumerate(rows):
             conversation = row.get("conversation", {})
             session_names = sorted(
-                [name for name in conversation if name.startswith("session_") and not name.endswith("date_time")],
+                [
+                    name
+                    for name in conversation
+                    if name.startswith("session_") and not name.endswith("date_time")
+                ],
                 key=lambda name: int(name.split("_")[1]),
             )
             documents = []
             for session_name in session_names:
                 session_num = int(session_name.split("_")[1])
                 doc_id = f"D{session_num}"
-                documents.append({
-                    "id": doc_id,
-                    "content": _session_text(conversation.get(session_name, [])),
-                    "tags": ["locomo", "session"],
-                })
+                documents.append(
+                    {
+                        "id": doc_id,
+                        "content": _session_text(conversation.get(session_name, [])),
+                        "tags": ["locomo", "session"],
+                    }
+                )
             for qa_idx, qa in enumerate(row.get("qa", [])):
                 evidence = qa.get("evidence", [])
                 if not evidence:
                     continue
                 session_ids = {str(part).split(":")[0] for part in evidence}
-                cases.append(_build_dataset_case(
-                    case_id=f"locomo-{row.get('sample_id', row_idx)}-{qa_idx}",
-                    query=str(qa.get("question", "")),
-                    expected_ids=sorted(session_ids),
-                    top_k=5,
-                    source="locomo",
-                    split="locomo10",
-                    documents=documents,
-                ))
+                cases.append(
+                    _build_dataset_case(
+                        case_id=f"locomo-{row.get('sample_id', row_idx)}-{qa_idx}",
+                        query=str(qa.get("question", "")),
+                        expected_ids=sorted(session_ids),
+                        top_k=5,
+                        source="locomo",
+                        split="locomo10",
+                        documents=documents,
+                    )
+                )
 
     longmemeval_dir = root / "longmemeval-cleaned"
     oracle_path = longmemeval_dir / "longmemeval_oracle.json"
@@ -116,23 +126,36 @@ def load_benchmark_cases(dataset_dir: str) -> list[dict[str, Any]]:
         rows = json.loads(oracle_path.read_text(encoding="utf-8"))
         for row_idx, row in enumerate(rows):
             documents = []
-            for session_id, session_entries in zip(row.get("answer_session_ids", []), row.get("haystack_sessions", [])):
-                documents.append({
-                    "id": str(session_id),
-                    "content": "\n".join(
-                        str(entry.get("content", "")) for entry in session_entries if entry.get("content")
+            for session_id, session_entries in zip(
+                row.get("answer_session_ids", []), row.get("haystack_sessions", [])
+            ):
+                documents.append(
+                    {
+                        "id": str(session_id),
+                        "content": "\n".join(
+                            str(entry.get("content", ""))
+                            for entry in session_entries
+                            if entry.get("content")
+                        ),
+                        "tags": [
+                            "longmemeval",
+                            str(row.get("question_type", "oracle")),
+                        ],
+                    }
+                )
+            cases.append(
+                _build_dataset_case(
+                    case_id=str(row.get("question_id", f"longmemeval-{row_idx}")),
+                    query=str(row.get("question", "")),
+                    expected_ids=_normalize_expected_ids(
+                        row.get("answer_session_ids", [])
                     ),
-                    "tags": ["longmemeval", str(row.get("question_type", "oracle"))],
-                })
-            cases.append(_build_dataset_case(
-                case_id=str(row.get("question_id", f"longmemeval-{row_idx}")),
-                query=str(row.get("question", "")),
-                expected_ids=_normalize_expected_ids(row.get("answer_session_ids", [])),
-                top_k=5,
-                source="longmemeval",
-                split=str(row.get("question_type", "oracle")),
-                documents=documents,
-            ))
+                    top_k=5,
+                    source="longmemeval",
+                    split=str(row.get("question_type", "oracle")),
+                    documents=documents,
+                )
+            )
 
     amabench_path = root / "AMA-bench" / "test" / "open_end_qa_set.jsonl"
     if amabench_path.exists():
@@ -141,26 +164,35 @@ def load_benchmark_cases(dataset_dir: str) -> list[dict[str, Any]]:
                 if not line.strip():
                     continue
                 row = json.loads(line)
-                documents = [{
-                    "id": str(row.get("episode_id", f"ama-{row_idx}")),
-                    "content": "\n".join(
-                        [str(row.get("task", ""))]
-                        + [str(turn.get("action", "")) + "\n" + str(turn.get("observation", "")) for turn in row.get("trajectory", [])]
-                    ),
-                    "tags": ["ama-bench", str(row.get("domain", "unknown"))],
-                }]
+                documents = [
+                    {
+                        "id": str(row.get("episode_id", f"ama-{row_idx}")),
+                        "content": "\n".join(
+                            [str(row.get("task", ""))]
+                            + [
+                                str(turn.get("action", ""))
+                                + "\n"
+                                + str(turn.get("observation", ""))
+                                for turn in row.get("trajectory", [])
+                            ]
+                        ),
+                        "tags": ["ama-bench", str(row.get("domain", "unknown"))],
+                    }
+                ]
                 for qa_idx, qa in enumerate(row.get("qa_pairs", [])):
                     qtype = str(qa.get("type", "unknown"))
                     case_id = str(qa.get("question_uuid", f"ama-{row_idx}-{qa_idx}"))
-                    cases.append(_build_dataset_case(
-                        case_id=case_id,
-                        query=str(qa.get("question", "")),
-                        expected_ids=[str(row.get("episode_id", case_id))],
-                        top_k=5,
-                        source="ama-bench",
-                        split=qtype,
-                        documents=documents,
-                    ))
+                    cases.append(
+                        _build_dataset_case(
+                            case_id=case_id,
+                            query=str(qa.get("question", "")),
+                            expected_ids=[str(row.get("episode_id", case_id))],
+                            top_k=5,
+                            source="ama-bench",
+                            split=qtype,
+                            documents=documents,
+                        )
+                    )
 
     memory_arena_root = root / "MemoryArena"
     if memory_arena_root.exists():
@@ -177,30 +209,41 @@ def load_benchmark_cases(dataset_dir: str) -> list[dict[str, Any]]:
                         background_text = backgrounds
                     else:
                         background_text = "\n".join(str(item) for item in backgrounds)
-                    documents = [{
-                        "id": row_id,
-                        "content": "\n".join(
-                            [background_text]
-                            + [str(q) for q in row.get("questions", [])]
-                            + [json.dumps(a, ensure_ascii=False) if isinstance(a, dict) else str(a) for a in row.get("answers", [])]
-                        ),
-                        "tags": ["memoryarena", split],
-                    }]
+                    documents = [
+                        {
+                            "id": row_id,
+                            "content": "\n".join(
+                                [background_text]
+                                + [str(q) for q in row.get("questions", [])]
+                                + [
+                                    json.dumps(a, ensure_ascii=False)
+                                    if isinstance(a, dict)
+                                    else str(a)
+                                    for a in row.get("answers", [])
+                                ]
+                            ),
+                            "tags": ["memoryarena", split],
+                        }
+                    ]
                     questions = row.get("questions", [])
                     answers = row.get("answers", [])
-                    for qa_idx, (question, answer) in enumerate(zip(questions, answers)):
+                    for qa_idx, (question, answer) in enumerate(
+                        zip(questions, answers)
+                    ):
                         expected_ids = [row_id]
                         if isinstance(answer, dict):
                             expected_ids = [str(answer.get("target_asin", row_id))]
-                        cases.append(_build_dataset_case(
-                            case_id=f"memoryarena-{split}-{row_id}-{qa_idx}",
-                            query=str(question),
-                            expected_ids=expected_ids,
-                            top_k=5,
-                            source="memoryarena",
-                            split=split,
-                            documents=documents,
-                        ))
+                        cases.append(
+                            _build_dataset_case(
+                                case_id=f"memoryarena-{split}-{row_id}-{qa_idx}",
+                                query=str(question),
+                                expected_ids=expected_ids,
+                                top_k=5,
+                                source="memoryarena",
+                                split=split,
+                                documents=documents,
+                            )
+                        )
 
     return cases
 
@@ -273,22 +316,62 @@ def build_scenario(
 
     # ---- 图记忆 (gr-001 ~ gr-008) ----
     graph_items = [
-        ("gr-001", "RAG 系统由检索器、重排器和生成器三部分组成", 0.8,
-         ["rag", "架构"], MemoryType.SEMANTIC),
-        ("gr-002", "向量检索使用 HNSW 索引实现近似最近邻搜索", 0.7,
-         ["向量数据库", "检索"], MemoryType.SEMANTIC),
-        ("gr-003", "Agent 记忆分为情景记忆、语义记忆和程序性记忆", 0.9,
-         ["记忆", "架构"], MemoryType.SEMANTIC),
-        ("gr-004", "知识图谱通过实体-关系-实体三元组存储结构化知识", 0.8,
-         ["知识图谱", "架构"], MemoryType.SEMANTIC),
-        ("gr-005", "记忆巩固是将短期情景转化为长期语义知识的过程", 0.9,
-         ["记忆", "巩固"], MemoryType.SEMANTIC),
-        ("gr-006", "MemGPT 使用虚拟上下文管理实现无限对话记忆", 0.8,
-         ["memgpt", "记忆"], MemoryType.SEMANTIC),
-        ("gr-007", "遗忘曲线遵循幂律衰减模型", 0.6,
-         ["记忆", "遗忘"], MemoryType.SEMANTIC),
-        ("gr-008", "多轮对话中的上下文压缩策略", 0.5,
-         ["对话", "压缩"], MemoryType.PROCEDURAL),
+        (
+            "gr-001",
+            "RAG 系统由检索器、重排器和生成器三部分组成",
+            0.8,
+            ["rag", "架构"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-002",
+            "向量检索使用 HNSW 索引实现近似最近邻搜索",
+            0.7,
+            ["向量数据库", "检索"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-003",
+            "Agent 记忆分为情景记忆、语义记忆和程序性记忆",
+            0.9,
+            ["记忆", "架构"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-004",
+            "知识图谱通过实体-关系-实体三元组存储结构化知识",
+            0.8,
+            ["知识图谱", "架构"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-005",
+            "记忆巩固是将短期情景转化为长期语义知识的过程",
+            0.9,
+            ["记忆", "巩固"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-006",
+            "MemGPT 使用虚拟上下文管理实现无限对话记忆",
+            0.8,
+            ["memgpt", "记忆"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-007",
+            "遗忘曲线遵循幂律衰减模型",
+            0.6,
+            ["记忆", "遗忘"],
+            MemoryType.SEMANTIC,
+        ),
+        (
+            "gr-008",
+            "多轮对话中的上下文压缩策略",
+            0.5,
+            ["对话", "压缩"],
+            MemoryType.PROCEDURAL,
+        ),
     ]
     for i, (mid, content, importance, tags, mtype) in enumerate(graph_items):
         item = MemoryItem(
@@ -392,12 +475,10 @@ def compute_metrics(
         actual_ids = [item.id for item, _score, _store in results]
         actual_stores = [store for _item, _score, store in results]
 
-        # hit@k
         for k in ks:
             if expected & set(actual_ids[:k]):
                 hits[k] += 1
 
-        # MRR: 第一个命中 expected 的排名
         rr = 0.0
         for rank, aid in enumerate(actual_ids, start=1):
             if aid in expected:
@@ -405,17 +486,18 @@ def compute_metrics(
                 break
         reciprocal_ranks.append(rr)
 
-        # store 分布（top-5）
         for s in actual_stores[:5]:
             store_counter[s] += 1
 
-        per_query.append({
-            "query": q["query"],
-            "expected_ids": q["expected_ids"],
-            "actual_ids": actual_ids,
-            "reciprocal_rank": rr,
-            **{f"hit@{k}": bool(expected & set(actual_ids[:k])) for k in ks},
-        })
+        per_query.append(
+            {
+                "query": q["query"],
+                "expected_ids": q["expected_ids"],
+                "actual_ids": actual_ids,
+                "reciprocal_rank": rr,
+                **{f"hit@{k}": bool(expected & set(actual_ids[:k])) for k in ks},
+            }
+        )
 
     n = len(queries)
     total_store_hits = sum(store_counter.values()) or 1
@@ -436,9 +518,7 @@ def compute_metrics(
 # ---------------------------------------------------------------------------
 
 
-def check_roundtrip(
-    manager: MemoryManager, queries: list[dict], tmp_dir: str
-) -> bool:
+def check_roundtrip(manager: MemoryManager, queries: list[dict], tmp_dir: str) -> bool:
     """保存快照 → 从快照恢复新 manager → 对比 top-3 结果 ID 是否一致。"""
     snap_path = os.path.join(tmp_dir, "roundtrip_snap")
     manager.save_snapshot(snap_path)
@@ -560,10 +640,12 @@ def _write_report_md(
     ]
     for store, ratio in metrics["store_distribution"].items():
         lines.append(f"| {store} | {ratio:.3f} |")
-    lines.extend([
-        "",
-        f"快照 roundtrip 一致性: {'PASS' if roundtrip_ok else 'FAIL'}",
-    ])
+    lines.extend(
+        [
+            "",
+            f"快照 roundtrip 一致性: {'PASS' if roundtrip_ok else 'FAIL'}",
+        ]
+    )
     path = os.path.join(out_dir, "report.md")
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
@@ -595,7 +677,9 @@ def compute_coverage_matrix(cases: list[dict[str, Any]]) -> dict[str, bool]:
     return {
         "formation": "Test_Time_Learning" in splits or "formation" in splits,
         "evolution": "Conflict_Resolution" in splits or "evolution" in splits,
-        "retrieval": bool({"locomo", "longmemeval", "ama-bench", "memoryarena"} & sources),
+        "retrieval": bool(
+            {"locomo", "longmemeval", "ama-bench", "memoryarena"} & sources
+        ),
         "memory_in_use": bool({"ama-bench", "memoryarena", "longmemeval"} & sources),
     }
 
@@ -606,7 +690,7 @@ def run_dataset_benchmark(dataset_dir: str, out_dir: str) -> dict[str, Any]:
     if not cases:
         raise FileNotFoundError(f"未在 {dataset_dir} 中找到可用的 benchmark case")
 
-    summary_rows: list[dict[str, Any]] = []
+    results_per_query: list[list[tuple[MemoryItem, float, str]]] = []
     traces: list[dict[str, Any]] = []
     for case in cases:
         manager = MemoryManager(
@@ -658,42 +742,26 @@ def run_dataset_benchmark(dataset_dir: str, out_dir: str) -> dict[str, Any]:
                     )
                 )
 
-        traced = manager.recall_with_trace(case["query"], top_k=int(case.get("top_k", 5)))
-        results = traced["results"]
-        result_ids = [item.id for item, _score, _store in results]
-        expected_ids = {str(item) for item in case.get("expected_ids", [])}
-        hit = bool(expected_ids & set(result_ids))
-        summary_rows.append({
-            "id": case["id"],
-            "query": case["query"],
-            "source": case["source"],
-            "split": case["split"],
-            "expected_ids": case.get("expected_ids", []),
-            "result_ids": result_ids,
-            "hit": hit,
-        })
+        traced = manager.recall_with_trace(
+            case["query"], top_k=int(case.get("top_k", 5))
+        )
+        results_per_query.append(traced["results"])
         traces.append(traced["trace"])
 
-    hits = sum(1 for row in summary_rows if row["hit"])
-    metrics = {
-        "hit@1": hits / len(summary_rows),
-        "hit@3": hits / len(summary_rows),
-        "hit@5": hits / len(summary_rows),
-        "mrr": hits / len(summary_rows),
-        "store_distribution": {},
-        "per_query": summary_rows,
-    }
+    metrics = compute_metrics(cases, results_per_query)
     coverage = compute_coverage_matrix(cases)
     retrieval_backend = {
         "stores": ["episodic", "graph"],
-        "semantic_vector_store_enabled": any(case.get("source") == "memoryarena" for case in cases),
+        "semantic_vector_store_enabled": any(
+            case.get("source") == "memoryarena" for case in cases
+        ),
     }
     _write_report_json(metrics, True, out_dir, retrieval_backend=retrieval_backend)
     _write_report_md(metrics, True, out_dir, retrieval_backend=retrieval_backend)
     _write_cases_jsonl(metrics, traces, out_dir)
     summary = {
         "benchmark_name": "dataset-benchmark",
-        "case_count": len(summary_rows),
+        "case_count": len(cases),
         "metrics": {k: metrics[k] for k in ["hit@1", "hit@3", "hit@5", "mrr"]},
         "coverage": coverage,
         "retrieval_backend": retrieval_backend,
@@ -711,7 +779,10 @@ def run_evaluation(out_dir: str) -> dict:
     fm_manager, events, expected_writes = build_formation_scenario(seed=42)
     actual_writes: set[str] = set()
     for ev in events:
-        if ev["importance"] >= _IMPORTANCE_THRESHOLD and len(ev["content"]) >= _CONTENT_MIN_LEN:
+        if (
+            ev["importance"] >= _IMPORTANCE_THRESHOLD
+            and len(ev["content"]) >= _CONTENT_MIN_LEN
+        ):
             fm_manager.remember(
                 content=ev["content"],
                 importance=ev["importance"],
@@ -813,27 +884,78 @@ def build_formation_scenario(
     manager.register_store("episodic", ep_store, default=True)
 
     events = [
-        {"id": "f-001", "content": "用户偏好：不喜欢冗长回复", "importance": 0.90, "tags": ["偏好"]},
+        {
+            "id": "f-001",
+            "content": "用户偏好：不喜欢冗长回复",
+            "importance": 0.90,
+            "tags": ["偏好"],
+        },
         {"id": "f-002", "content": "嗯", "importance": 0.10, "tags": []},
-        {"id": "f-003", "content": "用户工作地点是上海", "importance": 0.85, "tags": ["偏好", "地点"]},
+        {
+            "id": "f-003",
+            "content": "用户工作地点是上海",
+            "importance": 0.85,
+            "tags": ["偏好", "地点"],
+        },
         {"id": "f-004", "content": "好的", "importance": 0.05, "tags": []},
-        {"id": "f-005", "content": "用户擅长 Python，不熟悉 Rust", "importance": 0.80, "tags": ["技能"]},
-        {"id": "f-006", "content": "讨论了 RAG 检索管道的配置方法", "importance": 0.70, "tags": ["rag"]},
-        {"id": "f-007", "content": "用户说明天有会议", "importance": 0.45, "tags": ["日程"]},
-        {"id": "f-008", "content": "用户要求回复使用中文", "importance": 0.75, "tags": ["偏好"]},
+        {
+            "id": "f-005",
+            "content": "用户擅长 Python，不熟悉 Rust",
+            "importance": 0.80,
+            "tags": ["技能"],
+        },
+        {
+            "id": "f-006",
+            "content": "讨论了 RAG 检索管道的配置方法",
+            "importance": 0.70,
+            "tags": ["rag"],
+        },
+        {
+            "id": "f-007",
+            "content": "用户说明天有会议",
+            "importance": 0.45,
+            "tags": ["日程"],
+        },
+        {
+            "id": "f-008",
+            "content": "用户要求回复使用中文",
+            "importance": 0.75,
+            "tags": ["偏好"],
+        },
         {"id": "f-009", "content": "哦", "importance": 0.08, "tags": []},
-        {"id": "f-010", "content": "提到 Agent 记忆的分层架构设计原则", "importance": 0.88, "tags": ["架构"]},
+        {
+            "id": "f-010",
+            "content": "提到 Agent 记忆的分层架构设计原则",
+            "importance": 0.88,
+            "tags": ["架构"],
+        },
         {"id": "f-011", "content": "用户不确定", "importance": 0.30, "tags": []},
-        {"id": "f-012", "content": "确认了向量数据库选型为 ChromaDB", "importance": 0.72, "tags": ["工具"]},
+        {
+            "id": "f-012",
+            "content": "确认了向量数据库选型为 ChromaDB",
+            "importance": 0.72,
+            "tags": ["工具"],
+        },
         {"id": "f-013", "content": "嗯嗯", "importance": 0.12, "tags": []},
-        {"id": "f-014", "content": "用户偏好暗色主题 UI", "importance": 0.65, "tags": ["偏好"]},
-        {"id": "f-015", "content": "讨论了 LRU 淘汰策略的适用场景", "importance": 0.68, "tags": ["架构"]},
+        {
+            "id": "f-014",
+            "content": "用户偏好暗色主题 UI",
+            "importance": 0.65,
+            "tags": ["偏好"],
+        },
+        {
+            "id": "f-015",
+            "content": "讨论了 LRU 淘汰策略的适用场景",
+            "importance": 0.68,
+            "tags": ["架构"],
+        },
     ]
 
     expected_writes = {
         e["id"]
         for e in events
-        if e["importance"] >= _IMPORTANCE_THRESHOLD and len(e["content"]) >= _CONTENT_MIN_LEN
+        if e["importance"] >= _IMPORTANCE_THRESHOLD
+        and len(e["content"]) >= _CONTENT_MIN_LEN
     }
     return manager, events, expected_writes
 
@@ -900,11 +1022,19 @@ def build_evolution_scenario(
         # 冲突更新：工作地点变更
         {"type": "update", "target_id": "ev-m001", "new_content": "用户工作地点是上海"},
         # 冲突更新：技能更新
-        {"type": "update", "target_id": "ev-m002", "new_content": "用户擅长 Python 和 Java"},
+        {
+            "type": "update",
+            "target_id": "ev-m002",
+            "new_content": "用户擅长 Python 和 Java",
+        },
         # 主动遗忘：日程信息过期
         {"type": "forget", "target_id": "ev-m003"},
         # 冲突更新：工具选型变更
-        {"type": "update", "target_id": "ev-m005", "new_content": "向量数据库选型为 ChromaDB"},
+        {
+            "type": "update",
+            "target_id": "ev-m005",
+            "new_content": "向量数据库选型为 ChromaDB",
+        },
     ]
 
     expected_state: dict[str, str | None] = {
@@ -930,9 +1060,7 @@ def compute_evolution_metrics(
     should_forget = {k for k, v in expected_state.items() if v is None}
 
     if should_survive:
-        correct = sum(
-            1 for k, v in should_survive.items() if actual_state.get(k) == v
-        )
+        correct = sum(1 for k, v in should_survive.items() if actual_state.get(k) == v)
         evolution_accuracy = correct / len(should_survive)
     else:
         evolution_accuracy = 1.0
@@ -951,8 +1079,11 @@ def compute_evolution_metrics(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Agent Memory 评测")
-    parser.add_argument("--out", default="docs/memory-eval/latest",
-                        help="输出目录 (默认: docs/memory-eval/latest)")
+    parser.add_argument(
+        "--out",
+        default="docs/memory-eval/latest",
+        help="输出目录 (默认: docs/memory-eval/latest)",
+    )
     args = parser.parse_args()
     run_evaluation(args.out)
 

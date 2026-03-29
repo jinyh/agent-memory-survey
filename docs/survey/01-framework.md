@@ -93,6 +93,16 @@ Skill 不是 tool（外部能力接口），也不是普通 fact memory。它是
 
 Agentic thinking 把问题域扩大到了"如何行动"，而 lifecycle 继续回答"memory 这层如何支撑行动"。静态分类保留为辅助视角。
 
+## 本章主要证据来源
+
+- `paper`：`Memory in the Age of AI Agents: A Survey`
+- `blog`：用于补充 agentic thinking、工程实现与方法论争议
+- `DeepResearch`：仅作线索
+
+## 为什么生命周期比静态分类更有效
+
+生命周期框架能直接描述写入、更新、读取和治理四个接口，因此比静态分类更适合解释新工作。
+
 ## 关键概念与代表引用
 
 - 生命周期框架

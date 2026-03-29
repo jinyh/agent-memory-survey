@@ -5,11 +5,10 @@ from pathlib import Path
 
 from src.references import (
     build_reference_library,
-    extract_deepresearch_entries,
     resolve_download_url,
     write_reference_indexes,
 )
-
+from src.references.indexing import extract_deepresearch_entries
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -46,45 +45,29 @@ def test_quality_assessment_is_populated_for_papers_and_blogs():
 def test_build_reference_library_enriches_downloaded_paper_titles():
     library = build_reference_library(REPO_ROOT)
 
-    assert any(
-        record.title.startswith("TeleMem:")
-        for record in library.papers
-    )
-    assert any(
-        record.title.startswith("MemoryArena:")
-        for record in library.papers
-    )
-    assert any(
-        "MemoryAgentBench" in record.title
-        for record in library.papers
-    )
-    assert any(
-        record.title.startswith("AMA-Bench:")
-        for record in library.papers
-    )
-    assert any(
-        record.title.startswith("Memoria:")
-        for record in library.papers
-    )
-    assert any(
-        record.title.startswith("MemSkill:")
-        for record in library.papers
-    )
-    assert any(
-        record.title.startswith("BMAM:")
-        for record in library.papers
-    )
+    assert any(record.title.startswith("TeleMem:") for record in library.papers)
+    assert any(record.title.startswith("MemoryArena:") for record in library.papers)
+    assert any("MemoryAgentBench" in record.title for record in library.papers)
+    assert any(record.title.startswith("AMA-Bench:") for record in library.papers)
+    assert any(record.title.startswith("Memoria:") for record in library.papers)
+    assert any(record.title.startswith("MemSkill:") for record in library.papers)
+    assert any(record.title.startswith("BMAM:") for record in library.papers)
 
 
 def test_extract_deepresearch_entries_tracks_download_status():
-    report_path = REPO_ROOT / "ref/DeepResearch/多模态Agent空间推理记忆研究.md"
+    report_path = next(
+        (
+            path
+            for path in sorted((REPO_ROOT / "ref/DeepResearch").glob("*.md"))
+            if "记忆研究" in path.name
+        ),
+        REPO_ROOT / "ref/DeepResearch/多模态Agent空间推理记忆研究.md",
+    )
 
     entries = extract_deepresearch_entries(report_path, REPO_ROOT)
 
     assert len(entries) >= 20
-    telemem = next(
-        entry for entry in entries if "TeleMem" in entry.title
-    )
+    telemem = next(entry for entry in entries if "TeleMem" in entry.title)
     assert telemem.category in {"paper", "dataset", "benchmark", "other"}
     assert telemem.status in {"downloaded", "missing"}
     assert telemem.source_url
@@ -93,7 +76,14 @@ def test_extract_deepresearch_entries_tracks_download_status():
 def test_write_reference_indexes_creates_expected_outputs(tmp_path: Path):
     library = build_reference_library(REPO_ROOT)
     entries = extract_deepresearch_entries(
-        REPO_ROOT / "ref/DeepResearch/多模态Agent空间推理记忆研究.md",
+        next(
+            (
+                path
+                for path in sorted((REPO_ROOT / "ref/DeepResearch").glob("*.md"))
+                if "记忆研究" in path.name
+            ),
+            REPO_ROOT / "ref/DeepResearch/多模态Agent空间推理记忆研究.md",
+        ),
         REPO_ROOT,
     )
 

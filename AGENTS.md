@@ -35,11 +35,11 @@
 ## 开发命令
 ```bash
 uv run --active --extra dev pytest tests/              # 运行测试
+uv run --active --extra dev pytest tests/test_memory.py -q  # 记忆层回归
 uv run --active python -m src.memory.agent             # 运行 Agent 示例
 uv run --active python -m src.memory.evaluation --out docs/memory-eval/latest  # 全生命周期评测
 uv run --active python -m src.references               # 重建资料索引并补齐开放论文
-uv run --active --extra dev ruff check src/ tests/     # 代码检查
-uv run --active --extra dev ruff format src/ tests/    # 代码格式化
+uv run --active --extra dev ruff check .               # 代码检查
 ```
 
 ## 资料维护约定
@@ -56,6 +56,8 @@ uv run --active --extra dev ruff format src/ tests/    # 代码格式化
 - 代表引用优先 `paper`；`blog` 只能做工程补充；`DeepResearch` 只能做线索。
 - 如果正文出现缩写或系统名并承担论证功能，首次必须写出明确作品名，不允许只用泛称或缩写承担主判断。
 - `docs/survey/survey-map.md` 作为 survey ↔ code ↔ gap 的长期索引层维护，不替代正文。
+- `docs/ideas/` 只放轻量记录、临时洞察和候选映射；一旦形成明确研究问题、证据地图、实验规格或可直接引用的稳定判断，就升级到 `docs/plans/`。
+- `docs/plans/` 优先使用日期前缀命名；若发现无日期前缀但已属正式工件的文件，先补命名再更新索引。
 - `src/memory/evaluation.py` 的数据集适配只负责把 `ref/datasets` 归一化成 benchmark case；不要把 retrieval 数据集误写成完整 lifecycle benchmark。
 - `MemoryManager.recall()` 采用 rank 融合，不是 raw score 直排；调试检索时优先看 `recall_with_trace()`。
 - `tests/test_memory.py -q` 是本仓库最常用的记忆层回归验证命令。

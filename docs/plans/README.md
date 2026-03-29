@@ -10,7 +10,7 @@
 
 - [2026-03-26-memory-lifecycle-eval-research-brief.md](2026-03-26-memory-lifecycle-eval-research-brief.md) — 研究问题、范围与 success criteria
 - [2026-03-26-memory-lifecycle-eval-evidence-map.md](2026-03-26-memory-lifecycle-eval-evidence-map.md) — 证据地图与覆盖矩阵
-- [2026-03-26-memory-lifecycle-eval-framework.md](2026-03-26-memory-lifecycle-eval-framework.md) — 架构决策与评测框架设计
+- [2026-03-26-memory-lifecycle-eval-framework.md](../architecture/2026-03-26-memory-lifecycle-eval-framework.md) — 架构决策与评测框架设计
 - [2026-03-26-memory-lifecycle-eval-experiment-spec.md](2026-03-26-memory-lifecycle-eval-experiment-spec.md) — 实验规格与 ground truth 策略
 - [2026-03-26-memory-lifecycle-eval-evaluation-report.md](2026-03-26-memory-lifecycle-eval-evaluation-report.md) — 实验结果与证据边界
 - [2026-03-26-memory-lifecycle-eval-survey-update-note.md](2026-03-26-memory-lifecycle-eval-survey-update-note.md) — survey 回写说明
@@ -26,4 +26,5 @@
 ## 其他计划
 
 - [2026-03-26-memory-core-v1.md](2026-03-26-memory-core-v1.md) — 最小记忆原型规划
-- [survey-evidence-restructure.md](survey-evidence-restructure.md) — survey 证据重构计划
+- [2026-03-26-survey-evidence-restructure.md](2026-03-26-survey-evidence-restructure.md) — survey 证据重构计划
+- [2026-03-28-memory-lifecycle-closed-loop-from-benchmarks.md](2026-03-28-memory-lifecycle-closed-loop-from-benchmarks.md) — 用样本卡片看最小生命周期闭环

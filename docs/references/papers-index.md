@@ -1,6 +1,6 @@
 # Papers Index
 
-- count: 31
+- count: 36
 
 ## Evaluating Very Long-Term Conversational Memory of LLM Agents
 - source_type: paper
@@ -57,6 +57,17 @@
 - tags: ['agent-memory', 'benchmark', 'agent-eval']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
+## EverMemOS: A Self-Organizing Memory Operating System for Structured Long-Horizon Reasoning
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2601.02163.pdf
+- identifier: arXiv:2601.02163
+- paper_type: system
+- lifecycle_stages: ['formation', 'evolution', 'retrieval']
+- memory_functions: ['episodic', 'semantic', 'working']
+- tags: ['agent-memory', 'memory-os', 'long-horizon']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为 systems 章节的强补充证据。'}
+
 ## Seeing, Listening, Remembering, and Reasoning: A Multimodal Agent with Long-Term Memory
 - source_type: paper
 - year: 2025
@@ -90,6 +101,28 @@
 - tags: ['agent-memory']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
+## MAGMA: A Multi-Graph based Agentic Memory Architecture for AI Agents
+- source_type: paper
+- year: 2026
+- file_path: ref/paper/2601.03236.pdf
+- identifier: arXiv:2601.03236
+- paper_type: system
+- lifecycle_stages: ['retrieval']
+- memory_functions: ['semantic']
+- tags: ['agent-memory', 'graph-memory']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为图记忆系统路线的补充证据。'}
+
+## MIRIX: Multi-Agent Memory System for LLM-Based Agents
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2507.07957.pdf
+- identifier: arXiv:2507.07957
+- paper_type: framework
+- lifecycle_stages: ['formation', 'evolution', 'retrieval']
+- memory_functions: ['episodic', 'semantic', 'working', 'procedural']
+- tags: ['agent-memory', 'multi-agent', 'memory-system']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为 multi-agent memory system 的补充证据。'}
+
 ## Memoria: A Scalable Agentic Memory Framework for Personalized Conversational AI
 - source_type: paper
 - year: 2025
@@ -100,6 +133,17 @@
 - memory_functions: ['episodic', 'semantic']
 - tags: ['agent-memory', 'personalization', 'memory-service']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
+
+## WorldMM: Dynamic Multimodal Memory Agent for Long Video Reasoning
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2512.02425.pdf
+- identifier: arXiv:2512.02425
+- paper_type: system
+- lifecycle_stages: ['retrieval']
+- memory_functions: ['semantic']
+- tags: ['agent-memory', 'multimodal-memory', 'video-memory']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为多模态视频记忆补充证据。'}
 
 ## Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects
 - source_type: paper

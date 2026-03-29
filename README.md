@@ -45,10 +45,23 @@ uv sync --active --extra dev
 日常开发命令：
 
 ```bash
-uv run --active --extra dev pytest tests/
+make test
+make lint
+make docs
+make refs
+make eval
 uv run --active python -m src.memory.agent
+```
+
+等价的直接命令：
+
+```bash
+uv run --active --extra dev pytest tests/
+uv run --active --extra dev pytest tests/test_memory.py -q
+uv run --active --extra dev ruff check .
 uv run --active python -m src.memory.evaluation --out docs/memory-eval/latest
 uv run --active python -m src.references
+python scripts/check-doc-links.py
 ```
 
 ## 资料更新流程
