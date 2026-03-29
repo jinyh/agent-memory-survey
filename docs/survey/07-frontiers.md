@@ -1,7 +1,7 @@
 # Frontiers：多模态、空间记忆与安全治理
 
-> v3.1.1 | 2026-03-28
-> Changelog: 强化 MEM 作为具身多尺度状态记忆补充证据的定位，补充 compression / latency / distribution shift 边界。
+> v3.2.0 | 2026-04-27
+> Changelog: 补充 Vision to Geometry 作为空间记忆主证据；补充 See and Remember 作为 multimodal web traversal 主证据；更新关键概念、代表工作定位与证据来源。
 
 ## 本章核心判断
 
@@ -41,6 +41,16 @@ Agent Memory 的 frontier 已经不再只是“让文本 chatbot 记住更久”
   主代表引用：`RenderMem: Rendering as Spatial Memory Retrieval`
   证据类型：`主证据`
   边界说明：支撑“渲染即检索”的世界状态路线，不支撑治理与删除问题已解决。
+- geometric grounding for spatial memory
+  本文语义：空间记忆不只是场景 caption，而是带 FoV / 几何先验的结构化空间状态，可支持 sequential embodied reasoning。
+  主代表引用：`Vision to Geometry: 3D Spatial Memory for Sequential Embodied MLLM Reasoning and Exploration`
+  证据类型：`主证据`
+  边界说明：支撑 3D spatial memory 需要几何 grounding 而非仅靠视觉描述；不支撑 sequential benchmark 口径已统一，也不支撑连续任务中 revision 成本已解决。
+- multimodal web traversal memory
+  本文语义：在网页导航与 GUI 操作中，agent 需要记住跨 step 的视觉元素、界面状态与操作轨迹。
+  主代表引用：`See and Remember: A Multimodal Agent for Web Traversal`
+  证据类型：`主证据`
+  边界说明：支撑 multimodal memory 在 web agent 场景已进入系统级实现；不支撑跨任务泛化或统一评价口径已成熟。
 - auditability / deletion
   本文语义：长期 memory 必须支持来源追踪、删除和可撤销性。
   主代表引用：`Elastic memory architecture`
@@ -120,12 +130,14 @@ Frontier 章节最重要的结论不是“未来会更强”，而是：memory l
 
 - `TeleMem`：代表长期多模态 memory 开始进入系统级设计。
 - `Think3D`：代表主动 3D 探索驱动的 spatial memory 主锚点。
+- `Vision to Geometry / 3DSPMR`：代表 FoV-based 几何先验驱动的 sequential embodied spatial memory 主锚点，配有 SEER-Bench 实证。
+- `See and Remember`：代表 multimodal web traversal 场景下跨步骤视觉状态记忆的系统实现。
 - `RenderMem`：代表“渲染即检索”的世界状态记忆主锚点。
 - `MEM / M3-Agent / MemVerse / MemOCR / GSMem`：保留为补充线索，不再堆叠为本章主锚点；其中 MEM 主要补强具身任务中的多尺度状态记忆。
 - `工程治理材料`：代表安全、权限、删除与审计会成为 memory 基础设施要求。
 
 ## 本章主要证据来源
 
-- `paper`：TeleMem、Think3D、RenderMem 为主证据，MEM、M3-Agent、MemVerse、MemOCR、GSMem 作为补充线索。
+- `paper`：TeleMem、Think3D、RenderMem、Vision to Geometry、See and Remember 为主证据，MEM、M3-Agent、MemVerse、MemOCR、GSMem 作为补充线索。
 - `blog`：系统治理与 benchmark 争议中的工程讨论，仅作工程补充。
 - `综合推断`：frontier 的中心问题正在从“更长文本记忆”转向“更长期的世界状态治理”。

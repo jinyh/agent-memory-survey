@@ -1,6 +1,7 @@
 # Retrieval：记忆读取与上下文装配
 
-> v3.0 | 2026-03-26
+> v3.1.0 | 2026-04-27
+> Changelog: 补充 Zep temporal KG 与 R^3Mem reversible compression 作为新关键概念条目；更新代表工作定位与证据来源。
 
 ## 本章核心判断
 
@@ -54,6 +55,16 @@ Retrieval 不是“从库里 top-k 拿几条最相似文本”这么简单。对
   主代表引用：`Memora（论文题名 Memoria）`
   证据类型：`主证据`
   边界说明：支撑 retrieval 中 summary/profile 与 evidence 并存，不支撑泛化最优策略。
+- temporal knowledge graph retrieval
+  本文语义：用 temporally-aware KG 同时处理非结构化对话与结构化业务数据，并保留历史关系，支持跨 session 时序推理。
+  主代表引用：`Zep: A Temporal Knowledge Graph Architecture for Agent Memory`
+  证据类型：`主证据`
+  边界说明：DMR 94.8% vs 93.4%，LongMemEval +18.5% accuracy / -90% latency；支撑时间 KG 路线的量化可行性，不支撑完整 lifecycle 治理已闭环。
+- reversible compression for retention and retrieval
+  本文语义：用可逆压缩把 retention（保留信息）和 retrieval（重构原始数据）作为双目标统一优化，以层次化 virtual memory tokens 编码超长历史。
+  主代表引用：`R^3Mem: Bridging Memory Retention and Retrieval via Reversible Compression`
+  证据类型：`主证据`
+  边界说明：支撑 retention/retrieval 双目标机制的可行性，在 long-context LM 和 RAG 任务上达到 SOTA；工作状态为 v1（work in progress），需等待正式出版版本。
 
 ## 读取机制的四条主线
 
@@ -161,7 +172,8 @@ Recursive Language Models 的关键贡献，是把“读取记忆”转化为“
 ## 代表工作定位
 
 - `Mem0 / LangMem`：代表主流外部检索与抽取式长期记忆。
-- `Zep / Graphiti`：代表关系和时间显式化的图检索路线。
+- `Zep / Graphiti`：代表关系和时间显式化的图检索路线；Zep 同时具备 DMR 和 LongMemEval 两个 benchmark 的量化结果（+18.5% accuracy，-90% latency），是这条路线当前实证最强的系统。
+- `R^3Mem`：代表 retention/retrieval 双目标的 reversible compression 机制路线，在 long-context LM 和 RAG 任务上达到 SOTA。
 - `Letta / MemGPT`：代表 memory management 被 agent 工具化与显式化。
 - `Recursive Language Models`：代表程序化上下文访问与递归式 retrieval。
 - `MSA`：代表把 retrieval 内化为稀疏注意力与 learned routing。
@@ -169,6 +181,6 @@ Recursive Language Models 的关键贡献，是把“读取记忆”转化为“
 
 ## 本章主要证据来源
 
-- `paper`：Mem0、Recursive Language Models、MSA、图记忆综述、Memoria、Letta/MemGPT 相关工作。
+- `paper`：Mem0、Recursive Language Models、MSA、图记忆综述、Memoria、Letta/MemGPT、Zep、R^3Mem 相关工作。
 - `blog`：Elastic 的 hybrid retrieval 实践、benchmark 对比文章。
 - `综合推断`：retrieval 的核心是“memory in use”，而不是单次 top-k 命中率。

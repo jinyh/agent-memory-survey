@@ -376,6 +376,39 @@
 - tags: ['agent-memory']
 - quality: {'evidence_strength': 'high', 'method_rigor': 'medium', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '需结合正式出版版本与代码仓库确认最终实验设置。', 'recommended_use': '可作为综述主证据与系统设计参考。'}
 
+## A-MEM: Agentic Memory for LLM Agents
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2502.12110.pdf
+- identifier: arXiv:2502.12110
+- paper_type: system
+- lifecycle_stages: ['formation', 'evolution']
+- memory_functions: ['episodic', 'semantic']
+- tags: ['agent-memory', 'memory-organization', 'zettelkasten']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'high', 'reproducibility': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': 'v11，已充分迭代，社区认可度高。', 'recommended_use': '可作为 02-formation 的主证据，结构化写入 + 写入触发演化。'}
+
+## Zep: A Temporal Knowledge Graph Architecture for Agent Memory
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2501.13956.pdf
+- identifier: arXiv:2501.13956
+- paper_type: system
+- lifecycle_stages: ['retrieval', 'formation']
+- memory_functions: ['episodic', 'semantic']
+- tags: ['agent-memory', 'knowledge-graph', 'temporal-reasoning', 'enterprise']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'high', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '产品级系统，DMR 94.8% vs 93.4%，LongMemEval +18.5% accuracy -90% latency。', 'recommended_use': '可作为 04-retrieval 的主证据，时间 KG + 跨 session 推理 + 双 benchmark 量化结果。'}
+
+## R^3Mem: Bridging Memory Retention and Retrieval via Reversible Compression
+- source_type: paper
+- year: 2025
+- file_path: ref/paper/2502.15957.pdf
+- identifier: arXiv:2502.15957
+- paper_type: mechanism
+- lifecycle_stages: ['retrieval', 'formation']
+- memory_functions: ['working', 'semantic']
+- tags: ['agent-memory', 'compression', 'reversible-memory']
+- quality: {'evidence_strength': 'high', 'method_rigor': 'high', 'experiment_coverage': 'medium', 'reproducibility': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': 'Work in progress (v1)，需等待正式出版版本。', 'recommended_use': '可作为 04-retrieval 的主证据，retention/retrieval 双目标 reversible compression。'}
+
 ## MSA: Memory Sparse Attention for Efficient End-to-End Memory Model Scaling to 100M Tokens
 - source_type: paper
 - year: None

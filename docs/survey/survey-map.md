@@ -1,6 +1,6 @@
 # Agent Memory Survey 证据地图
 
-> v3.5.0 | 2026-03-28 — 同步 systems 章节新增的 retrieval-centric blog 基线定位，并保留 MEM 在 formation / systems / frontier 的章节映射与版本状态
+> v3.6.0 | 2026-04-27 — 完成全量论文评估（39篇），补充 A-MEM / Zep / R^3Mem 至系统映射表，并新增四档总表
 
 这份地图不是正文替代品，而是正文的索引层。它回答两个问题：
 
@@ -39,6 +39,23 @@
 | MemoryAgentBench | 低 | 低 | 低 | 高 | 低 | 中 |
 | MemoryArena | 低 | 低 | 中 | 高 | 低 | 中 |
 | AMA-Bench | 低 | 低 | 中 | 高 | 低 | 中 |
+| A-MEM | 高 | 高 | 中 | 中 | 中 | 低 |
+| Zep（新） | 中 | 中 | 高 | 高 | 高 | 低 |
+| R^3Mem | 高 | 中 | 高 | 中 | 中 | 低 |
+| Agentic Memory (AgeMem) | 高 | 高 | 高 | 中 | 高 | 低 |
+| MemSkill | 高 | 高 | 中 | 中 | 中 | 低 |
+| BMAM | 中 | 中 | 高 | 中 | 高 | 低 |
+| SYNAPSE | 中 | 中 | 高 | 中 | 中 | 中 |
+| MemOCR | 高 | 中 | 高 | 中 | 中 | 高 |
+| See and Remember | 中 | 中 | 高 | 中 | 中 | 高 |
+| RenderMem | 低 | 低 | 高 | 低 | 中 | 高 |
+| Vision to Geometry / 3DSPMR | 低 | 低 | 高 | 中 | 低 | 高 |
+| M3-Agent (Seeing/Listening) | 中 | 中 | 高 | 中 | 中 | 高 |
+| AgentOrchestra | 中 | 高 | 中 | 中 | 高 | 低 |
+| Titans | 低 | 高 | 高 | 中 | 中 | 中 |
+| MemVerse | 中 | 中 | 高 | 中 | 中 | 高 |
+| MAGMA | 中 | 中 | 高 | 中 | 高 | 低 |
+| MIRIX | 中 | 中 | 高 | 中 | 高 | 低 |
 
 说明：
 
