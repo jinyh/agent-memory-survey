@@ -1,6 +1,7 @@
 # Evolution：记忆演化、压缩与治理
 
-> v3.0 | 2026-03-26
+> v3.1 | 2026-03-30
+> Changelog: 新增 experience replay / 海马回放类比、持续学习与 stability-plasticity 交叉定位、缓存淘汰策略类比、meta-learning 定位。
 
 ## 本章核心判断
 
@@ -39,7 +40,7 @@
   证据类型：`主证据`
   边界说明：支撑 personalization memory 的演化边界，不承担本章核心 versioning 论证。
 - learnable memory operations
-  本文语义：巩固、修订、裁剪可以由可学习技能驱动，而非纯启发式。
+  本文语义：巩固、修订、裁剪可以由可学习技能驱动，而非纯启发式。这在本质上是一个元学习（meta-learning）问题——"学习如何记忆"，即 agent 不仅在记忆内容层面学习，还在记忆操作策略层面学习。MemSkill 和 MemAgent 的贡献正在于此：它们不只是优化某次检索或某条记忆的质量，而是优化记忆系统本身的运作方式。与经典 meta-learning（MAML、Reptile 等）的区别在于：后者通过梯度方法学习初始化参数，前者通过 LLM 生成和评估学习显式策略——但"学习如何学习"的结构是相同的。
   主代表引用：`MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents`
   证据类型：`主证据`
   边界说明：支撑 evolution 可学习化，不支撑大规模部署稳定性已验证。
@@ -78,6 +79,8 @@
 
 这一步的难点在于避免过早抽象。系统若太快把局部经历提升为稳定知识，就会制造高置信度错误。
 
+**与 experience replay 的类比**：强化学习中的 experience replay buffer 是"从过去经验中有策略地采样和回放"的经典机制。Agent memory 的 consolidation 可以被视为"语义层的 experience replay"——两者共享同一个核心洞察：不是存储全部历史，而是有选择地从历史中提取模式并回放到当前决策中。区别在于 RL replay 采样的是 (state, action, reward) 元组并用于梯度更新，而 agent memory consolidation 采样的是 episodic 经验并用 LLM 生成摘要或策略。神经科学中的海马回放（hippocampal replay）也指向类似机制：睡眠期间对白天经验的选择性重放被认为是记忆巩固的关键过程，与 agent memory 的离线 consolidation 有结构对应。
+
 ### 2. 更新：覆盖、版本化还是并存
 
 更新是 memory layer 最容易被低估的决策。面对新证据，系统至少有三种选择：
@@ -109,7 +112,15 @@ MSA 的贡献之一，是说明 latent route + sparse generation 可以把极大
 - `summarized away`：被压缩成更高层表征，但仍可追溯。
 - `revoked/deleted`：因隐私、权限或错误而被明确移除。
 
-多数论文对这部分讨论还不够，反而是工程 blog 和产品实践更早暴露问题，例如权限隔离、删除权、审计链、租户隔离、记忆投毒与跨用户污染。这说明 evolution 迟早会从“模型问题”变成“系统治理问题”。
+多数论文对这部分讨论还不够，反而是工程 blog 和产品实践更早暴露问题，例如权限隔离、删除权、审计链、租户隔离、记忆投毒与跨用户污染。这说明 evolution 迟早会从”模型问题”变成”系统治理问题”。
+
+### 交叉定位：持续学习与缓存淘汰
+
+Agent memory 的 evolution 机制与两个成熟领域有深层结构对应，值得明确。
+
+**持续学习（continual learning）与 stability-plasticity 困境**：持续学习领域的核心问题是灾难性遗忘（catastrophic forgetting）——模型在学习新任务时丢失旧任务的能力，其根源是 stability-plasticity tradeoff。Agent memory 的 evolution 面对的是同一个困境的外化版本：新记忆不断写入时，如何避免覆盖或稀释仍然有用的旧记忆。持续学习的经典策略——replay（回放旧样本）、regularization（约束参数变动）、architectural isolation（为不同任务分配不同参数）——在 agent memory 中都有对应物：consolidation 是语义层的 replay，version semantics 是显式的 regularization（保留旧边界而非覆盖），belief/evidence 分层是 architectural isolation 的外部化实现。但关键差异在于：持续学习处理的是参数空间的连续优化，agent memory 处理的是符号/文本空间的离散更新——后者可以做到精确的版本回溯和选择性删除，这是参数空间做不到的。
+
+**缓存淘汰策略（cache eviction）类比**：Agent memory 的遗忘和检索预算问题在形式上与 cache replacement policy 高度同构——都是在有限资源（token budget / cache size）下决定保留什么、淘汰什么。经典策略（LRU 按最近访问、LFU 按访问频率、ARC 自适应平衡两者）提供了一个有用的分析框架。当前 agent memory 系统中的 recency decay 本质上是 LRU，importance scoring 本质上是 LFU 的变体。但 agent memory 的淘汰决策需要语义感知——一条低频但关键的用户偏好不应因为”最近没被访问”就被淘汰——这是纯频率/时间策略无法处理的。这也解释了为什么 Hindsight 等工作要把 evidence 和 belief 分层：不同语义类别的记忆需要不同的淘汰策略，而不是统一的 LRU/LFU。
 
 ## 当前方法的主要缺口
 

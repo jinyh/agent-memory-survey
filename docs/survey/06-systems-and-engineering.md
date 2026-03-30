@@ -1,7 +1,7 @@
 # Systems And Engineering：系统谱系与工程落地
 
-> v3.1.0 | 2026-03-28
-> Changelog: 新增工程 blog 作为 retrieval-centric baseline 的价值与边界分析；保留 MEM 作为具身多尺度 memory system 的工程启发，并补充 active state / archive 分层与 latency 约束的关联。
+> v3.2.0 | 2026-03-30
+> Changelog: 新增 MANN/NTM 历史前身定位；新增多智能体记忆（共享/隔离/一致性/ToM）小节。
 
 ## 本章核心判断
 
@@ -49,6 +49,12 @@
   主代表引用：`BMAM: Brain-inspired Multi-Agent Memory Framework`
   证据类型：`工程补充`
   边界说明：支撑 brain-inspired architecture 作为补充路线，不承担本章最核心主线。
+
+## 历史前身：Memory-Augmented Neural Networks
+
+当前 agent memory 系统并非凭空出现。2014-2016 年间，Neural Turing Machine（NTM）和 Differentiable Neural Computer（DNC）开创了"让神经网络拥有可读写外部记忆"的研究方向。它们的核心思想——用可微的 attention 机制实现对外部记忆矩阵的寻址、读取和写入——与今天的 agent memory 系统在动机上一脉相承。
+
+但两代系统之间存在结构性断裂：NTM/DNC 的记忆是连续向量空间中的低维矩阵，通过端到端梯度训练；当前 agent memory 系统的记忆是离散的自然语言文本或结构化知识，通过 LLM 生成和检索操作。这个断裂不是技术退步，而是因为 LLM agent 的推理引擎本身已经足够强大，不需要在参数空间中学习记忆操作——用自然语言作为记忆表示反而带来了可解释性、可编辑性和可审计性的优势。MSA 的 sparse attention 路线可以被视为对 NTM 传统的部分回归：它让模型内部重新承担一部分 memory function，但规模和机制已经与 NTM 的小矩阵完全不同。
 
 ## 一条粗略但有用的系统谱系
 
@@ -135,6 +141,18 @@ Elastic 的实践说明，memory 很快会碰到 identity-aware retrieval、tena
 ### 3. latency、token 与可更新性是三角关系
 
 外部检索越丰富，推理链越长，解释性越强，通常也意味着更高延迟和更复杂的同步成本。相反，极简记忆方案速度快，但对时间性、版本化和复杂任务支持弱。系统设计本质上是在这三者间找平衡。
+
+## 多智能体记忆：共享、隔离与一致性
+
+随着多 agent 协作成为主流范式，memory 系统面临的一个新维度是：多个 agent 之间的记忆如何共享、同步和隔离。当前 survey 覆盖的工作中，AgentOrchestra（TEA 协议）、MIRIX 和 MAGMA 涉及这个方向，但系统性讨论仍然不足。
+
+多智能体记忆的核心问题可以归纳为三个：
+
+1. **共享 vs. 隔离**：哪些记忆应该跨 agent 可见（共享的任务目标、环境观察），哪些应该隔离（agent 的内部 belief、策略偏好）。AgentOrchestra 通过协议层定义了共享边界，但更细粒度的权限模型仍未成熟。
+2. **一致性保证**：多个 agent 同时更新同一条记忆时，如何处理冲突？这在形式上类似分布式系统的一致性问题——强一致性代价高但安全，最终一致性更灵活但可能导致 agent 间 belief 分歧。当前没有工作系统性地处理这个问题。
+3. **心智理论（Theory of Mind）的工程化**：一个 agent 不仅需要自己的记忆，还需要对其他 agent "知道什么"和"相信什么"建模。这在认知科学中对应 Theory of Mind，在工程上意味着维护他人 belief 的近似表示。当前 agent memory 系统几乎完全是单 agent 视角，尚未系统性地处理这个问题。
+
+多智能体记忆的证据目前处于中低水平：有少量系统级探索，但缺少独立的 benchmark 和可对比的实验。随着多 agent 框架的普及，这很可能成为下一个需要系统性回答的 memory 问题。
 
 ## 对本仓库原型的启发
 
