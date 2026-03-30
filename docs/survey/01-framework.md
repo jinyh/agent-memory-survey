@@ -1,6 +1,6 @@
 # Agent Memory 统一研究框架
 
-> v3.2 | 2026-03-27
+> v3.4 | 2026-03-30
 
 ## 问题的迁移：从"想得更久"到"为了行动而想"
 
@@ -91,7 +91,66 @@ Skill 不是 tool（外部能力接口），也不是普通 fact memory。它是
 - 它不是整个 agent system 的总框架。
 - 它是 memory layer 的内部分析框架。
 
-Agentic thinking 把问题域扩大到了"如何行动"，而 lifecycle 继续回答"memory 这层如何支撑行动"。静态分类保留为辅助视角。
+Agentic thinking 把问题域扩大到了"如何行动"，而 lifecycle 继续回答"memory 这层如何支撑行动"。静态分类保留为辅助视角
+
+## 记忆类型的操作性定义
+
+episodic、semantic、procedural、working 这四个标签在后续各章反复出现。本节统一定义它们在 agent 系统中的操作含义。需要特别说明的是：这些术语来自认知科学，但其原始含义在移植到 agent 系统时发生了实质性的语义位移。本 survey 使用的是适配后的含义，与认知科学教材中的定义并不完全对应。
+
+| 类型 | 认知科学原型 | Agent 系统中的操作含义 | lifecycle 主要阶段 |
+| --- | --- | --- | --- |
+| Episodic | 有时空标记的自传式事件，可被重新体验（re-experiencing） | 带 provenance（时间戳、主体、上下文）的观察记录；不要求可重新体验，要求可追溯；是写入长期层前最原始的事件形态 | formation（主写入期）、retrieval（时序查询） |
+| Semantic | 去语境化的通用知识与概念，不含时空锚点 | 从多次 episodic 巩固而来的稳定偏好、事实、用户属性；被窄化为可提取的结构化事实，不包含 LLM 参数中的百科知识 | evolution（巩固产物）、retrieval（稳定事实查询） |
+| Procedural | 隐性的操作技能（如骑车、打字），无法直接言说 | 显式的 skill、workflow、策略模板；与认知科学原型相反，agent 的 procedural 是可序列化、可载入、可更新的显式结构 | evolution（从 episodic 巩固或先验写入）、retrieval（按情境激活 skill） |
+| Working | 容量有限的短时工作空间（约 7±2 组块） | 当前任务目标、待办、上下文板等活跃态；无容量上限约束，但有明确生命周期边界（任务或会话结束后归档或清除），常驻使用无需检索 | formation（active state 分层） |
+
+### 三个关键语义位移
+
+使用这些术语时，有三处与认知科学直觉的偏差值得特别注意：
+
+1. **Procedural 从隐性到显式**：认知科学中的 procedural 是无法言说的身体技能；agent 系统中的 procedural 是可序列化、可载入、可更新的显式策略——两者共享名字，但工程含义完全不同。
+2. **Semantic 范围被窄化**：认知科学中 semantic 涵盖所有去语境化知识；agent 系统中通常只指从用户交互中抽取的偏好和事实，不包含 LLM 参数中已编码的世界知识。
+3. **类型是状态，不是永久标签**：同一条记忆可以跨类型迁移。一条 observation 先以 episodic 形式存在，巩固后变为 semantic，若形成稳定操作模式再变为 procedural。这正是 lifecycle 框架优于静态分类的核心理由——类型描述记忆在某一时刻的形态，而非其永久属性。
+
+各类型如何在 lifecycle 各阶段具体运作，详见对应章节（02-formation、03-evolution、04-retrieval）。
+
+## 知识图谱与 Agent Memory 的定位
+
+知识图谱（Knowledge Graph，KG）在 agent memory 文献中频繁出现，但两者的关系常被混淆。本节明确其定位：KG 是 agent memory 系统中的一种**存储与检索基础设施**，而非 memory 系统的替代框架。
+
+### 核心区别
+
+| 维度 | 传统知识图谱 | Agent Memory 系统 |
+| --- | --- | --- |
+| 核心关注 | 实体与关系的结构化表示 | 经验的存储、演化与检索全生命周期 |
+| 时间性 | 通常为静态快照 | 必须处理时序演化、遗忘、巩固 |
+| 记忆类型 | 单一（事实三元组） | 多类型：episodic、semantic、procedural、working |
+| 检索目标 | 精确查询（多跳推理、SPARQL） | 上下文相关性（融合 recency、importance、relevance） |
+| 数据来源 | 预定义 schema 与结构化抽取 | Agent 交互中动态产生的非结构化经验 |
+| 评价标准 | 图的完备性、查询准确率 | 记忆对 Agent 行为的实际影响 |
+
+### KG 在 Memory 系统中的价值
+
+KG 作为 memory 的结构化存储层，在以下场景有明确优势：
+
+- **关系追踪**：实体间关系需要显式建模时（人物、事件、因果链）
+- **时序推理**：跨 session 的时间依赖，Zep 和 Graphiti 的 temporal KG 是代表性实现
+- **多跳检索**：单次 embedding 查询无法覆盖的关联链
+- **溯源与解释**：需要回答「为什么」时，图的路径比向量距离更可解释
+
+本项目 `src/memory/graph_store.py` 即为此路线的实现：用 NetworkX 存储实体-关系-实体三元组，由 `manager.py` 与 vector store、episodic store 并列编排，结果通过 rank-based fusion 统一合并。
+
+### KG 不能替代 Memory 系统的理由
+
+KG 覆盖不到 memory lifecycle 的核心议题：
+
+1. **记忆巩固**：episodic 如何演化为 semantic/procedural，KG 无内建机制
+2. **遗忘与衰减**：importance 衰减和 temporal decay 策略，KG 不处理
+3. **多 store 融合**：把 graph、vector、episodic 结果按相关性统一排序的编排层，在传统 KG 中不存在
+4. **行为评测**：记忆对 agent 决策的影响评估，而非图的完备性度量
+
+**结论**：KG 是 agent memory 的重要组件（尤其在关系推理和时序追踪上），但 agent memory 的范畴远大于 KG。选择 KG 路线是 storage/retrieval 层的工程决策，不是 memory system 的架构选择。
+
 
 ## 本章主要证据来源
 
