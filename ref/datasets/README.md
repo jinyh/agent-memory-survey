@@ -21,6 +21,14 @@
 | DMR（Deep Memory Retrieval） | **非独立数据集** | Zep（arXiv:2501.13956）引用的 MemGPT 内部评测指标，非可下载数据集；LongMemEval 已有 |
 | Think3D benchmark data | **依赖外部 benchmark** | spagent repo（zhangzaibin/spagent）的 dataset/ 目录仅含生成脚本，实际评测使用 BLINK Multi-view / MindCube / VSI-Bench 等已有外部 benchmark |
 
+## 本项目构造的评测场景
+
+| 数据集 | 路径 | 内容 | 来源 |
+|---|---|---|---|
+| **lifecycle-eval** | `lifecycle-eval/scenarios.jsonl` | 40条全生命周期评测场景（30好+10坏），覆盖 formation→evolution→retrieval→evaluation 完整链路 | 基于 LoCoMo/LongMemEval/MemoryAgentBench 真实数据适配，中文 |
+
+`lifecycle-eval` 不是独立 benchmark，是 RQ-001 框架验证用的小规模合成场景。设计文档：`docs/ideas/2026-03-29-lifecycle-eval-scenario-design.md`。
+
 ## 注意事项
 
 - M3-Bench 的原始视频文件（1020 个）通过 `web.json` 中的 `video_url` 字段外链，未本地下载。

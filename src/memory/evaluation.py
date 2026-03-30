@@ -1077,6 +1077,132 @@ def compute_evolution_metrics(
     }
 
 
+# ---------------------------------------------------------------------------
+# Lifecycle 场景加载与评测
+# ---------------------------------------------------------------------------
+
+_LIFECYCLE_SCENARIOS = Path(__file__).resolve().parents[2] / "ref" / "datasets" / "lifecycle-eval" / "scenarios.jsonl"
+
+
+def load_lifecycle_scenarios(
+    path: str | Path | None = None,
+    quality_filter: str | None = "good",
+) -> list[dict[str, Any]]:
+    """从 scenarios.jsonl 加载全生命周期评测场景。
+
+    Args:
+        path: JSONL 文件路径，默认使用仓库内置路径
+        quality_filter: "good" | "bad" | None（None=全部加载）
+
+    Returns:
+        场景列表，每条包含完整 lifecycle chain
+    """
+    p = Path(path) if path else _LIFECYCLE_SCENARIOS
+    if not p.exists():
+        raise FileNotFoundError(f"lifecycle scenarios not found: {p}")
+    scenarios: list[dict[str, Any]] = []
+    with p.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            obj = json.loads(line)
+            if quality_filter is None or obj.get("quality") == quality_filter:
+                scenarios.append(obj)
+    return scenarios
+
+
+def evaluate_lifecycle_formation(scenarios: list[dict[str, Any]]) -> dict[str, Any]:
+    """基于 lifecycle 场景评测 formation 质量。
+
+    对每条场景，检查 should_write 和 should_not_write 的 ground truth
+    是否被正确标注。当前仅作结构验证——返回场景覆盖统计，不声称区分度。
+    """
+    total = len(scenarios)
+    has_should_write = sum(
+        1 for s in scenarios
+        if s["lifecycle"]["formation"]["ground_truth"]["should_write"]
+    )
+    has_should_not_write = sum(
+        1 for s in scenarios
+        if s["lifecycle"]["formation"]["ground_truth"]["should_not_write"]
+    )
+    conflict_types = Counter(
+        s["lifecycle"]["evolution"]["conflict_type"] for s in scenarios
+    )
+    return {
+        "total_scenarios": total,
+        "with_should_write": has_should_write,
+        "with_should_not_write": has_should_not_write,
+        "conflict_type_distribution": dict(conflict_types),
+        "note": "结构验证：确认场景覆盖度，不评测模型写入决策的区分度",
+    }
+
+
+def evaluate_lifecycle_evolution(scenarios: list[dict[str, Any]]) -> dict[str, Any]:
+    """基于 lifecycle 场景评测 evolution 正确性。
+
+    统计 expected_state 中的 forget/replace/extend 覆盖情况。
+    当前仅作结构验证。
+    """
+    total = len(scenarios)
+    forget_count = sum(
+        1 for s in scenarios
+        if any(v is None for v in s["lifecycle"]["evolution"]["expected_state"].values())
+    )
+    extend_count = sum(
+        1 for s in scenarios if s["lifecycle"]["evolution"]["conflict_type"] == "extend"
+    )
+    replace_count = sum(
+        1 for s in scenarios if s["lifecycle"]["evolution"]["conflict_type"] == "replace"
+    )
+    return {
+        "total_scenarios": total,
+        "with_forget": forget_count,
+        "with_extend": extend_count,
+        "with_replace": replace_count,
+        "note": "结构验证：确认 evolution 冲突类型覆盖，不评测模型冲突解决的区分度",
+    }
+
+
+def run_lifecycle_evaluation(out_dir: str, quality_filter: str | None = "good") -> dict[str, Any]:
+    """执行 lifecycle 场景评测，输出结构验证报告。"""
+    os.makedirs(out_dir, exist_ok=True)
+    scenarios = load_lifecycle_scenarios(quality_filter=quality_filter)
+
+    formation_report = evaluate_lifecycle_formation(scenarios)
+    evolution_report = evaluate_lifecycle_evolution(scenarios)
+
+    # retrieval 覆盖统计
+    retrieval_queries = [s["lifecycle"]["retrieval"]["query"] for s in scenarios]
+    retrieval_has_expected = sum(
+        1 for s in scenarios if s["lifecycle"]["retrieval"]["expected_ids"]
+    )
+
+    report = {
+        "lifecycle_eval": {
+            "scenario_count": len(scenarios),
+            "quality_filter": quality_filter,
+            "formation": formation_report,
+            "evolution": evolution_report,
+            "retrieval": {
+                "total_queries": len(retrieval_queries),
+                "with_expected_ids": retrieval_has_expected,
+            },
+            "boundary_note": "本评测仅验证场景结构完整性和覆盖度，不评测模型在这些场景上的实际区分度。"
+                             "引入模型预测写入决策后才能获得有意义的 precision/recall。",
+        }
+    }
+
+    # 写入报告
+    report_path = os.path.join(out_dir, "lifecycle-eval-report.json")
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Agent Memory 评测")
     parser.add_argument(
@@ -1084,8 +1210,16 @@ def main() -> None:
         default="docs/memory-eval/latest",
         help="输出目录 (默认: docs/memory-eval/latest)",
     )
+    parser.add_argument(
+        "--lifecycle",
+        action="store_true",
+        help="运行 lifecycle 场景评测（结构验证）",
+    )
     args = parser.parse_args()
-    run_evaluation(args.out)
+    if args.lifecycle:
+        run_lifecycle_evaluation(args.out)
+    else:
+        run_evaluation(args.out)
 
 
 if __name__ == "__main__":

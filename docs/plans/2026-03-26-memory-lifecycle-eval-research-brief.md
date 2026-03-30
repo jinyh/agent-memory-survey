@@ -24,7 +24,7 @@
 
 ## non_goals
 
-- 不构建新的大规模 benchmark 数据集（仅复用或小规模扩展现有工件）
+- 不构建新的大规模 benchmark 数据集（仅基于现有 LoCoMo/LongMemEval/MemoryAgentBench 数据构造小规模场景，用于结构验证而非性能评测）
 - 不评测多模态或空间记忆（frontier 方向，留给 RQ-002+）
 - 不解决多 agent 并发写入的一致性问题（超出当前原型边界）
 - 不改变 survey 的生命周期框架本身（RQ-001 只填评测缺口，不重构框架）
@@ -32,7 +32,7 @@
 ## success_criteria
 
 1. 能对现有 5 个主流 benchmark 给出「覆盖 / 部分覆盖 / 不覆盖」的结构化判断，依据来自论文证据而非工程叙事
-2. formation 和 evolution 至少各有 2 个可量化指标，并在 `src/memory/evaluation.py` 中有对应实现
+2. 明确定义 formation 和 evolution 各需要什么指标，以及当前 benchmark 为何无法提供这些指标——实现层面仅作结构验证（场景覆盖度、冲突类型分布），不声称区分度。`ref/datasets/lifecycle-eval/scenarios.jsonl` 提供 30 条好场景 + 10 条坏场景作为结构验证基础
 3. `evaluation-report` 产物能同时呈现三个阶段指标，结果可复现（固定 seed + ground truth）
 4. `docs/survey/05-evaluation.md` 中「benchmark 覆盖边界」一节有明确论文证据支撑，而非综合推断
 

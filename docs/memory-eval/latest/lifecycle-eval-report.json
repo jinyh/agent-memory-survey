@@ -1,0 +1,29 @@
+{
+  "lifecycle_eval": {
+    "scenario_count": 30,
+    "quality_filter": "good",
+    "formation": {
+      "total_scenarios": 30,
+      "with_should_write": 30,
+      "with_should_not_write": 30,
+      "conflict_type_distribution": {
+        "extend": 15,
+        "replace": 10,
+        "forget": 5
+      },
+      "note": "结构验证：确认场景覆盖度，不评测模型写入决策的区分度"
+    },
+    "evolution": {
+      "total_scenarios": 30,
+      "with_forget": 9,
+      "with_extend": 15,
+      "with_replace": 10,
+      "note": "结构验证：确认 evolution 冲突类型覆盖，不评测模型冲突解决的区分度"
+    },
+    "retrieval": {
+      "total_queries": 30,
+      "with_expected_ids": 30
+    },
+    "boundary_note": "本评测仅验证场景结构完整性和覆盖度，不评测模型在这些场景上的实际区分度。引入模型预测写入决策后才能获得有意义的 precision/recall。"
+  }
+}

@@ -82,3 +82,4 @@
 - 现有 5 个主流 benchmark 均不完整覆盖 formation 独立评测和 evolution 正确性评测，这一判断有论文级依据
 - 在 `evaluation.py` 中扩展 formation/evolution 场景和指标的技术方案可行，三阶段独立、产物统一
 - formation_precision/recall 和 evolution_accuracy/forgetting_precision 四个指标定义合理，在引入模型预测后可直接复用
+- `ref/datasets/lifecycle-eval/scenarios.jsonl` 提供了 30 条好场景（lifecycle 完整链路）+ 10 条坏场景（反例），覆盖 extend/replace/forget 三种冲突类型。这些场景基于 LoCoMo/LongMemEval/MemoryAgentBench 真实数据构造，仅用于结构验证，不代表框架已具备评测区分度

@@ -39,5 +39,7 @@ htmlcov/
 
 # Local research materials
 ref/paper/*.pdf
-ref/datasets/
+ref/datasets/*
+!ref/datasets/README.md
+!ref/datasets/lifecycle-eval/
 .firecrawl/
