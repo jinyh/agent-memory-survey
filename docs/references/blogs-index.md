@@ -1,6 +1,17 @@
 # Blogs Index
 
-- count: 8
+- count: 12
+
+## A Data Scientist RLM That Lives in Your Program
+- source_type: blog
+- author_or_org: None
+- published_at: 2026-03-22T00:00:00+00:00
+- file_path: ref/blog/A-Data-Analysis-Agent-That-Lives-in-Your-Program.md
+- source_url: https://kmad.ai/A-Data-Analysis-Agent-That-Lives-in-Your-Program
+- article_type: benchmark-analysis
+- lifecycle_stages: ['evaluation']
+- tags: ['agent-memory', 'benchmark']
+- quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
 
 ## AI Agent Memory Systems in 2026
 - source_type: blog
@@ -13,6 +24,28 @@
 - tags: ['agent-memory', 'benchmark']
 - quality: {'credibility': 'high', 'verifiability': 'medium', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
 
+## 𝗿𝗮𝗺𝗮𝗸𝗿𝘂𝘀𝗵𝗻𝗮— 𝗲/𝗮𝗰𝗰 on X: "Agentic Memory: A Detailed Breakdown" / X
+- source_type: blog
+- author_or_org: None
+- published_at: Sat, 28 Mar 2026 02:40:38 GMT
+- file_path: ref/blog/Agentic Memory- A Detailed Breakdown.md
+- source_url: https://x.com/techwith_ram/status/2037499938574110770
+- article_type: opinionated-essay
+- lifecycle_stages: ['formation', 'evolution']
+- tags: ['agent-memory', 'state-management']
+- quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
+
+## vixhaℓ on X: "Building Vectorless RAG System (No Embeddings, No Vector DB)" / X
+- source_type: blog
+- author_or_org: None
+- published_at: Fri, 27 Mar 2026 15:12:38 GMT
+- file_path: ref/blog/Building Vectorless RAG System (No Embeddings, No Vector DB).md
+- source_url: https://x.com/TheVixhal/status/2037236399691489797
+- article_type: engineering-practice
+- lifecycle_stages: ['retrieval', 'evaluation']
+- tags: ['agent-memory']
+- quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'medium', 'marketing_bias_risk': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
+
 ## Junyang Lin on X: "From "Reasoning" Thinking to "Agentic" Thinking " / X
 - source_type: blog
 - author_or_org: None
@@ -23,6 +56,39 @@
 - lifecycle_stages: ['evaluation']
 - tags: ['agent-memory', 'benchmark']
 - quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
+
+## Nav Toor on X: "Harness Engineering: Why the Best AI Engineers in 2026 Stopped Writing Code" / X
+- source_type: blog
+- author_or_org: None
+- published_at: Fri, 27 Mar 2026 07:48:17 GMT
+- file_path: ref/blog/Harness Engineering- Why the Best AI Engineers in 2026 Stopped Writing Code.md
+- source_url: https://x.com/heynavtoor/status/2037200578842157462
+- article_type: benchmark-analysis
+- lifecycle_stages: ['evaluation']
+- tags: ['agent-memory', 'benchmark']
+- quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
+
+## Andrej Karpathy on X: "LLM Knowledge Bases
+- source_type: blog
+- author_or_org: None
+- published_at: Fri, 03 Apr 2026 15:37:02 GMT
+- file_path: ref/blog/LLM Knowledge Bases.md
+- source_url: https://x.com/karpathy/status/2039805659525644595
+- article_type: engineering-practice
+- lifecycle_stages: ['retrieval', 'evaluation']
+- tags: ['agent-memory']
+- quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'medium', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
+
+## Yohei on X: "The state of AI memory systems: benchmarks, architectures, and what actually works" / X
+- source_type: blog
+- author_or_org: Letta
+- published_at: Fri, 27 Mar 2026 08:03:19 GMT
+- file_path: ref/blog/The state of AI memory systems- benchmarks, architectures, and what actually works.md
+- source_url: https://x.com/yoheinakajima/status/2037201711937577319
+- article_type: benchmark-analysis
+- lifecycle_stages: ['evaluation']
+- tags: ['agent-memory', 'benchmark']
+- quality: {'credibility': 'high', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
 
 ## Agent Memory: Why Your AI Has Amnesia and How to Fix It
 - source_type: blog
@@ -67,25 +133,3 @@
 - lifecycle_stages: ['formation', 'evolution']
 - tags: ['agent-memory', 'state-management']
 - quality: {'credibility': 'medium', 'verifiability': 'high', 'engineering_signal': 'high', 'marketing_bias_risk': 'high', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程视角，涉及产品比较时需回到论文或官方文档复核。', 'recommended_use': '适合补充工程实践、系统选型与 benchmark 争议背景。'}
-
-## Agentic Memory: A Detailed Breakdown
-- source_type: blog
-- author_or_org: ramakrushna
-- published_at: Sat, 28 Mar 2026 02:40:38 GMT
-- file_path: ref/blog/Agentic Memory- A Detailed Breakdown.md
-- source_url: https://x.com/techwith_ram/status/2037499938574110770
-- article_type: architecture-practice
-- lifecycle_stages: ['formation', 'evolution', 'retrieval']
-- tags: ['agent-memory', 'context-layering', 'episodic-memory']
-- quality: {'credibility': 'medium', 'verifiability': 'medium', 'engineering_signal': 'high', 'marketing_bias_risk': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '偏工程综述与概念分层，适合补叙事与系统边界，不宜直接当成验证性证据。', 'recommended_use': '适合补充 lifecycle、上下文分层与 retrieval-before-writing-after 的工程叙事。'}
-
-## Building Vectorless RAG System (No Embeddings, No Vector DB)
-- source_type: blog
-- author_or_org: vixhal
-- published_at: Fri, 27 Mar 2026 15:12:38 GMT
-- file_path: ref/blog/Building Vectorless RAG System (No Embeddings, No Vector DB).md
-- source_url: https://x.com/TheVixhal/status/2037236399691489797
-- article_type: architecture-practice
-- lifecycle_stages: ['retrieval', 'evolution']
-- tags: ['rag', 'hierarchical-routing', 'compression']
-- quality: {'credibility': 'medium', 'verifiability': 'medium', 'engineering_signal': 'high', 'marketing_bias_risk': 'medium', 'timeliness': 'high', 'project_relevance': 'high', 'risk_notes': '更适合作为结构化检索与面向读取的压缩范式参考，不应直接等同于完整 memory lifecycle 方案。', 'recommended_use': '适合补充分层路由式 retrieval、tree index 与面向读取的层次化摘要思路。'}
