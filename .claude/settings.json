@@ -15,12 +15,6 @@
             "command": "fp=\"$(jq -r '(.tool_input.file_path // .tool_response.filePath // empty)')\"; case \"$fp\" in */ref/paper/*|*/ref/blog/*|*/ref/DeepResearch/*) printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"你刚修改了 ref 材料层。请考虑运行 uv run --active python -m src.references 以重建 references 索引。\"}}' ;; esac",
             "timeout": 10,
             "statusMessage": "检查 references 重建提醒"
-          },
-          {
-            "type": "command",
-            "command": "fp=\"$(jq -r '(.tool_input.file_path // .tool_response.filePath // empty)')\"; case \"$fp\" in */docs/plans/*.md|*/docs/architecture/*.md) printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"你刚新增或重写了正式工件。请检查命名、位置与边界是否符合 AGENTS.md 和 docs/method/README.md。\"}}' ;; esac",
-            "timeout": 10,
-            "statusMessage": "检查正式工件规则提醒"
           }
         ]
       }
