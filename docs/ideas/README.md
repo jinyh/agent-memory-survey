@@ -21,6 +21,10 @@
 
 ## 当前记录
 
+### 2026-04-04：知识库工作流观察
+
+- [2026-04-04-llm-kb-workflow-note.md](2026-04-04-llm-kb-workflow-note.md) — LLM 编译式知识库 workflow 的角色边界与可借鉴点
+
 ### 2026-03-29：本轮改动与整理
 
 - [2026-03-29-agentresearch-change-summary.md](2026-03-29-agentresearch-change-summary.md) — 本轮仓库改动摘要与目录观察

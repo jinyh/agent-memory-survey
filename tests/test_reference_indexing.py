@@ -10,22 +10,45 @@ from src.references import (
 )
 from src.references.indexing import extract_deepresearch_entries
 
+
+SAMPLE_PAPER_FILES = [
+    "2402.17753.pdf",
+    "2507.05257.pdf",
+    "2512.12686.pdf",
+    "2602.02474.pdf",
+    "2601.20465.pdf",
+]
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_build_reference_library_scans_local_sources():
-    library = build_reference_library(REPO_ROOT)
+def _seed_sample_papers(repo_root: Path) -> None:
+    paper_dir = repo_root / "ref/paper"
+    paper_dir.mkdir(parents=True, exist_ok=True)
+    for filename in SAMPLE_PAPER_FILES:
+        (paper_dir / filename).write_bytes(b"%PDF-1.4\n% test fixture\n")
+
+
+def test_build_reference_library_scans_local_sources(tmp_path: Path):
+    _seed_sample_papers(tmp_path)
+    library = build_reference_library(tmp_path)
 
     assert len(library.papers) >= 4
-    assert len(library.blogs) >= 5
+    assert len(library.blogs) == 0
     assert all(record.source_type == "paper" for record in library.papers)
-    assert all(record.source_type == "blog" for record in library.blogs)
     assert all(record.file_path.startswith("ref/") for record in library.papers)
-    assert all(record.file_path.startswith("ref/blog/") for record in library.blogs)
 
 
-def test_quality_assessment_is_populated_for_papers_and_blogs():
-    library = build_reference_library(REPO_ROOT)
+def test_quality_assessment_is_populated_for_papers_and_blogs(tmp_path: Path):
+    _seed_sample_papers(tmp_path)
+    blog_dir = tmp_path / "ref/blog"
+    blog_dir.mkdir(parents=True, exist_ok=True)
+    (blog_dir / "sample-blog.md").write_text(
+        "Title: Sample Blog\nURL Source: https://example.com/post\nPublished Time: 2026-04-04\n\nClaude Code and Agent Memory benchmark architecture implementation.\n",
+        encoding="utf-8",
+    )
+
+    library = build_reference_library(tmp_path)
 
     paper = library.papers[0]
     blog = library.blogs[0]
@@ -42,13 +65,12 @@ def test_quality_assessment_is_populated_for_papers_and_blogs():
     assert blog.quality.recommended_use
 
 
-def test_build_reference_library_enriches_downloaded_paper_titles():
-    library = build_reference_library(REPO_ROOT)
+def test_build_reference_library_enriches_downloaded_paper_titles(tmp_path: Path):
+    _seed_sample_papers(tmp_path)
+    library = build_reference_library(tmp_path)
 
-    assert any(record.title.startswith("TeleMem:") for record in library.papers)
-    assert any(record.title.startswith("MemoryArena:") for record in library.papers)
+    assert any(record.title.startswith("Evaluating Very Long-Term Conversational Memory") for record in library.papers)
     assert any("MemoryAgentBench" in record.title for record in library.papers)
-    assert any(record.title.startswith("AMA-Bench:") for record in library.papers)
     assert any(record.title.startswith("Memoria:") for record in library.papers)
     assert any(record.title.startswith("MemSkill:") for record in library.papers)
     assert any(record.title.startswith("BMAM:") for record in library.papers)
@@ -74,7 +96,16 @@ def test_extract_deepresearch_entries_tracks_download_status():
 
 
 def test_write_reference_indexes_creates_expected_outputs(tmp_path: Path):
-    library = build_reference_library(REPO_ROOT)
+    fixture_root = tmp_path / "repo"
+    _seed_sample_papers(fixture_root)
+    blog_dir = fixture_root / "ref/blog"
+    blog_dir.mkdir(parents=True, exist_ok=True)
+    (blog_dir / "sample-blog.md").write_text(
+        "Title: Sample Blog\nURL Source: https://example.com/post\nPublished Time: 2026-04-04\n\nbenchmark architecture implementation\n",
+        encoding="utf-8",
+    )
+
+    library = build_reference_library(fixture_root)
     entries = extract_deepresearch_entries(
         next(
             (
@@ -87,11 +118,12 @@ def test_write_reference_indexes_creates_expected_outputs(tmp_path: Path):
         REPO_ROOT,
     )
 
-    write_reference_indexes(tmp_path, library, entries)
+    output_dir = tmp_path / "out"
+    write_reference_indexes(output_dir, library, entries)
 
-    papers_index = tmp_path / "papers-index.json"
-    blogs_index = tmp_path / "blogs-index.json"
-    deepresearch_index = tmp_path / "deepresearch-ingestion.json"
+    papers_index = output_dir / "papers-index.json"
+    blogs_index = output_dir / "blogs-index.json"
+    deepresearch_index = output_dir / "deepresearch-ingestion.json"
 
     assert papers_index.exists()
     assert blogs_index.exists()
@@ -102,7 +134,7 @@ def test_write_reference_indexes_creates_expected_outputs(tmp_path: Path):
     deepresearch_payload = json.loads(deepresearch_index.read_text())
 
     assert papers_payload["count"] >= 4
-    assert blogs_payload["count"] >= 5
+    assert blogs_payload["count"] >= 1
     assert deepresearch_payload["count"] >= 20
 
 

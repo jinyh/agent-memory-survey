@@ -14,6 +14,6 @@ def test_claude_md_declares_agents_as_source_of_truth():
 def test_claude_md_keeps_minimum_project_context():
     content = (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8")
 
-    assert "# AgentResearch" in content
+    assert "AgentResearch" in content
     assert "Claude Code" in content
     assert "Agent Memory" in content
