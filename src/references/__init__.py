@@ -8,6 +8,8 @@ from .indexing import (
     build_reference_library,
     download_github_files,
     download_hf_dataset,
+    download_open_deepresearch_papers,
+    extract_deepresearch_entries,
     resolve_download_url,
     write_reference_indexes,
 )

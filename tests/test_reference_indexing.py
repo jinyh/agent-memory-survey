@@ -5,10 +5,11 @@ from pathlib import Path
 
 from src.references import (
     build_reference_library,
+    download_open_deepresearch_papers,
+    extract_deepresearch_entries,
     resolve_download_url,
     write_reference_indexes,
 )
-from src.references.indexing import extract_deepresearch_entries
 
 
 SAMPLE_PAPER_FILES = [
@@ -136,6 +137,11 @@ def test_write_reference_indexes_creates_expected_outputs(tmp_path: Path):
     assert papers_payload["count"] >= 4
     assert blogs_payload["count"] >= 1
     assert deepresearch_payload["count"] >= 20
+
+
+def test_references_package_exports_ingest_helpers():
+    assert callable(extract_deepresearch_entries)
+    assert callable(download_open_deepresearch_papers)
 
 
 def test_resolve_download_url_supports_arxiv_and_openreview():

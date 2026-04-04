@@ -1,88 +1,60 @@
 # Agent Memory
 
-Agent Memory 研究项目，当前重构为三层结构：
+AgentResearch 是一个以 **Agent Memory 机制与实现** 为中心的研究仓库。当前主线由三层组成：
 
-- `docs/`：生命周期主线的综述、论文笔记与参考资料入口
-- `ref/`：原始研究资料，按 `paper / blog / DeepResearch` 分层
-- `src/`：最小研究原型与资料索引工具
+- `ref/`：原始研究资料层（`paper / blog / DeepResearch / datasets`）
+- `docs/`：研究工作流、survey、references 索引与正式研究工件
+- `src/`：最小 memory 原型、references 工具与评测实现
 
-## 目录别名对照
+## 从哪里开始
 
-日常口头讨论中常会使用一些简写，统一对应到以下真实路径：
+如果你第一次进入这个仓库，按下面顺序阅读：
 
-- `paper` → `ref/paper/`
-- `blog` → `ref/blog/`
-- `DeepResearch` → `ref/DeepResearch/`
-- `ideas` → `docs/ideas/`
-- `survey-map` → `docs/survey/survey-map.md`
+1. `docs/method/README.md`：研究工作流总入口，说明材料如何进入正式研究链路
+2. `docs/survey/README.md`：当前关于 Agent Memory 的核心判断与章节导航
+3. `AGENTS.md`：共享项目约定、证据口径与目录边界细则
 
-## 目录结构
+## 核心目录
 
-- `docs/method/`：研究版 BMAD 方法层（工作流、角色、工件、评审门、追踪规则）
-  - 整体工作流总览见 `docs/method/README.md`
-- `docs/survey/`：新版综述，按 Formation / Evolution / Retrieval / Evaluation / Frontier 组织
-- `docs/references.md`：参考资料入口页
-- `docs/references/`：自动生成的 paper/blog/deepresearch 索引与质量评估
-- `ref/paper/`：本地 PDF 论文库，默认不纳入版本控制
-- `ref/blog/`：工程文章与行业资料
-- `ref/DeepResearch/`：研究报告与待摄取引用线索
-- `docs/plans/`：研究工件（research-brief、evidence-map、experiment-spec、evaluation-report、survey-update-note）
-- `docs/architecture/`：架构决策记录（ADR）
-- `src/memory/`：记忆层概念原型（含全生命周期评测框架）
-- `src/references/`：资料索引、质量评估与下载工具
-- `tests/`：单元测试
+- `docs/method/`：研究工作流、gate、traceability 与外部材料判定规则
+- `docs/survey/`：围绕 `formation -> evolution -> retrieval -> evaluation` 主线组织的综述
+- `docs/references/`：自动生成的 paper/blog/DeepResearch 索引
+- `docs/plans/`：正式研究工件（如 research-brief、evidence-map、experiment-spec、evaluation-report）
+- `docs/ideas/`：轻量孵化、候选映射、局部启发
+- `docs/architecture/`：与 memory/evaluation/references 实现相关的架构决策
+- `ref/`：原始资料层
+- `src/memory/`：最小 memory 原型与评测相关实现
+- `src/references/`：references 扫描、质量评估与索引工具
+- `tests/`：代码、文档与索引相关测试
 
-## 开发命令
-
-推荐将虚拟环境放在仓库外，例如：
+## 常用命令
 
 ```bash
 uv venv "$HOME/.venvs/agentresearch"
 source "$HOME/.venvs/agentresearch/bin/activate"
 uv sync --active --extra dev
-```
 
-日常开发命令：
-
-```bash
 make test
 make lint
 make docs
 make refs
 make eval
-uv run --active python -m src.memory.agent
 ```
 
-等价的直接命令：
+## 资料更新
 
-```bash
-uv run --active --extra dev pytest tests/
-uv run --active --extra dev pytest tests/test_memory.py -q
-uv run --active --extra dev ruff check .
-uv run --active python -m src.memory.evaluation --out docs/memory-eval/latest
-uv run --active python -m src.references
-python scripts/check-doc-links.py
-```
-
-## 资料更新流程
-
-当 `ref/paper/` 或 `ref/blog/` 有新文件，或者 `ref/DeepResearch/` 的引文更新时，运行：
+当 `ref/paper/`、`ref/blog/` 或 `ref/DeepResearch/` 更新时，运行：
 
 ```bash
 uv run --active python -m src.references
 ```
 
-该命令会自动：
+它会重建 `docs/references/` 索引，并补齐可直接下载的开放论文。
 
-1. 扫描 `paper` 和 `blog` 新文件
-2. 生成 `docs/references/` 下的结构化索引
-3. 评估每条资料的质量字段
-4. 对 `DeepResearch` 中支持直下的开放论文执行下载补齐
+## 入口与事实源
 
-说明：`ref/paper/` 用于保存本地论文原文 PDF，供索引脚本和研究流程使用，但这些 PDF 默认不会提交到 Git 仓库。
-
-## 根目录约定
-
-根目录只保留高信号文件与主目录入口，不放临时脚本、重复入口和本地缓存产物。本地虚拟环境、测试缓存和系统垃圾文件不应留在仓库根目录。
-
-代理说明文件采用单一事实源策略：共享项目约定统一维护在 `AGENTS.md`，`CLAUDE.md` 仅保留 Claude Code 的入口说明与必要差异。
+- 项目目标与导航：`README.md`
+- 共享项目约定：`AGENTS.md`
+- Claude Code 入口提醒：`CLAUDE.md`
+- 研究工作流事实源：`docs/method/README.md`
+- 研究结论入口：`docs/survey/README.md`

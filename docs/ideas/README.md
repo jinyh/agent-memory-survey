@@ -1,6 +1,6 @@
 # Ideas
 
-这个目录用于记录与 Claude 交互过程中产生的想法、临时洞察和后续可执行点。
+这个目录用于记录与 Claude 交互过程中产生的想法、临时洞察、候选映射和尚未进入正式研究链路的局部启发。
 
 ## 命名规则
 
@@ -55,5 +55,7 @@
 ## 使用边界
 
 - 不要把 `docs/ideas/` 当作长期的正式结论仓库。
+- 如果内容已经形成明确研究问题、证据地图、实验规格或可稳定复用的判断，应升级到 `docs/plans/` 或 `docs/architecture/`，而不是继续停留在 ideas。
 - “最小实现是否支撑 survey” 的稳定映射，优先回写到 `docs/survey/survey-map.md`。
 - blog / 外部材料的纳入边界判断，优先遵循 `docs/method/blog-survey-calibration-template.md`。
+- 方法层自我设计、skill 设计或支线 case 若暂未进入正式研究链路，也优先放在 `docs/ideas/` 或后续归档，而不是直接进入 `docs/plans/`。

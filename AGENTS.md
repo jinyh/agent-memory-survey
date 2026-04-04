@@ -64,3 +64,11 @@ uv run --active --extra dev ruff check .               # 代码检查
 - `find . -name "CLAUDE.md" -o -name ".claude.local.md"` 可先确认是否已有 Claude 说明文件，再决定是更新还是新建。
 - survey 章节更新时，优先同步 `docs/survey/README.md` 和 `docs/survey/survey-map.md`。
 - 更新共享写作规则时，必须同步检查 `CLAUDE.md`，并保持 `AGENTS.md` 为单一细则真源。
+
+## 项目级协作层约束
+- 仓库的第一目标是研究 Agent Memory 的机制与实现；workflow、skills、hooks 只能服务主线，不能继续膨胀成独立维护对象。
+- 默认优先级是：`materials/references -> survey judgment -> memory prototype -> evaluation`，而不是先扩协作流程。
+- 项目级 skills 只应在两类场景中保持高优先级：证据摄取/映射，或跨层重大架构评审。
+- `research-workflow` 一类能力更适合作为 `docs/method/README.md` 中的文档规则，而不是高频日常入口。
+- `/architect` 保持低频、专项使用；除非变更同时跨越 `docs/`、`src/`、`references` 多层，否则不应默认触发。
+- 不再继续增加“改 A 提醒 B、改 B 提醒 C”类型的流程型 hooks，避免为流程叠流程。

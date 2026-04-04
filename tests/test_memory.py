@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 from src.memory.base import FusionConfig, MemoryItem, MemoryType
 from src.memory.episodic import EpisodicMemory
 from src.memory.evaluation import (
@@ -672,7 +674,7 @@ class TestEvaluationOutputs:
         from src.memory.export_memoryagentbench import export_memoryagentbench
 
         summary = export_memoryagentbench(
-            dataset_root="/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets/MemoryAgentBench",
+            dataset_root=str(REPO_ROOT / "ref/datasets/MemoryAgentBench"),
             out_root=str(tmp_path / "normalized"),
         )
 
@@ -689,9 +691,7 @@ class TestEvaluationOutputs:
         assert summary["Accurate_Retrieval"] > 0
 
     def test_load_benchmark_cases_normalizes_files(self):
-        dataset_root = Path(
-            "/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets"
-        )
+        dataset_root = REPO_ROOT / "ref/datasets"
 
         cases = load_benchmark_cases(str(dataset_root))
 
@@ -710,7 +710,7 @@ class TestEvaluationOutputs:
         monkeypatch.setattr(VectorMemoryStore, "_encode", fake_encode)
 
         summary = run_dataset_benchmark(
-            dataset_dir="/Users/jinyh/Documents/AIProjects/AgentResearch/ref/datasets",
+            dataset_dir=str(REPO_ROOT / "ref/datasets"),
             out_dir=str(tmp_path / "dataset-out"),
         )
 

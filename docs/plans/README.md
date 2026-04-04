@@ -1,8 +1,30 @@
 # Plans
 
-> v1.0.1 | 2026-03-27
+> v1.1.0 | 2026-04-04
 
-这个目录是研究规划与可执行结论的索引。更稳定、可复用的内容优先放在这里。
+这个目录只放**正式研究工件**，用于承接已经进入研究主链路的内容。更稳定、可复用、需要被后续引用的工件优先放在这里。
+
+## 这个目录应该放什么
+
+优先保留以下类型：
+
+- `research-brief`
+- `evidence-map`
+- `experiment-spec`
+- `evaluation-report`
+- `survey-update-note`
+- 与核心研究问题直接相关、且已进入正式链路的补充计划
+
+## 这个目录不应该放什么
+
+以下内容应优先放在 `docs/ideas/`，或整理后归档到 `docs/archive/`：
+
+- 方法层自我设计与流程讨论
+- skill / 协作方式设计文档
+- 尚未进入正式研究链路的支线 case
+- 过程性状态总结、临时收口 memo
+
+如果一份文档还不能明确回答“它服务于哪个研究问题、哪一个 gate、哪一个正式产物”，默认不应放在 `docs/plans/`。
 
 ## RQ-001：Agent Memory 全生命周期评测
 
@@ -17,11 +39,6 @@
 - [2026-03-27-rq001-completion-check.md](2026-03-27-rq001-completion-check.md) — RQ-001 完成度检查
 - [2026-03-27-rq001-completion-update.md](2026-03-27-rq001-completion-update.md) — RQ-001 补齐更新
 - [2026-03-27-rq001-status-summary.md](2026-03-27-rq001-status-summary.md) — RQ-001 状态收口
-
-## 方法层
-
-- [2026-03-26-agentresearch-bmad-method-layer-v1.md](2026-03-26-agentresearch-bmad-method-layer-v1.md) — 研究版 BMAD 方法层
-- [2026-03-27-agentresearch-method-stack-v1.md](2026-03-27-agentresearch-method-stack-v1.md) — 推荐方法栈与 harness 增强层
 
 ## 其他计划
 
